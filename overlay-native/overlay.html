@@ -145,6 +145,21 @@ html,body{background:transparent;overflow:hidden;width:100vw;height:100vh;
 <script>
 (function(){
 "use strict";
+window.addEventListener("error", function(ev){
+  try{
+    if(window.__retiring) return;
+    var b = document.getElementById("bubble");
+    b.classList.add("show");
+    document.getElementById("blede").textContent = "I tripped over my own choreography.";
+    document.getElementById("btext").textContent =
+      "An exception just fired mid-performance: \"" + (ev.message||"unknown") + "\". " +
+      "Telling you beats sitting here in silence, which is the entire philosophy of this product. " +
+      "The chips below should still work. If not, the X works. If the X does not work, close the laptop slowly.";
+    var br = document.getElementById("brec");
+    br.textContent = "error surfaced honestly · degrade loudly, never silently";
+    br.style.display = "block";
+  }catch(e){}
+});
 var qs = new URLSearchParams(location.search);
 var CFG = window.__BILLY || {};
 var SW = CFG.screenW || +qs.get("screenW") || innerWidth, SH = CFG.screenH || +qs.get("screenH") || innerHeight;
@@ -160,7 +175,8 @@ function bridgeAsk(q){
     body:JSON.stringify({question:q})}).then(function(r){return r.json()});
 }
 
-var GREET_LEDE = "Hey, I'm Billy. Yes, on your actual screen.";
+var GREET_LEDE = CLAUDE ? "Hey, I'm Billy. Yes, on your actual screen."
+  : "Hey, I'm Billy. I couldn't find a Claude window, so this spot is mine now.";
 var GREET = "This is my application to work with you at Rocket Money. I found your Claude window and sat down on it, because the best cover letter for this role seemed to be a working demo of the experience you're hiring for. Ask me anything below, or let's talk for real over phone or Zoom.";
 var CHIPS = ["What are your biggest weaknesses?","Why should we not hire you?","What have you actually built?","Show me something off the record"];
 
@@ -272,7 +288,8 @@ function askBilly(q){
   .then(function(s){
     if(s&&s.lede) speak(s.lede, s.rest, s.receipt||null);
     else speak("Hm.","The pipeline returned nothing I can say.",null); })
-  .catch(function(e){ speak("Hm.","The pipeline errored ("+e.message+").",null); });
+  .catch(function(e){ speak("I've lost contact with my brain.",
+    "The pipeline that fact-checks me is not answering ("+e.message+"), which means right now I am legally just a drawing. Anything I said would be unsourced, and you know how I feel about that. Summon me again, or check that the MCP server is still alive.", null); });
 }
 CHIPS.forEach(function(c){
   var b=document.createElement("button"); b.className="chip"; b.textContent=c;
@@ -323,6 +340,16 @@ fig.addEventListener("transitionend", function step(ev){
     positionBubble();
     speak(GREET_LEDE, GREET, null);
   }, 550);
+});
+Array.prototype.forEach.call(document.querySelectorAll("#skin img"), function(img){
+  img.addEventListener("error", function once(){
+    img.removeEventListener("error", once);
+    if(!fig.classList.contains("skin")) return;
+    fig.classList.remove("skin","posing");
+    document.getElementById("blede").textContent = "I appear to have lost my body.";
+    document.getElementById("btext").textContent = "A sprite failed to load, so the stick figure is stepping in. He is load-bearing and has no ego about it.";
+    bubble.classList.add("show"); positionBubble();
+  });
 });
 window.addEventListener("resize", positionBubble);
 
