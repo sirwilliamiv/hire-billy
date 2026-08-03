@@ -27,7 +27,8 @@ const ok = (name, cond) => { console.log((cond ? 'PASS' : 'FAIL') + '  ' + name)
   const u = await runPipeline('What is his favorite color?');
   ok('unmapped degrades loudly', u.kind === 'unmapped' && u.lede.includes('not plugged in'));
 
-  await runPipeline('a'); // burn remaining token
+  const pi = await runPipeline('Why should we hire you?');
+  ok('positive pitch mapped', pi.lede.includes('demo is the argument') && pi.sources.includes('strengths'));
   const h = await runPipeline('one more');
   ok('sixth question rate limited', h.kind === 'halt' && h.lede.includes('Rate limited'));
 }

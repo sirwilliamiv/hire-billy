@@ -17,7 +17,7 @@ function clayMaterials() {
     beard: mk(9067064, 0.85),
     eye: mk(15921388, 0.35),
     teeth: mk(16052198, 0.4),
-    shirt: mk(11060440, 0.9)
+    shirt: mk(6127769, 0.9)
   };
 }
 function extrudeShape(points) {
@@ -79,16 +79,16 @@ function createBillyPortraitBustModel(options = {}) {
   }
   const shirtNode = pivot("shirt", root, [0, -0.9, 0]);
   const shirtProfile = [
-    [-0.88, -0.45],
-    [-0.86, 0.05],
-    [-0.67, 0.28],
-    [-0.33, 0.42],
-    [-0.11, 0.45],
-    [0.11, 0.45],
-    [0.33, 0.42],
-    [0.67, 0.28],
-    [0.86, 0.05],
-    [0.88, -0.45]
+    [-0.95, -0.45],
+    [-0.93, 0.05],
+    [-0.72, 0.28],
+    [-0.35, 0.42],
+    [-0.12, 0.45],
+    [0.12, 0.45],
+    [0.35, 0.42],
+    [0.72, 0.28],
+    [0.93, 0.05],
+    [0.95, -0.45]
   ];
   const shirtGeo = new THREE.ExtrudeGeometry(extrudeShape(shirtProfile), {
     depth: 0.55,

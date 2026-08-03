@@ -15,7 +15,7 @@ import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { runPipeline, formatAnswer, formatCard, CORPUS } from '../core/pipeline.js';
+import { runPipeline, formatAnswer, formatCard, corpus } from '../core/pipeline.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WIDGET_URI = 'ui://hire-billy/panel';
@@ -35,7 +35,7 @@ const traceShape = z.object({
 }).passthrough();
 
 export function buildServer({ local = false } = {}) {
-  const server = new McpServer({ name: 'hire-billy', version: CORPUS.meta.version + '.0' });
+  const server = new McpServer({ name: 'hire-billy', version: corpus().meta.version + '.0' });
 
   server.registerTool(
     'ask_billy',

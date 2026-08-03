@@ -1,12 +1,24 @@
 /* billy-1 shared core: one corpus, one pipeline, every surface.
    Nine stages, eight deterministic, one model call. Timings here are
    measured for real; the browser UI dramatizes the same stages. */
-import { readFileSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-export const CORPUS = JSON.parse(readFileSync(join(HERE, '..', 'corpus.json'), 'utf8'));
+const CORPUS_PATH = join(HERE, '..', 'corpus.json');
+let corpusCache = JSON.parse(readFileSync(CORPUS_PATH, 'utf8'));
+let corpusMtime = statSync(CORPUS_PATH).mtimeMs;
+/* long-lived hosts (Claude Desktop keeps MCP servers alive for the whole
+   app session) must not serve yesterday's corpus: re-read on mtime change */
+export function corpus() {
+  try {
+    const m = statSync(CORPUS_PATH).mtimeMs;
+    if (m !== corpusMtime) { corpusCache = JSON.parse(readFileSync(CORPUS_PATH, 'utf8')); corpusMtime = m; }
+  } catch (e) {}
+  return corpusCache;
+}
+export const CORPUS = corpusCache;
 
 const KEY = process.env.ANTHROPIC_API_KEY || '';
 const MODEL = process.env.BILLY1_MODEL || 'claude-sonnet-4-5';
@@ -57,6 +69,10 @@ const MAPPED = [
     lede: 'Three, and they are load-bearing.',
     rest: 'He prototypes past the point where he should be delegating, a hands-on bias that gets worse under pressure. He is impatient with process that exists to distribute blame rather than to ship. And he will polish the system before the story, which is why he pairs best with a strong product counterpart. If you want the flattering version: there is not one. The grounding stage strikes anything the corpus cannot back.',
     sources: ['limitations'] },
+  { key: 'pitch', re: /why (should we |should i |would we )?hire|why you\b|sell (yourself|us)|\bpitch\b|best fit|why billy/i,
+    lede: 'Because the demo is the argument.',
+    rest: 'He turns ambiguous model capability into dependable product behavior, ships the demo himself, and still runs the rituals: 1:1s, reviews, growth plans. You are inside the evidence right now: a grounded assistant that cannot flatter, shows its work, and knows when to hand off to a human. The flaws are one question away, in the same corpus, retrieved by the same machinery. That is the trust model he builds into financial software, applied to himself first.',
+    sources: ['strengths', 'overview', 'limitations'] },
 ];
 
 const SUPERLATIVES = [
@@ -65,7 +81,7 @@ const SUPERLATIVES = [
 ];
 
 function corpusText() {
-  return CORPUS.sections.map(s => s.title + ' ' + s.body).join(' ').toLowerCase();
+  return corpus().sections.map(s => s.title + ' ' + s.body).join(' ').toLowerCase();
 }
 
 /* stage 09: it is not allowed to make him sound better than he is */
@@ -86,7 +102,7 @@ function ground(text) {
 /* stage 06: sections chosen by overlap with the question */
 function retrieve(question) {
   const words = question.toLowerCase().match(/[a-z]{3,}/g) || [];
-  const scored = CORPUS.sections.map(s => {
+  const scored = corpus().sections.map(s => {
     const hay = (s.id + ' ' + s.title + ' ' + s.body).toLowerCase();
     return { id: s.id, score: words.reduce((n, w) => n + (hay.includes(w) ? 1 : 0), 0) };
   }).sort((a, b) => b.score - a.score);
@@ -101,7 +117,7 @@ async function askClaude(question) {
     'without a corpus span. If the corpus does not cover the question, say so',
     'plainly. Reply as strict JSON: {"lede": string, "rest": string,',
     '"sources": [section ids]} with lede under 12 words.',
-    'CORPUS: ' + JSON.stringify(CORPUS),
+    'CORPUS: ' + JSON.stringify(corpus()),
   ].join(' ');
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -252,11 +268,12 @@ export function formatAnswer(r) {
 }
 
 export function formatCard(section) {
-  const m = CORPUS.meta;
+  const C = corpus();
+  const m = C.meta;
   const secs = section
-    ? CORPUS.sections.filter(s => s.id === section)
-    : CORPUS.sections;
-  if (!secs.length) return `No section named "${section}". Sections: ${CORPUS.sections.map(s => s.id).join(', ')}`;
+    ? C.sections.filter(s => s.id === section)
+    : C.sections;
+  if (!secs.length) return `No section named "${section}". Sections: ${C.sections.map(s => s.id).join(', ')}`;
   return [
     `# ${m.model} · model card`,
     `corpus v${m.version} · params ${m.params} · context ${m.context} · updated ${m.updated} · license ${m.license}`,

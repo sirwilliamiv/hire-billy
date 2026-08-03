@@ -1251,8 +1251,8 @@
       "details": [],
       "fidelityTier": "blockout",
       "colorMaterialRecipe": {
-        "dominantAlbedo": "rgba(0, 0, 0, 1.0)",
-        "secondaryAlbedo": "rgba(0, 0, 0, 1.0)",
+        "dominantAlbedo": "rgba(168, 196, 216, 1.0)",
+        "secondaryAlbedo": "rgba(230, 181, 150, 1.0)",
         "materialClass": "unknown",
         "materialClassConfidence": 0.9,
         "evidenceRef": "full-object"
@@ -6058,6 +6058,615 @@
         "blockout requires --map-stripped-render evidence"
       ],
       "renderHash": "7228058eb61f18d4",
+      "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.2151,
+        "aspectRatioDelta": 0.1219,
+        "scaleDelta": 0.6525,
+        "bilateralSymmetryError": 0.0598,
+        "colorDelta": {
+          "checked": 16,
+          "maxDeltaE": 49.85,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 49.85
+            },
+            {
+              "componentId": null,
+              "deltaE": 27.43
+            },
+            {
+              "componentId": null,
+              "deltaE": 24.47
+            },
+            {
+              "componentId": null,
+              "deltaE": 27.43
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.27
+            },
+            {
+              "componentId": null,
+              "deltaE": 15.15
+            },
+            {
+              "componentId": null,
+              "deltaE": 15.77
+            },
+            {
+              "componentId": null,
+              "deltaE": 15.77
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.13
+            },
+            {
+              "componentId": null,
+              "deltaE": 14.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.27
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.27
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.86
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.07
+            },
+            {
+              "componentId": null,
+              "deltaE": 12.88
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.215 is below threshold 0.85",
+        "aspect-ratio delta 0.122 exceeds threshold 0.05",
+        "scale delta 0.652 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "renderHash": "e146f093dd8d7756",
+      "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.2151,
+        "aspectRatioDelta": 0.1219,
+        "scaleDelta": 0.6525,
+        "bilateralSymmetryError": 0.0597,
+        "colorDelta": {
+          "checked": 16,
+          "maxDeltaE": 49.85,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 49.85
+            },
+            {
+              "componentId": null,
+              "deltaE": 27.44
+            },
+            {
+              "componentId": null,
+              "deltaE": 24.48
+            },
+            {
+              "componentId": null,
+              "deltaE": 27.44
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.28
+            },
+            {
+              "componentId": null,
+              "deltaE": 15.15
+            },
+            {
+              "componentId": null,
+              "deltaE": 15.75
+            },
+            {
+              "componentId": null,
+              "deltaE": 15.75
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.13
+            },
+            {
+              "componentId": null,
+              "deltaE": 14.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.95
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.28
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.28
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.86
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.07
+            },
+            {
+              "componentId": null,
+              "deltaE": 12.88
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.215 is below threshold 0.85",
+        "aspect-ratio delta 0.122 exceeds threshold 0.05",
+        "scale delta 0.652 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "renderHash": "be71de32b06884f7",
+      "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6968,
+        "aspectRatioDelta": 0.0683,
+        "scaleDelta": 0.078,
+        "bilateralSymmetryError": 0.1347,
+        "colorDelta": {
+          "checked": 16,
+          "maxDeltaE": 26.26,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 26.26
+            },
+            {
+              "componentId": null,
+              "deltaE": 26.26
+            },
+            {
+              "componentId": null,
+              "deltaE": 22.59
+            },
+            {
+              "componentId": null,
+              "deltaE": 26.26
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.37
+            },
+            {
+              "componentId": null,
+              "deltaE": 15.38
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.37
+            },
+            {
+              "componentId": null,
+              "deltaE": 14.8
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.37
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.37
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.34
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.3
+            },
+            {
+              "componentId": null,
+              "deltaE": 14.11
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.697 is below threshold 0.85",
+        "aspect-ratio delta 0.068 exceeds threshold 0.05",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "renderHash": "88fa3c1e035cabe4",
+      "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.7541,
+        "aspectRatioDelta": 0.0489,
+        "scaleDelta": 0.0584,
+        "bilateralSymmetryError": 0.11,
+        "colorDelta": {
+          "checked": 16,
+          "maxDeltaE": 26.45,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 26.45
+            },
+            {
+              "componentId": null,
+              "deltaE": 26.45
+            },
+            {
+              "componentId": null,
+              "deltaE": 22.78
+            },
+            {
+              "componentId": null,
+              "deltaE": 26.45
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.39
+            },
+            {
+              "componentId": null,
+              "deltaE": 15.55
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.05
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.05
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.55
+            },
+            {
+              "componentId": null,
+              "deltaE": 14.8
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.01
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.39
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.39
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.4
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.95
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.77
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.754 is below threshold 0.85",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "renderHash": "4e54597f86e8397b",
+      "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6803,
+        "aspectRatioDelta": 0.0829,
+        "scaleDelta": 0.0829,
+        "bilateralSymmetryError": 0.0901,
+        "colorDelta": {
+          "checked": 16,
+          "maxDeltaE": 22.11,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 3.63
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.63
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.15
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.63
+            },
+            {
+              "componentId": null,
+              "deltaE": 22.11
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.78
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.58
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.58
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.9
+            },
+            {
+              "componentId": null,
+              "deltaE": 17.62
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.66
+            },
+            {
+              "componentId": null,
+              "deltaE": 22.11
+            },
+            {
+              "componentId": null,
+              "deltaE": 22.11
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.24
+            },
+            {
+              "componentId": null,
+              "deltaE": 16.61
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.44
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.680 is below threshold 0.85",
+        "aspect-ratio delta 0.083 exceeds threshold 0.05",
+        "scale delta 0.083 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "renderHash": "b565f8c25c53a539",
+      "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6826,
+        "aspectRatioDelta": 0.0439,
+        "scaleDelta": 0.0439,
+        "bilateralSymmetryError": 0.0844,
+        "colorDelta": {
+          "checked": 16,
+          "maxDeltaE": 22.1,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 3.58
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.58
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.07
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.58
+            },
+            {
+              "componentId": null,
+              "deltaE": 22.1
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.77
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.6
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.6
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.88
+            },
+            {
+              "componentId": null,
+              "deltaE": 17.61
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.68
+            },
+            {
+              "componentId": null,
+              "deltaE": 22.1
+            },
+            {
+              "componentId": null,
+              "deltaE": 22.1
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.28
+            },
+            {
+              "componentId": null,
+              "deltaE": 16.64
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.46
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.683 is below threshold 0.85",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "renderHash": "979df4189832f571",
+      "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.7554,
+        "aspectRatioDelta": 0.0163,
+        "scaleDelta": 0.0163,
+        "bilateralSymmetryError": 0.0519,
+        "colorDelta": {
+          "checked": 16,
+          "maxDeltaE": 22.1,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 3.6
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.6
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.09
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.6
+            },
+            {
+              "componentId": null,
+              "deltaE": 22.1
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.77
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.6
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.6
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.89
+            },
+            {
+              "componentId": null,
+              "deltaE": 17.58
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.67
+            },
+            {
+              "componentId": null,
+              "deltaE": 22.1
+            },
+            {
+              "componentId": null,
+              "deltaE": 22.1
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.32
+            },
+            {
+              "componentId": null,
+              "deltaE": 16.69
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.51
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.755 is below threshold 0.85",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "renderHash": "c62cd40f6342a445",
       "passId": "blockout"
     }
   ]

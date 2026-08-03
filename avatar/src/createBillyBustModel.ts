@@ -60,7 +60,7 @@ function clayMaterials(): Record<string, THREE.Material> {
     beard: mk(0x8a5a38, 0.85),
     eye: mk(0xf2f0ec, 0.35),
     teeth: mk(0xf4efe6, 0.4),
-    shirt: mk(0xa8c4d8, 0.9),
+    shirt: mk(0x5d8099, 0.9),
   };
 }
 
@@ -134,8 +134,8 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
   // Front-silhouette profile (world units), extruded and tapered front-to-back.
   const shirtNode = pivot('shirt', root, [0, -0.9, 0]);
   const shirtProfile: [number, number][] = [
-    [-0.88, -0.45], [-0.86, 0.05], [-0.67, 0.28], [-0.33, 0.42], [-0.11, 0.45],
-    [0.11, 0.45], [0.33, 0.42], [0.67, 0.28], [0.86, 0.05], [0.88, -0.45],
+    [-0.95, -0.45], [-0.93, 0.05], [-0.72, 0.28], [-0.35, 0.42], [-0.12, 0.45],
+    [0.12, 0.45], [0.35, 0.42], [0.72, 0.28], [0.93, 0.05], [0.95, -0.45],
   ];
   const shirtGeo = new THREE.ExtrudeGeometry(extrudeShape(shirtProfile), {
     depth: 0.55, bevelEnabled: true, bevelSize: 0.1, bevelThickness: 0.12, bevelSegments: 5, steps: 1,

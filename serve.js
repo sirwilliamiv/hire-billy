@@ -8,7 +8,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { runPipeline, CORPUS } from './core/pipeline.js';
+import { runPipeline, corpus } from './core/pipeline.js';
 import { buildServer } from './mcp/factory.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -81,7 +81,7 @@ const server = createServer(async (req, res) => {
   }
   if (req.method === 'GET' && path === '/corpus.json') {
     res.writeHead(200, { 'content-type': 'application/json' });
-    return res.end(JSON.stringify(CORPUS, null, 2));
+    return res.end(JSON.stringify(corpus(), null, 2));
   }
   if (req.method === 'POST' && path === '/ask') {
     if (GATED && !KEYS.includes(keyOf(req))) {
