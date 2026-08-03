@@ -47,6 +47,7 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
     conf.userContentController.add(self, name: "quit")
     var cfg = "window.__BILLY={screenW:\(Int(screen.width)),screenH:\(Int(screen.height))"
     if let brain = argValue("--brain") { cfg += ",brain:'\(brain)'" }
+    if let token = argValue("--token") { cfg += ",token:'\(token)'" }
     if let c = claudeWindowBounds() {
       cfg += ",claude:{x:\(Int(c.origin.x)),y:\(Int(c.origin.y)),w:\(Int(c.width)),h:\(Int(c.height))}"
     }

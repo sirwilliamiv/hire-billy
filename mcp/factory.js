@@ -14,19 +14,25 @@ import { dirname, join } from 'node:path';
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { createServer } from 'node:http';
+import { randomBytes } from 'node:crypto';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { runPipeline, formatAnswer, formatCard, corpus } from '../core/pipeline.js';
 
 /* loopback brain for the native overlay: the window is a dumb shell, the
    answers stay in this process (pipeline + hot-reloading corpus) */
-let brainPort = null;
+let brain = null; /* { port, token } */
 function ensureBrain() {
   return new Promise(resolve => {
-    if (brainPort) return resolve(brainPort);
+    if (brain) return resolve(brain);
+    const token = randomBytes(16).toString('hex');
+    /* the only legitimate caller is the overlay WebView (file:// origin sends
+       Origin: null) presenting the per-launch token injected at spawn; any
+       cross-origin browser page fails both checks */
+    const CORS = { 'access-control-allow-origin': 'null', 'access-control-allow-headers': 'content-type, x-billy-token' };
     const srv = createServer((req, res) => {
-      const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type' };
       if (req.method === 'OPTIONS') { res.writeHead(204, CORS); return res.end(); }
+      if (req.headers['x-billy-token'] !== token) { res.writeHead(403, CORS); return res.end(); }
       if (req.method === 'POST' && req.url === '/ask') {
         let b = '';
         req.on('data', c => { b += c; if (b.length > 65536) req.destroy(); });
@@ -44,7 +50,7 @@ function ensureBrain() {
       res.writeHead(404, CORS); res.end();
     });
     srv.unref();
-    srv.listen(0, '127.0.0.1', () => { brainPort = srv.address().port; resolve(brainPort); });
+    srv.listen(0, '127.0.0.1', () => { brain = { port: srv.address().port, token }; resolve(brain); });
   });
 }
 
@@ -151,8 +157,8 @@ export function buildServer({ local = false } = {}) {
       async () => {
         const nativeBin = join(HERE, '..', 'overlay-native', 'billy-overlay');
         if (existsSync(nativeBin)) {
-          const port = await ensureBrain();
-          const child = spawn(nativeBin, ['--brain', String(port)], { detached: true, stdio: 'ignore' });
+          const b = await ensureBrain();
+          const child = spawn(nativeBin, ['--brain', String(b.port), '--token', b.token], { detached: true, stdio: 'ignore' });
           child.unref();
         } else if (existsSync(electronBin)) {
           const child = spawn(electronBin, ['.'], { cwd: overlayDir, detached: true, stdio: 'ignore' });
