@@ -13,9 +13,40 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
+import { createServer } from 'node:http';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { runPipeline, formatAnswer, formatCard, corpus } from '../core/pipeline.js';
+
+/* loopback brain for the native overlay: the window is a dumb shell, the
+   answers stay in this process (pipeline + hot-reloading corpus) */
+let brainPort = null;
+function ensureBrain() {
+  return new Promise(resolve => {
+    if (brainPort) return resolve(brainPort);
+    const srv = createServer((req, res) => {
+      const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type' };
+      if (req.method === 'OPTIONS') { res.writeHead(204, CORS); return res.end(); }
+      if (req.method === 'POST' && req.url === '/ask') {
+        let b = '';
+        req.on('data', c => { b += c; if (b.length > 65536) req.destroy(); });
+        req.on('end', async () => {
+          try {
+            const { question } = JSON.parse(b || '{}');
+            const r = await runPipeline(question);
+            const { kind, lede, rest, sources, flags, struck, receipt, trace } = r;
+            res.writeHead(200, { ...CORS, 'content-type': 'application/json' });
+            res.end(JSON.stringify({ kind, lede, rest, sources, flags, struck, receipt, trace }));
+          } catch (e) { res.writeHead(400, CORS); res.end('{}'); }
+        });
+        return;
+      }
+      res.writeHead(404, CORS); res.end();
+    });
+    srv.unref();
+    srv.listen(0, '127.0.0.1', () => { brainPort = srv.address().port; resolve(brainPort); });
+  });
+}
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WIDGET_URI = 'ui://hire-billy/panel';
@@ -118,11 +149,17 @@ export function buildServer({ local = false } = {}) {
         inputSchema: {},
       },
       async () => {
-        if (!existsSync(electronBin)) {
-          return { content: [{ type: 'text', text: 'The overlay runtime is not installed here (overlay/node_modules missing). Run: cd overlay && npm install' }] };
+        const nativeBin = join(HERE, '..', 'overlay-native', 'billy-overlay');
+        if (existsSync(nativeBin)) {
+          const port = await ensureBrain();
+          const child = spawn(nativeBin, ['--brain', String(port)], { detached: true, stdio: 'ignore' });
+          child.unref();
+        } else if (existsSync(electronBin)) {
+          const child = spawn(electronBin, ['.'], { cwd: overlayDir, detached: true, stdio: 'ignore' });
+          child.unref();
+        } else {
+          return { content: [{ type: 'text', text: 'No overlay runtime found: build overlay-native (swiftc) or run npm install in overlay/.' }] };
         }
-        const child = spawn(electronBin, ['.'], { cwd: overlayDir, detached: true, stdio: 'ignore' });
-        child.unref();
         return { content: [{ type: 'text', text: 'He is on his way. Watch the right edge of your screen: he will walk over and sit down on the Claude window. The bubble is interactive; the X on it sends him home.' }] };
       }
     );
