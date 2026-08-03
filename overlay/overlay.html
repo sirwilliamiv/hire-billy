@@ -38,6 +38,18 @@ html,body{background:transparent;overflow:hidden;width:100vw;height:100vh;
 .seated .armR{transform:rotate(-38deg)}
 .waving .armR{animation:wave .5s ease-in-out 2}
 @keyframes wave{0%,100%{transform:rotate(-38deg)}50%{transform:rotate(-165deg)}}
+#door{position:fixed;width:120px;height:212px;perspective:700px;opacity:0;
+  transition:opacity 3s ease;pointer-events:none;z-index:1}
+#door.show{opacity:1}
+#door.bye{transition-duration:.7s}
+#door .framebox{position:absolute;inset:-7px;border:7px solid var(--card);
+  border-radius:10px 10px 0 0;border-bottom:none;box-shadow:0 14px 44px rgba(6,7,10,.45)}
+#door .opening{position:absolute;inset:0;background:#000;overflow:hidden}
+#door .opening canvas{width:100%;height:100%;display:block}
+#door .panel{position:absolute;inset:0;background:var(--paper2);border:2px solid var(--line);
+  transform-origin:left center;transition:transform .8s cubic-bezier(.6,.05,.3,1)}
+#door.open .panel{transform:rotateY(-80deg)}
+#door .knob{position:absolute;right:11px;top:99px;width:9px;height:9px;border-radius:50%;background:var(--soft3)}
 #bubble{position:fixed;z-index:1;width:min(430px,44vw);background:var(--card);
   border:1px solid var(--line);border-radius:16px;padding:14px 16px;
   max-height:min(46vh,440px);overflow-y:auto;overscroll-behavior:contain;
@@ -59,6 +71,11 @@ html,body{background:transparent;overflow:hidden;width:100vw;height:100vh;
 </style>
 </head>
 <body>
+<div id="door">
+  <div class="opening"><canvas id="rain"></canvas></div>
+  <div class="panel"><i class="knob"></i></div>
+  <div class="framebox"></div>
+</div>
 <div id="fig" class="instant">
   <svg viewBox="0 0 120 245" width="120" height="245">
     <g class="body">
@@ -108,11 +125,41 @@ var GREET = "This is my application to work with you at Rocket Money. I found yo
 var CHIPS = ["What are your biggest weaknesses?","Why should we not hire you?","What have you actually built?"];
 
 var fig = document.getElementById("fig");
+var rainTimer = null;
+function startRain(){
+  var cv = document.getElementById("rain");
+  if(!cv || rainTimer) return;
+  var dpr = window.devicePixelRatio || 1;
+  var W = cv.offsetWidth || 120, H = cv.offsetHeight || 212;
+  cv.width = W * dpr; cv.height = H * dpr;
+  var ctx = cv.getContext("2d");
+  ctx.scale(dpr, dpr);
+  ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H);
+  var fs = 10, cols = Math.ceil(W / fs), drops = [];
+  for(var i = 0; i < cols; i++) drops[i] = Math.floor(Math.random() * -H / fs);
+  var CH = "01アイウエオカキクケコサシスセソタチツ<>/{}=+*";
+  rainTimer = setInterval(function(){
+    ctx.fillStyle = "rgba(0,0,0,.16)"; ctx.fillRect(0, 0, W, H);
+    ctx.font = fs + "px 'Martian Mono',monospace";
+    for(var i = 0; i < cols; i++){
+      var b = Math.random();
+      ctx.fillStyle = b > .88 ? "#fff" : "rgba(255,255,255," + (0.18 + b * 0.4).toFixed(2) + ")";
+      ctx.fillText(CH[Math.floor(Math.random() * CH.length)], i * fs, drops[i] * fs);
+      if(drops[i] * fs > H && Math.random() > 0.92) drops[i] = 0;
+      drops[i]++;
+    }
+  }, 70);
+}
+function stopRain(){ if(rainTimer){ clearInterval(rainTimer); rainTimer = null; } }
 /* seat: on the Claude window's bottom edge (its input bar), else screen bottom */
 var seat = CLAUDE
   ? { x: CLAUDE.x + Math.round(CLAUDE.w*0.42), hipY: CLAUDE.y + CLAUDE.h - 74 }
   : { x: Math.round(SW*0.22), hipY: SH - 100 };
-var start = { x: SW + 60, y: seat.hipY - 132 - 40, s: .55 };
+var doorW = 120, doorH = 212;
+var doorBottom = seat.hipY + 96;
+var doorX = CLAUDE ? Math.min(CLAUDE.x + CLAUDE.w - doorW - 90, SW - doorW - 40) : SW - 280;
+var ds = 0.88;
+var start = { x: doorX + doorW/2 - 60*ds, y: doorBottom - 228*ds, s: ds };
 var mid   = { x: seat.x,  y: seat.hipY - 245 + 26, s: 1 };
 var sit   = { x: seat.x,  y: seat.hipY - 132, s: 1 };
 function place(p){ fig.style.transform = "translate("+p.x+"px,"+(p.y)+"px) scale("+(p.s||1)+")"; }
@@ -164,18 +211,36 @@ CHIPS.forEach(function(c){
 });
 document.getElementById("bye").onclick=function(){ bridgeQuit(); };
 
-/* choreography: enter from the right edge of the SCREEN, walk to the seat */
+/* choreography: a door materializes on the desktop, rains, opens, he steps out */
+var door = document.getElementById("door");
+door.style.left = doorX + "px";
+door.style.top = (doorBottom - doorH) + "px";
 place(start);
+fig.style.opacity = 0;
 fig.getBoundingClientRect();
-fig.classList.remove("instant");
-fig.classList.add("walking");
-requestAnimationFrame(function(){ place(mid); });
-fig.addEventListener("transitionend", function step(){
+door.classList.add("show");
+startRain();
+setTimeout(function(){ door.classList.add("open"); }, 3100);
+setTimeout(function(){ fig.style.transition = "opacity .3s"; fig.style.opacity = 1; }, 3650);
+setTimeout(function(){
+  fig.style.transition = "";
+  fig.classList.remove("instant");
+  fig.classList.add("walking");
+  fig.style.transitionDuration = "2800ms";
+  fig.getBoundingClientRect();
+  setTimeout(function(){ place(mid); }, 30);
+  setTimeout(function(){ door.classList.remove("open"); }, 1000);
+  setTimeout(function(){ door.classList.add("bye"); door.classList.remove("show"); }, 2000);
+  setTimeout(stopRain, 2900);
+}, 4100);
+fig.addEventListener("transitionend", function step(ev){
+  if(ev.propertyName !== "transform") return;
   fig.removeEventListener("transitionend", step);
   fig.classList.remove("walking");
   fig.style.transitionDuration="";
   fig.classList.add("sitfall","seated");
   place(sit);
+  closeDoor();
   setTimeout(function(){
     fig.classList.add("waving");
     setTimeout(function(){fig.classList.remove("waving")},1100);

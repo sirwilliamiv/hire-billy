@@ -101,6 +101,7 @@ export function createClaySkin(): BillySkin {
     name: 'clay',
     materials: {
       skin: mk(0xe6b596, 0.75),
+      neck: mk(0xd8a888, 0.75),
       hair: mk(0x6b4a2f, 0.85),
       beard: mk(0x8a5a38, 0.85),
       eye: mk(0xf2f0ec, 0.35),
@@ -120,9 +121,33 @@ export function createLikenessSkin(albedoUrl: string, onReady?: () => void): Bil
   // UNLIT photo color: the projected pixels ARE the look. Scene lights and tone
   // mapping would repaint the photo and push it back toward CG.
   const shared = () => new THREE.MeshBasicMaterial({ map: tex, toneMapped: false });
+  // shaded variant for neck + shirt: the photo's under-chin/chest V darkened like the
+  // real shadow, so the strip below the beard doesn't glow brighter than the face
+  const shadedCanvas = document.createElement('canvas');
+  shadedCanvas.width = shadedCanvas.height = 512;
+  const shadedTex = new THREE.CanvasTexture(shadedCanvas);
+  shadedTex.colorSpace = THREE.SRGBColorSpace;
+  const img = new Image();
+  img.onload = () => {
+    const c = shadedCanvas.getContext('2d')!;
+    c.drawImage(img, 0, 0, 512, 512);
+    c.save();
+    c.translate(256, 445);
+    c.scale(1, 2.6);                       // elongated shadow down the whole open V
+    const g = c.createRadialGradient(0, 0, 6, 0, 0, 80);
+    g.addColorStop(0, 'rgba(58, 42, 36, 0.72)');
+    g.addColorStop(0.75, 'rgba(58, 42, 36, 0.45)');
+    g.addColorStop(1, 'rgba(58, 42, 36, 0)');
+    c.fillStyle = g;
+    c.fillRect(-100, -180, 200, 360);
+    c.restore();
+    shadedTex.needsUpdate = true;
+  };
+  img.src = albedoUrl;
+  const shaded = () => new THREE.MeshBasicMaterial({ map: shadedTex, toneMapped: false });
   return {
     name: 'likeness',
-    materials: { skin: shared(), hair: shared(), beard: shared(), teeth: shared(), shirt: shared(), eye: shared() },
+    materials: { skin: shared(), neck: shaded(), hair: shared(), beard: shared(), teeth: shared(), shirt: shaded(), eye: shared() },
     onAttach: (root) => applyLikenessUVs(root),
   };
 }
@@ -221,7 +246,7 @@ export function createMatrixSkin(albedoUrl: string, onReady?: () => void): Billy
   const shared = () => new THREE.MeshBasicMaterial({ map: tex, toneMapped: false });
   return {
     name: 'matrix',
-    materials: { skin: shared(), hair: shared(), beard: shared(), teeth: shared(), shirt: shared(), eye: shared() },
+    materials: { skin: shared(), neck: shared(), hair: shared(), beard: shared(), teeth: shared(), shirt: shared(), eye: shared() },
     onAttach: (root) => applyLikenessUVs(root),
     update: (t) => { redraw(t); tex.needsUpdate = true; },
   };

@@ -168,7 +168,7 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
   // --- neck ----------------------------------------------------------------
   const neckNode = pivot('neck', shirtNode, [0, 0.40, 0.02]);
   const neckGeo = new THREE.CylinderGeometry(0.12, 0.16, 0.3, 28, 4);
-  addMesh('neck', neckNode, neckGeo, 'skin');
+  addMesh('neck', neckNode, neckGeo, 'neck');
   socket('socket-head', neckNode, [0, 0.14, 0]);
 
   // --- head ----------------------------------------------------------------
@@ -297,7 +297,7 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
     }
     beardGeo.computeVertexNormals();
   }
-  addMesh('beard', beardNode, beardGeo, 'beard', [0.945, 1.04, 0.94]);
+  addMesh('beard', beardNode, beardGeo, 'beard', [0.95, 1.05, 0.955]);
 
   // --- hair: 12 curl clumps (repetition system hair-curl-clumps) ----------
   // Deterministic distribution over the scalp; fuller on anatomical left (+x).

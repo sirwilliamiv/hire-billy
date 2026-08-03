@@ -120,7 +120,7 @@ function createBillyPortraitBustModel(options = {}) {
   }
   const neckNode = pivot("neck", shirtNode, [0, 0.4, 0.02]);
   const neckGeo = new THREE.CylinderGeometry(0.12, 0.16, 0.3, 28, 4);
-  addMesh("neck", neckNode, neckGeo, "skin");
+  addMesh("neck", neckNode, neckGeo, "neck");
   socket("socket-head", neckNode, [0, 0.14, 0]);
   const headNode = pivot("head", neckNode, [0, 0.52, 0.02]);
   const headGeo = new THREE.SphereGeometry(0.5, 48, 36);
@@ -249,7 +249,7 @@ function createBillyPortraitBustModel(options = {}) {
     }
     beardGeo.computeVertexNormals();
   }
-  addMesh("beard", beardNode, beardGeo, "beard", [0.945, 1.04, 0.94]);
+  addMesh("beard", beardNode, beardGeo, "beard", [0.95, 1.05, 0.955]);
   const hairNode = pivot("hair", headNode, [0, 0.1, -0.02]);
   const rand = mulberry32(45329);
   const clumpGeoBase = new THREE.SphereGeometry(1, 18, 14);

@@ -78,7 +78,7 @@ export function buildServer({ local = false } = {}) {
   server.registerTool(
     'ask_billy',
     {
-      title: 'Ask Billy',
+      title: 'Interrogate the candidate',
       description:
         'Interrogate the candidate. Ask anything: strengths, weaknesses, how he works, why not to hire him. ' +
         'Every answer is grounded in a signed corpus and returns a measured nine-stage trace. ' +
@@ -110,7 +110,7 @@ export function buildServer({ local = false } = {}) {
   server.registerTool(
     'get_model_card',
     {
-      title: 'Get the model card',
+      title: 'Pull his permanent record',
       description:
         'Read the candidate\'s model card: overview, how he works, reported strengths, known limitations, ' +
         'evidence, scope. Limitations ship in the same corpus as strengths, retrieved by the same machinery.',
@@ -147,7 +147,7 @@ export function buildServer({ local = false } = {}) {
     server.registerTool(
       'summon_billy',
       {
-        title: 'Summon Billy onto the screen',
+        title: 'Let him out',
         description:
           'Launches a small transparent overlay on this computer: an animated figure of the candidate ' +
           'walks across the desktop, sits down on the Claude window, and answers questions in a speech ' +

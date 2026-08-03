@@ -47,6 +47,7 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
     window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.screenSaverWindow)))
     window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
     window.ignoresMouseEvents = true
+    window.setFrame(screen, display: true)  /* re-assert after level permits covering the menu bar */
 
     let conf = WKWebViewConfiguration()
     conf.userContentController.add(self, name: "rects")
@@ -71,8 +72,12 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
     timer = Timer.scheduledTimer(withTimeInterval: 0.12, repeats: true) { [weak self] _ in
       guard let self = self else { return }
       let m = NSEvent.mouseLocation                 /* bottom-left origin */
-      let css = CGPoint(x: m.x, y: screenH - m.y)   /* top-left origin */
+      let f = self.window.frame
+      let css = CGPoint(x: m.x - f.origin.x, y: (f.origin.y + f.height) - m.y)
       let hit = self.hotRects.contains { $0.contains(css) }
+      if CommandLine.arguments.contains("--debug") {
+        try? "cursor \(Int(css.x)),\(Int(css.y)) hit \(hit) rects \(self.hotRects.count)".write(toFile: self.stateDir + "/cursor.dbg", atomically: true, encoding: .utf8)
+      }
       if self.window.ignoresMouseEvents == hit { self.window.ignoresMouseEvents = !hit }
       if FileManager.default.fileExists(atPath: self.cmdFile),
          let cmd = try? String(contentsOfFile: self.cmdFile, encoding: .utf8), cmd.contains("retire") {
@@ -93,8 +98,15 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
 
   func userContentController(_ u: WKUserContentController, didReceive m: WKScriptMessage) {
     if m.name == "quit" { NSApp.terminate(nil); return }
-    if m.name == "rects", let arr = m.body as? [[String: Double]] {
-      hotRects = arr.map { CGRect(x: $0["x"] ?? 0, y: $0["y"] ?? 0, width: $0["w"] ?? 0, height: $0["h"] ?? 0) }
+    if m.name == "rects", let arr = m.body as? [[String: Any]] {
+      hotRects = arr.map { d in
+        func num(_ k: String) -> CGFloat { CGFloat((d[k] as? NSNumber)?.doubleValue ?? 0) }
+        return CGRect(x: num("x"), y: num("y"), width: num("w"), height: num("h"))
+      }
+      if CommandLine.arguments.contains("--debug") {
+        let s = hotRects.map { "\(Int($0.origin.x)),\(Int($0.origin.y)),\(Int($0.width)),\(Int($0.height))" }.joined(separator: " ")
+        try? s.write(toFile: stateDir + "/rects.dbg", atomically: true, encoding: .utf8)
+      }
     }
   }
 }
