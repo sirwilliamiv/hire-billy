@@ -2,8 +2,8 @@
   "meta": {
     "name": "Billy",
     "model": "hire-billy",
-    "version": "1.4",
-    "updated": "July 2026",
+    "version": "1.5",
+    "updated": "August 2026",
     "contact": "billy@proedu.me",
     "params": "1 human",
     "context": "long",
@@ -29,6 +29,11 @@
       "id": "limitations",
       "title": "Known limitations",
       "body": "Prototypes past the point where delegation should have started, a hands-on bias that intensifies under pressure. Impatient with process whose function is distributing blame rather than shipping. Will polish the system before the story, which is why he pairs best with a strong product counterpart. Wrong hire for: consensus-first cultures, pure research bets, or roles where the demo is never touched again."
+    },
+    {
+      "id": "shipped",
+      "title": "Shipped",
+      "body": "At Built Technologies: platform UI for $400B+ in annual construction financing, scaled from 4 monoliths to 100+ microfrontends across a 200+ engineer org, with a composable design system at 100% adoption that saved 42,750+ developer hours. On his own, under Origin Platform Labs: inbox-admin, a live agentic SaaS that turns small-business email into completed QuickBooks accounting with human-in-the-loop approvals, a full write ledger, and per-vendor graduation to autonomy, in production with beta users; Forge, a phone-and-voice control room for fleets of coding agents; origin-brain, a local-first research assistant his coding agents query over MCP; MOONSHOT and GRAZE, browser games where every level is proven fair by simulation before anyone plays it; Tiny Meadow, an automated children's media pipeline; FlySky AR, live aircraft overlaid on the real sky through a phone camera. And Hire Billy, the artifact answering you right now."
     },
     {
       "id": "evidence",

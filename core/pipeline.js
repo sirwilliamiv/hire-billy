@@ -45,7 +45,11 @@ const ROUTES = [
 
 /* mapped questions: written answers, versioned with the corpus */
 const MAPPED = [
-  { key: 'practice', re: /use ai|uses ai|\bai\b|claude|llm|model|build|process|method|how does he|ship/i,
+  { key: 'shipped', re: /\bbuilt\b|shipped|portfolio|\bprojects?\b|\bmade\b|worked on|what.{0,24}\bbuild\b/i,
+    lede: 'A platform moving $400B a year, and the thing answering you right now.',
+    rest: 'At Built Technologies he scaled platform UI from 4 monoliths to 100+ microfrontends across a 200+ engineer org, with a design system at 100% adoption that saved 42,750+ developer hours. On his own: inbox-admin, a live agentic SaaS that turns small-business email into completed QuickBooks accounting with human-in-the-loop approvals and a full write ledger; Forge, a phone-and-voice control room for fleets of coding agents; origin-brain, a local-first research assistant his agents query over MCP; MOONSHOT and GRAZE, browser games where every level is proven fair by simulation; Tiny Meadow, an automated children\u2019s media pipeline; FlySky AR, live aircraft overlaid on the real sky. And Hire Billy, which you are using. Details live in the model card under shipped.',
+    sources: ['shipped', 'evidence'] },
+  { key: 'practice', re: /use ai|uses ai|\bai\b|claude|llm|model|process|method|how does he/i,
     lede: 'As an execution layer. The model is the smallest part of this product.',
     rest: 'One model call chooses the words; eight deterministic stages decide everything else: what could be retrieved, what could be claimed, what would get struck. That ratio is how he builds: evals before features, code wrapped around the model, glamour last. This answer is not a description of the method. It is the method, running.',
     sources: ['how-i-work', 'evidence'] },

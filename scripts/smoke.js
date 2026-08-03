@@ -103,6 +103,8 @@ const ok = (name, cond) => { console.log((cond ? 'PASS' : 'FAIL') + '  ' + name)
   const r2 = await rpc('tools/call', { name: 'ask_billy', arguments: { question: 'What is this thing, and what are your biggest weaknesses as a candidate?' } });
   ok('multi-part question prefers content over meta', r2.result?.structuredContent?.sources?.includes('limitations'));
   const r3 = await rpc('tools/call', { name: 'ask_billy', arguments: { question: 'What is this?' } });
+  const r4 = await rpc('tools/call', { name: 'ask_billy', arguments: { question: 'What have you actually built?' } }, 4);
+  ok('built question reaches shipped portfolio', r4.result?.structuredContent?.sources?.includes('shipped') && r4.result?.structuredContent?.rest?.includes('inbox-admin'));
   ok('pure meta question still static', r3.result?.structuredContent?.kind === 'static');
 
   const ans = await rpc('tools/call', { name: 'ask_billy', arguments: { question: 'What are his weaknesses?' } });
