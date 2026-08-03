@@ -165,6 +165,24 @@ fig.addEventListener("transitionend", function step(){
   }, 550);
 });
 window.addEventListener("resize", positionBubble);
+
+/* answers pushed from the chat: spoken as soon as he is seated */
+var seatedReady = false, speakQueue = [];
+function handlePush(pl){
+  if(!pl || !pl.lede) return;
+  if(!seatedReady){ speakQueue.push(pl); return; }
+  bubble.classList.add("show"); positionBubble();
+  speak(pl.lede, (pl.rest||"") + (pl.receipt ? "\n\nreceipt: "+pl.receipt : ""));
+}
+if(window.overlay && window.overlay.onSpeak) window.overlay.onSpeak(handlePush);
+(function watchSeated(){
+  var t = setInterval(function(){
+    if(fig.classList.contains("seated") && bubble.classList.contains("show")){
+      seatedReady = true; clearInterval(t);
+      if(speakQueue.length){ var last = speakQueue.pop(); speakQueue = []; setTimeout(function(){ handlePush(last); }, 1200); }
+    }
+  }, 300);
+})();
 })();
 </script>
 </body>

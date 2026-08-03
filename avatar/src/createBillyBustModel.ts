@@ -204,7 +204,7 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
 
   // --- eyes ----------------------------------------------------------------
   for (const [side, x] of [['l', 0.115], ['r', -0.115]] as const) {
-    const eNode = pivot(`eye-${side}`, headNode, [x, 0.04, 0.30]);
+    const eNode = pivot(`eye-${side}`, headNode, [x, 0.04, 0.345]);
     addMesh(`eye-${side}`, eNode, new THREE.SphereGeometry(0.048, 24, 18), 'eye');
   }
 
@@ -306,13 +306,16 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
   const clumpSpecs: { theta: number; phi: number; scale: number }[] = [];
   const RING: [number, number, number][] = [
     // [azimuth deg from +z front, elevation deg from equator, base scale]
-    [0, 62, 1.15],   // front crown sweep
-    [28, 58, 1.05], [-28, 58, 1.0],
-    [55, 45, 1.1], [-55, 42, 0.95],
-    [85, 30, 1.2], [-85, 28, 0.9],   // temples: +x (anatomical left) fuller
-    [115, 35, 1.05], [-115, 33, 0.9],
-    [150, 45, 1.0], [-150, 42, 0.95],
-    [180, 58, 1.0],  // back crown
+    // crown sweep (big, voluminous)
+    [0, 68, 1.5], [35, 62, 1.35], [-35, 62, 1.3], [75, 60, 1.3], [-75, 58, 1.2],
+    [120, 58, 1.3], [-120, 58, 1.25], [165, 62, 1.3],
+    // upper sides
+    [55, 38, 1.25], [-55, 36, 1.05],
+    // temples down to ear level: +x (anatomical left) fuller per reference
+    [80, 16, 1.45], [-80, 14, 1.1],
+    [105, 10, 1.2], [-105, 8, 1.0],
+    // behind ears / nape sides
+    [140, 18, 1.15], [-140, 16, 1.05],
   ];
   for (const [azDeg, elDeg, s] of RING) {
     clumpSpecs.push({ theta: THREE.MathUtils.degToRad(azDeg), phi: THREE.MathUtils.degToRad(elDeg), scale: s });
@@ -323,28 +326,36 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
     const dirX = Math.sin(c.theta) * Math.cos(c.phi);
     const dirY = Math.sin(c.phi);
     const dirZ = Math.cos(c.theta) * Math.cos(c.phi);
-    const px = dirX * headRx * 0.94;
-    const py = dirY * headRy * 0.86 + 0.02;
-    const pz = dirZ * headRz * 0.92;
+    const px = dirX * headRx * 0.98;
+    const py = dirY * headRy * 0.94 + 0.02;
+    const pz = dirZ * headRz * 0.9;
     const cNode = pivot(`hair-clump-${i}`, hairNode, [px, py, pz], [
       (rand() - 0.5) * 30, (rand() - 0.5) * 40, (rand() - 0.5) * 30,
     ]);
     const s = c.scale * (0.9 + rand() * 0.25);
     addMesh(`hair-clump-${i}`, cNode, clumpGeoBase.clone(), 'hair', [
-      0.16 * s * (1 + jitter()), 0.115 * s * (1 + jitter()), 0.15 * s * (1 + jitter()),
+      0.19 * s * (1 + jitter()), 0.15 * s * (1 + jitter()), 0.17 * s * (1 + jitter()),
     ]);
   });
-  // front hairline wisps: 4 smaller clumps at the forehead line
+  // front hairline row: brings the hairline down to ~0.34 of head height
+  // (head local y ~0.2 at the forehead) and feathers it with wisps
+  for (let i = 0; i < 5; i += 1) {
+    const x = -0.26 + i * 0.13 + (rand() - 0.5) * 0.03;
+    const fNode = pivot(`hair-front-${i}`, hairNode, [x, 0.22 + (rand() - 0.5) * 0.04, 0.27], [
+      (rand() - 0.5) * 30, 0, (rand() - 0.5) * 40,
+    ]);
+    addMesh(`hair-front-${i}`, fNode, clumpGeoBase.clone(), 'hair', [0.13, 0.1, 0.12]);
+  }
   for (let i = 0; i < 4; i += 1) {
-    const x = -0.21 + i * 0.14 + (rand() - 0.5) * 0.03;
-    const wNode = pivot(`hair-wisp-${i}`, hairNode, [x, 0.30 + (rand() - 0.5) * 0.04, 0.30], [
+    const x = -0.2 + i * 0.13 + (rand() - 0.5) * 0.04;
+    const wNode = pivot(`hair-wisp-${i}`, hairNode, [x, 0.16 + (rand() - 0.5) * 0.03, 0.3], [
       (rand() - 0.5) * 40, 0, (rand() - 0.5) * 50,
     ]);
-    addMesh(`hair-wisp-${i}`, wNode, clumpGeoBase.clone(), 'hair', [0.085, 0.05, 0.07]);
+    addMesh(`hair-wisp-${i}`, wNode, clumpGeoBase.clone(), 'hair', [0.07, 0.05, 0.06]);
   }
   // hair-back inferred nape mass (speculative — hidden in reference)
-  const hairBackNode = pivot('hair-back', headNode, [0, 0.12, -0.30]);
-  addMesh('hair-back', hairBackNode, clumpGeoBase.clone(), 'hair', [0.33, 0.30, 0.18]);
+  const hairBackNode = pivot('hair-back', headNode, [0, 0.14, -0.28]);
+  addMesh('hair-back', hairBackNode, clumpGeoBase.clone(), 'hair', [0.36, 0.34, 0.22]);
 
   // --- runtime -------------------------------------------------------------
   const runtime: ProceduralModelRuntime = { nodes, meshes, sockets, colliders, destructionGroups, skinTargets };

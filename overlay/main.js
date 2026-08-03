@@ -4,6 +4,11 @@
 const { app, BrowserWindow, screen, ipcMain } = require('electron');
 const { execFile } = require('node:child_process');
 const path = require('node:path');
+const http = require('node:http');
+const fs = require('node:fs');
+const os = require('node:os');
+
+const PORT_FILE = path.join(os.tmpdir(), 'hire-billy-overlay.port');
 
 function claudeBounds(cb) {
   execFile('osascript', ['-e',
@@ -44,6 +49,27 @@ app.whenReady().then(() => {
   }, 120);
 
   ipcMain.on('quit', () => app.quit());
+
+  /* companion channel: the MCP server pushes each chat Q&A here so the
+     figure on screen speaks the same answers the chat shows */
+  const feed = http.createServer((req, res) => {
+    if (req.method === 'GET' && req.url === '/ping') { res.writeHead(204); return res.end(); }
+    if (req.method === 'POST' && req.url === '/speak') {
+      let b = '';
+      req.on('data', c => { b += c; if (b.length > 65536) req.destroy(); });
+      req.on('end', () => {
+        try { win.webContents.send('speak', JSON.parse(b || '{}')); res.writeHead(204); }
+        catch (e) { res.writeHead(400); }
+        res.end();
+      });
+      return;
+    }
+    res.writeHead(404); res.end();
+  });
+  feed.listen(0, '127.0.0.1', () => {
+    fs.writeFileSync(PORT_FILE, String(feed.address().port));
+  });
+  app.on('will-quit', () => { try { fs.unlinkSync(PORT_FILE); } catch (e) {} });
 
   /* answers come from the shared pipeline, in this very process */
   ipcMain.handle('ask', async (e, q) => {

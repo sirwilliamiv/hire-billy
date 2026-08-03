@@ -116,11 +116,11 @@ function createBillyPortraitBustModel(options = {}) {
     bGeo.rotateX(Math.PI / 2);
     addMesh(`button-${i}`, bNode, bGeo, "shirt");
   }
-  const neckNode = pivot("neck", shirtNode, [0, 0.42, 0.02]);
-  const neckGeo = new THREE.CylinderGeometry(0.15, 0.185, 0.34, 28, 4);
+  const neckNode = pivot("neck", shirtNode, [0, 0.52, 0.02]);
+  const neckGeo = new THREE.CylinderGeometry(0.15, 0.19, 0.5, 28, 4);
   addMesh("neck", neckNode, neckGeo, "skin");
-  socket("socket-head", neckNode, [0, 0.12, 0]);
-  const headNode = pivot("head", neckNode, [0, 0.52, 0.02], [0, 0, -4]);
+  socket("socket-head", neckNode, [0, 0.16, 0]);
+  const headNode = pivot("head", neckNode, [0, 0.64, 0.02], [0, 0, -4]);
   const headGeo = new THREE.SphereGeometry(0.5, 48, 36);
   {
     const pos = headGeo.attributes.position;
@@ -148,7 +148,7 @@ function createBillyPortraitBustModel(options = {}) {
   socket("socket-scalp", headNode, [0, 0.42, -0.04]);
   socket("socket-scalp-back", headNode, [0, 0.28, -0.34]);
   for (const [side, x] of [["l", 0.115], ["r", -0.115]]) {
-    const eNode = pivot(`eye-${side}`, headNode, [x, 0.04, 0.3]);
+    const eNode = pivot(`eye-${side}`, headNode, [x, 0.04, 0.345]);
     addMesh(`eye-${side}`, eNode, new THREE.SphereGeometry(0.048, 24, 18), "eye");
   }
   const noseNode = pivot("nose", headNode, [0, -0.045, 0.345]);
@@ -169,8 +169,8 @@ function createBillyPortraitBustModel(options = {}) {
     bevelSegments: 3,
     steps: 1
   });
-  noseGeo.rotateY(Math.PI / 2);
-  noseGeo.translate(-0.075, 0, 0);
+  noseGeo.rotateY(-Math.PI / 2);
+  noseGeo.translate(0.075, 0, 0);
   {
     const pos = noseGeo.attributes.position;
     const v = new THREE.Vector3();
@@ -232,43 +232,48 @@ function createBillyPortraitBustModel(options = {}) {
     const earGeo = new THREE.SphereGeometry(0.085, 16, 12);
     addMesh(`ear-${side}`, eNode, earGeo, "skin", [0.35, 1.1, 0.7]);
   }
-  const beardNode = pivot("beard", headNode, [0, -0.13, 0.03]);
-  const beardGeo = new THREE.SphereGeometry(0.395, 36, 20, 0, Math.PI * 2, Math.PI * 0.46, Math.PI * 0.54);
+  const beardNode = pivot("beard", headNode, [0, -0.12, 0.04]);
+  const beardGeo = new THREE.SphereGeometry(0.385, 36, 18, 0, Math.PI * 2, Math.PI * 0.58, Math.PI * 0.4);
   {
     const pos = beardGeo.attributes.position;
     const v = new THREE.Vector3();
     for (let i = 0; i < pos.count; i += 1) {
       v.fromBufferAttribute(pos, i);
-      const t = THREE.MathUtils.clamp((-v.y + 0) / 0.42, 0, 1);
-      v.x *= (1 - 0.2 * t * t) * 0.95;
-      v.z *= 1 - 0.08 * t;
-      if (v.z < 0) v.z *= 0.35;
+      const t = THREE.MathUtils.clamp(-v.y / 0.38, 0, 1);
+      v.x *= (1 - 0.2 * t * t) * 0.93;
+      v.z *= 1 - 0.06 * t;
+      if (v.z < 0.02) v.z = 0.02 + (v.z - 0.02) * 0.15;
       pos.setXYZ(i, v.x, v.y, v.z);
     }
     beardGeo.computeVertexNormals();
   }
-  addMesh("beard", beardNode, beardGeo, "beard", [0.98, 1.05, 1]);
+  addMesh("beard", beardNode, beardGeo, "beard", [0.98, 1.1, 1]);
   const hairNode = pivot("hair", headNode, [0, 0.1, -0.02]);
   const rand = mulberry32(45329);
   const clumpGeoBase = new THREE.SphereGeometry(1, 18, 14);
   const clumpSpecs = [];
   const RING = [
     // [azimuth deg from +z front, elevation deg from equator, base scale]
-    [0, 62, 1.15],
-    // front crown sweep
-    [28, 58, 1.05],
-    [-28, 58, 1],
-    [55, 45, 1.1],
-    [-55, 42, 0.95],
-    [85, 30, 1.2],
-    [-85, 28, 0.9],
-    // temples: +x (anatomical left) fuller
-    [115, 35, 1.05],
-    [-115, 33, 0.9],
-    [150, 45, 1],
-    [-150, 42, 0.95],
-    [180, 58, 1]
-    // back crown
+    // crown sweep (big, voluminous)
+    [0, 68, 1.5],
+    [35, 62, 1.35],
+    [-35, 62, 1.3],
+    [75, 60, 1.3],
+    [-75, 58, 1.2],
+    [120, 58, 1.3],
+    [-120, 58, 1.25],
+    [165, 62, 1.3],
+    // upper sides
+    [55, 38, 1.25],
+    [-55, 36, 1.05],
+    // temples down to ear level: +x (anatomical left) fuller per reference
+    [80, 16, 1.45],
+    [-80, 14, 1.1],
+    [105, 10, 1.2],
+    [-105, 8, 1],
+    // behind ears / nape sides
+    [140, 18, 1.15],
+    [-140, 16, 1.05]
   ];
   for (const [azDeg, elDeg, s] of RING) {
     clumpSpecs.push({ theta: THREE.MathUtils.degToRad(azDeg), phi: THREE.MathUtils.degToRad(elDeg), scale: s });
@@ -279,9 +284,9 @@ function createBillyPortraitBustModel(options = {}) {
     const dirX = Math.sin(c.theta) * Math.cos(c.phi);
     const dirY = Math.sin(c.phi);
     const dirZ = Math.cos(c.theta) * Math.cos(c.phi);
-    const px = dirX * headRx * 0.94;
-    const py = dirY * headRy * 0.86 + 0.02;
-    const pz = dirZ * headRz * 0.92;
+    const px = dirX * headRx * 0.98;
+    const py = dirY * headRy * 0.94 + 0.02;
+    const pz = dirZ * headRz * 0.9;
     const cNode = pivot(`hair-clump-${i}`, hairNode, [px, py, pz], [
       (rand() - 0.5) * 30,
       (rand() - 0.5) * 40,
@@ -289,22 +294,31 @@ function createBillyPortraitBustModel(options = {}) {
     ]);
     const s = c.scale * (0.9 + rand() * 0.25);
     addMesh(`hair-clump-${i}`, cNode, clumpGeoBase.clone(), "hair", [
-      0.16 * s * (1 + jitter()),
-      0.115 * s * (1 + jitter()),
-      0.15 * s * (1 + jitter())
+      0.19 * s * (1 + jitter()),
+      0.15 * s * (1 + jitter()),
+      0.17 * s * (1 + jitter())
     ]);
   });
+  for (let i = 0; i < 5; i += 1) {
+    const x = -0.26 + i * 0.13 + (rand() - 0.5) * 0.03;
+    const fNode = pivot(`hair-front-${i}`, hairNode, [x, 0.22 + (rand() - 0.5) * 0.04, 0.27], [
+      (rand() - 0.5) * 30,
+      0,
+      (rand() - 0.5) * 40
+    ]);
+    addMesh(`hair-front-${i}`, fNode, clumpGeoBase.clone(), "hair", [0.13, 0.1, 0.12]);
+  }
   for (let i = 0; i < 4; i += 1) {
-    const x = -0.21 + i * 0.14 + (rand() - 0.5) * 0.03;
-    const wNode = pivot(`hair-wisp-${i}`, hairNode, [x, 0.3 + (rand() - 0.5) * 0.04, 0.3], [
+    const x = -0.2 + i * 0.13 + (rand() - 0.5) * 0.04;
+    const wNode = pivot(`hair-wisp-${i}`, hairNode, [x, 0.16 + (rand() - 0.5) * 0.03, 0.3], [
       (rand() - 0.5) * 40,
       0,
       (rand() - 0.5) * 50
     ]);
-    addMesh(`hair-wisp-${i}`, wNode, clumpGeoBase.clone(), "hair", [0.085, 0.05, 0.07]);
+    addMesh(`hair-wisp-${i}`, wNode, clumpGeoBase.clone(), "hair", [0.07, 0.05, 0.06]);
   }
-  const hairBackNode = pivot("hair-back", headNode, [0, 0.12, -0.3]);
-  addMesh("hair-back", hairBackNode, clumpGeoBase.clone(), "hair", [0.33, 0.3, 0.18]);
+  const hairBackNode = pivot("hair-back", headNode, [0, 0.14, -0.28]);
+  addMesh("hair-back", hairBackNode, clumpGeoBase.clone(), "hair", [0.36, 0.34, 0.22]);
   const runtime = { nodes, meshes, sockets, colliders, destructionGroups, skinTargets };
   root.userData.sculptRuntime = runtime;
   root.userData.applySkin = (skin) => applyBillySkin(root, skin);

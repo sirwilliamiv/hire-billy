@@ -5653,7 +5653,7 @@
           },
           {
             "path": "grimoire/intake/image_analysis.md",
-            "heading": "Layer 5 \u2014 Materials & surface (PBR)",
+            "heading": "Layer 5 — Materials & surface (PBR)",
             "key_path": null
           },
           {
@@ -5675,7 +5675,7 @@
           {
             "kind": "source",
             "ref": "docs/raw/img2threejs-skill-dataset.json",
-            "note": "img2threejs NotebookLM research distillation \u2014 merged recognition cues + Three.js target instead of duplicating this entity."
+            "note": "img2threejs NotebookLM research distillation — merged recognition cues + Three.js target instead of duplicating this entity."
           }
         ]
       },
@@ -5686,7 +5686,7 @@
         "key_path": "categories.material_pbr[5]",
         "score": 8.375008471137,
         "snippets": [
-          "Light transport property for opaque dielectrics where light penetrates and scatters internally before exiting (skin, wax, marble, some polymers). \u0110\u1eb7c t\u00ednh truy\u1ec1n \u00e1nh s\u00e1ng c\u1ee7a v\u1eadt li\u1ec7u \u0111i\u1ec7n m\u00f4i m\u1edd \u0111\u1ee5c, \u00e1nh s\u00e1ng xuy\u00ean v\u00e0o v\u00e0 t\u00e1n x\u1ea1 b\u00ean trong tr\u01b0\u1edbc ..."
+          "Light transport property for opaque dielectrics where light penetrates and scatters internally before exiting (skin, wax, marble, some polymers). Đặc tính truyền ánh sáng của vật liệu điện môi mờ đục, ánh sáng xuyên vào và tán xạ bên trong trước ..."
         ],
         "source_refs": [
           {
@@ -5710,7 +5710,7 @@
         "key_path": "categories.material_pbr[11]",
         "score": 6.615447681944,
         "snippets": [
-          "... (c\u1ea7n gamma/sRGB) v\u00e0 c\u00e1c b\u1ea3n \u0111\u1ed3 d\u1eef li\u1ec7u to\u00e1n h\u1ecdc (ph\u1ea3i gi\u1eef tuy\u1ebfn t\u00ednh/kh\u00f4ng hi\u1ec7u ch\u1ec9nh). Recognition cues: Base color/albedo and emissive textures are the only ones that should look like natural photographic color; Normal, roughness, ..."
+          "... (cần gamma/sRGB) và các bản đồ dữ liệu toán học (phải giữ tuyến tính/không hiệu chỉnh). Recognition cues: Base color/albedo and emissive textures are the only ones that should look like natural photographic color; Normal, roughness, ..."
         ],
         "source_refs": [
           {
@@ -5881,6 +5881,184 @@
           "source": "reference-pixel-extraction"
         }
       }
+    }
+  ],
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.44,
+        "aspectRatioDelta": 0.0698,
+        "scaleDelta": 0.4167,
+        "bilateralSymmetryError": 0.0171,
+        "colorDelta": {
+          "checked": 16,
+          "maxDeltaE": 58.68,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 58.68
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.27
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.04
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.27
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.76
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.44
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.62
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.62
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.55
+            },
+            {
+              "componentId": null,
+              "deltaE": 17.44
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.67
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.76
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.76
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.63
+            },
+            {
+              "componentId": null,
+              "deltaE": 16.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.8
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.440 is below threshold 0.85",
+        "aspect-ratio delta 0.070 exceeds threshold 0.05",
+        "scale delta 0.417 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "renderHash": "7228058eb61f18d4",
+      "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.44,
+        "aspectRatioDelta": 0.0698,
+        "scaleDelta": 0.4167,
+        "bilateralSymmetryError": 0.0171,
+        "colorDelta": {
+          "checked": 16,
+          "maxDeltaE": 58.68,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 58.68
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.27
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.04
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.27
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.76
+            },
+            {
+              "componentId": null,
+              "deltaE": 18.44
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.62
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.62
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.55
+            },
+            {
+              "componentId": null,
+              "deltaE": 17.44
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.67
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.76
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.76
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.63
+            },
+            {
+              "componentId": null,
+              "deltaE": 16.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 21.8
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.440 is below threshold 0.85",
+        "aspect-ratio delta 0.070 exceeds threshold 0.05",
+        "scale delta 0.417 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "renderHash": "7228058eb61f18d4",
+      "passId": "blockout"
     }
   ]
 }
