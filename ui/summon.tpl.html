@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Billy, summoned</title>
+<!-- GENERATED FILE: edit ui/summon.tpl.html, then `npm run build:summon`. -->
+<style>
+{{FONTS}}
+:root{
+  --blue:#2B47FF; --lime:#CBFF4D; --ink:#0C0B08; --paper:#F4F3EE;
+  --soft:#57534A; --line:#DBD7CB; --card:#F4F3EE; --paper2:#E9E7DF; --del:#FF4A38;
+  --serif:'Instrument Serif',Georgia,serif; --data:'Martian Mono',ui-monospace,monospace;
+}
+[data-theme="dark"]{
+  --ink:#F4F6FA; --paper:#0B0D13; --soft:#A8B1C2; --line:#232838;
+  --card:#10131C; --paper2:#161A26; --del:#FF6A5B;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font:14px/1.55 "Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink); background:transparent; position:relative; overflow:hidden;
+}
+.scene{position:relative; height:250px; overflow:visible}
+.brand{
+  position:absolute; top:10px; left:12px; display:flex; gap:7px; align-items:center;
+  font-size:11px; letter-spacing:.14em; font-weight:700; color:var(--soft); z-index:7
+}
+.brand .dot{width:16px;height:16px;border-radius:5px;background:var(--blue);display:grid;place-items:center}
+.brand .dot i{width:6px;height:6px;border-radius:50%;background:var(--lime);display:block}
+.kind{position:absolute;top:9px;right:12px;z-index:7;font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--soft);border:1px solid var(--line);border-radius:999px;padding:2px 8px}
+
+/* the door he arrives through */
+#door{position:absolute; top:34px; right:26px; width:66px; height:116px;
+  perspective:420px; opacity:0; transition:opacity 3s ease; pointer-events:none; z-index:2}
+#door.show{opacity:1}
+#door.bye{transition-duration:.7s}
+#door .framebox{position:absolute; inset:-4px; border:4px solid var(--soft);
+  border-radius:8px 8px 0 0; border-bottom:none}
+#door .opening{position:absolute; inset:0; background:#000; overflow:hidden}
+#door .opening canvas{width:100%; height:100%; display:block}
+#door .panelface{position:absolute; inset:0; background:var(--paper2); border:2px solid var(--line);
+  transform-origin:left center; transition:transform .8s cubic-bezier(.6,.05,.3,1)}
+#door.open .panelface{transform:rotateY(-78deg)}
+#door .knob{position:absolute; right:7px; top:54px; width:6px; height:6px; border-radius:50%; background:var(--soft)}
+
+/* the man himself: same sprites the desktop overlay walks with */
+#fig{position:absolute; top:0; left:0; width:120px; height:245px; z-index:6;
+  transform-origin:0 0; pointer-events:none;
+  transition:transform 3s cubic-bezier(.45,.05,.55,.95); will-change:transform;
+  filter:drop-shadow(0 6px 12px rgba(6,7,10,.24))}
+#fig.instant{transition:none}
+#fig.sitfall{transition:transform .45s cubic-bezier(.34,1.4,.64,1)}
+.sk{position:absolute}
+#skStand{left:15px;top:0;height:245px}
+#skSit{left:11px;top:-4px;height:210px;display:none}
+.walking #skStand{display:none}
+.seated #skStand{display:none}
+.seated #skSit{display:block}
+#puppet{position:absolute;left:60px;top:-3px;width:126px;height:245px;display:none;
+  transform:translateX(-50%) scaleX(-1)}
+#puppet img{position:absolute}
+#pBody{left:17.5px;top:0;height:137px;z-index:2;transform-origin:47px 135px}
+#pLegB{left:0;top:134px;height:111px;transform-origin:64.5px 1px}
+#pLegF{left:31px;top:134px;height:111px;transform-origin:33.5px 1px;z-index:1}
+.walking #puppet{display:block}
+.walking #pLegF{animation:swingF .62s ease-in-out infinite alternate}
+.walking #pLegB{animation:swingB .62s ease-in-out infinite alternate}
+.walking #pBody{animation:swayB .62s ease-in-out infinite alternate}
+.walking #fig .rig{animation:pWalk .78s ease-in-out infinite}
+@keyframes swingF{from{transform:rotate(-8deg)}to{transform:rotate(-16deg)}}
+@keyframes swingB{from{transform:rotate(8deg)}to{transform:rotate(16deg)}}
+@keyframes swayB{from{transform:rotate(1.2deg)}to{transform:rotate(-1.2deg)}}
+@keyframes pWalk{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+#mouth{left:60px;top:-6px;transform:translateX(-50%);display:none}
+.seated.talking #mouth{display:block}
+.rig{position:absolute;inset:0}
+.waving{animation:tip .55s ease-in-out 2}
+@keyframes tip{0%,100%{transform:rotate(0)}50%{transform:rotate(-3.5deg)}}
+
+/* what he says */
+#bubble{
+  position:absolute; left:var(--figpad,148px); right:12px; top:26px; z-index:5;
+  background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:12px 14px; box-shadow:0 8px 24px rgba(6,7,10,.10);
+  opacity:0; transform:translateY(8px) scale(.97); transition:opacity .35s,transform .35s;
+  max-height:186px; overflow-y:auto; overscroll-behavior:contain; cursor:pointer;
+}
+#bubble.show{opacity:1;transform:none}
+#bubble::before{
+  content:""; position:absolute; left:-8px; bottom:22px; width:14px; height:14px;
+  background:var(--card); border-left:1px solid var(--line); border-bottom:1px solid var(--line);
+  transform:rotate(45deg);
+}
+.blede{font-family:var(--serif);font-size:19px;line-height:1.25;margin-bottom:5px}
+.btext{font-size:13px;color:var(--ink);white-space:pre-wrap}
+.btext del{color:var(--del);text-decoration-thickness:2px}
+.cursor{display:inline-block;width:7px;height:14px;background:var(--blue);vertical-align:-2px;animation:blink .8s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* the ledge he sits on: input, chips, receipts */
+.panel{background:var(--paper);border:1px solid var(--line);border-top-width:2px;
+  border-radius:0 0 14px 14px;padding:10px 12px}
+.askrow{display:flex;gap:8px;padding-left:var(--figpad,148px)}
+.askrow input{flex:1;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);
+  border-radius:10px;padding:8px 12px;outline:none;min-width:0}
+.askrow input:focus{border-color:var(--blue)}
+.askrow button{font:600 13px/1 ui-sans-serif,-apple-system,sans-serif;color:#fff;background:var(--blue);
+  border:0;border-radius:10px;padding:0 15px;cursor:pointer}
+.askrow button:disabled{opacity:.5}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding-left:var(--figpad,148px)}
+.chip{font:inherit;font-size:12px;color:var(--ink);background:var(--paper2);border:1px solid var(--line);
+  border-radius:999px;padding:5px 12px;cursor:pointer}
+.chip:hover{border-color:var(--blue)}
+.metaarea{background:var(--paper);border-radius:12px;margin-top:6px;
+  padding:8px 12px 10px calc(var(--figpad,148px) + 12px);font-size:11px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:5px}
+.src{font-family:var(--data);background:var(--card);border:1px solid var(--line);
+  border-radius:999px;padding:1px 8px;color:var(--soft)}
+.receipt{font-family:var(--data);color:var(--soft);margin-bottom:4px}
+details summary{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);cursor:pointer;user-select:none}
+.trace{font:10.5px/1.7 var(--data);color:var(--soft);margin-top:4px;overflow-x:auto}
+.trace b{color:var(--ink)}
+.hidden{visibility:hidden}
+.gone{display:none}
+/* on a phone he is small enough that only the ask row needs to clear his
+   shins; chips and receipts take the full width back */
+@media (max-width:520px){
+  .scene{height:200px}
+  .chips,.metaarea{padding-left:12px}
+  .metaarea{padding-right:12px}
+  #bubble{max-height:150px;top:34px}
+}
+@media (prefers-reduced-motion: reduce){
+  #fig,#bubble{transition:none}
+  .walking #pLegF,.walking #pLegB,.walking #pBody,.walking #fig .rig,.waving{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="scene" id="scene">
+  <div class="brand"><span class="dot"><i></i></span> HIRE BILLY</div>
+  <span class="kind" id="kind">summoned</span>
+  <div id="door">
+    <div class="opening"><canvas id="rain"></canvas></div>
+    <div class="panelface"><i class="knob"></i></div>
+    <div class="framebox"></div>
+  </div>
+  <div id="bubble"><div class="blede" id="blede"></div><div class="btext" id="btext"></div></div>
+</div>
+<div id="fig" class="instant">
+  <div class="rig">
+    <img id="skStand" class="sk" src="{{SPR_STAND}}" alt="">
+    <img id="skSit" class="sk" src="{{SPR_SIT}}" alt="">
+    <img id="mouth" class="sk" src="" alt="">
+    <div id="puppet">
+      <img id="pLegB" src="{{SPR_LEGB}}" alt="">
+      <img id="pLegF" src="{{SPR_LEGF}}" alt="">
+      <img id="pBody" src="{{SPR_BODY}}" alt="">
+    </div>
+  </div>
+</div>
+<div class="panel hidden" id="panel">
+  <div class="askrow">
+    <input id="q" placeholder="Ask me anything…" maxlength="2000">
+    <button id="go">Ask</button>
+  </div>
+  <div class="chips" id="chips"></div>
+</div>
+<div class="metaarea hidden" id="metaarea"></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var MOUTHS={{MOUTHS}};
+var pending={}, seq=0, bridged=false, typing=null, mouthTimer=null, rainTimer=null;
+var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+var COPY={
+  inline:{
+    lede:"Hey, I'm Billy. No desktop here, so I came to the message.",
+    rest:"The full version of this walks across a macOS desktop and sits down on your Claude window. You're on a surface that doesn't have one, so you get the same entrance in the chat: I walk in, I sit down, and I answer out of the same signed corpus, struck claims and all. Ask me anything below."
+  },
+  /* kept verbatim in step with the same strings in mcp/factory.js, which
+     overwrite these whenever a real tool result reaches the card */
+  desktop:{
+    lede:"I'm out there, on your actual screen.",
+    rest:"Watch the right edge of your desktop: a door, then me, walking over to sit down on your Claude window. That bubble is the one to talk to. The X on it sends me home."
+  }
+};
+var CHIPS=[
+  "What are your biggest weaknesses?",
+  "Why should we not hire you?",
+  "What have you actually built?",
+  "How do you keep AI honest with money?"
+];
+
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function fmt(s){return esc(s).replace(/~~(.+?)~~/g,"<del>$1</del>")}
+
+/* ---------- the rain behind the door ---------- */
+function startRain(){
+  var cv=$("rain");
+  if(!cv||rainTimer) return;
+  var dpr=window.devicePixelRatio||1;
+  var W=cv.offsetWidth||66, H=cv.offsetHeight||116;
+  cv.width=W*dpr; cv.height=H*dpr;
+  var ctx=cv.getContext("2d");
+  ctx.scale(dpr,dpr);
+  ctx.fillStyle="#000"; ctx.fillRect(0,0,W,H);
+  var fs=8, cols=Math.ceil(W/fs), drops=[];
+  for(var i=0;i<cols;i++) drops[i]=Math.floor(Math.random()*-H/fs);
+  var CH="01アイウエオカキクケコサシスセソタチツ<>/{}=+*";
+  rainTimer=setInterval(function(){
+    ctx.fillStyle="rgba(0,0,0,.16)"; ctx.fillRect(0,0,W,H);
+    ctx.font=fs+"px 'Martian Mono',monospace";
+    for(var i=0;i<cols;i++){
+      var b=Math.random();
+      ctx.fillStyle=b>.88?"#fff":"rgba(255,255,255,"+(0.18+b*0.4).toFixed(2)+")";
+      ctx.fillText(CH[Math.floor(Math.random()*CH.length)], i*fs, drops[i]*fs);
+      if(drops[i]*fs>H && Math.random()>0.92) drops[i]=0;
+      drops[i]++;
+    }
+  },70);
+}
+function stopRain(){ if(rainTimer){clearInterval(rainTimer); rainTimer=null;} }
+
+/* ---------- choreography ----------
+   Sprite coordinates match the desktop overlay: the fig box is 120x245, hips
+   sit 141px down in the seated pose and 149px down mid-stride. The ledge is
+   the seam between the scene and the panel, so seated shins hang over the
+   panel exactly as they hang over the Claude window on the desktop. */
+var fig=$("fig"), scene=$("scene"), panel=$("panel");
+var hostDims=null;
+function survey(){
+  var W=(hostDims&&hostDims.width)||document.documentElement.clientWidth||640;
+  var phone=(screen.width<=500)||W<420;
+  var s=W<380?0.58:(phone?0.66:(W<560?0.86:1));
+  return {W:W, s:s, phone:phone, walkMs:phone?2300:3000};
+}
+function layout(){
+  var v=survey(), ledge=scene.offsetHeight;
+  document.body.style.setProperty("--figpad", Math.round(120*v.s+22)+"px");
+  var ds=0.45*v.s, doorW=66, doorRight=26, doorBottom=34+116;
+  var doorCx=v.W-doorRight-doorW/2;
+  return {
+    v:v,
+    start:{x:doorCx-60*ds, y:doorBottom-245*ds, s:ds},
+    mid:  {x:14,           y:ledge-149*v.s,     s:v.s},
+    seat: {x:14,           y:ledge-141*v.s,     s:v.s}
+  };
+}
+function place(p){ fig.style.transform="translate("+p.x+"px,"+p.y+"px) scale("+p.s+")"; }
+
+var L=null;
+function enter(mode){
+  L=layout();
+  if(mode==="desktop"){ standStill(); return; }
+  if(REDUCED){
+    fig.classList.add("instant","seated");
+    place(L.seat);
+    showBubble(COPY.inline.lede, COPY.inline.rest, true, revealPanel);
+    return;
+  }
+  var door=$("door");
+  fig.classList.add("instant"); place(L.start);
+  fig.style.opacity=0;
+  fig.getBoundingClientRect(); /* flush */
+  door.classList.add("show");
+  startRain();
+  setTimeout(function(){ door.classList.add("open"); }, 2100);
+  setTimeout(function(){ fig.style.transition="opacity .3s"; fig.style.opacity=1; }, 2650);
+  setTimeout(function(){
+    fig.style.transition=""; fig.classList.remove("instant");
+    fig.classList.add("walking");
+    fig.style.transitionDuration=L.v.walkMs+"ms";
+    fig.getBoundingClientRect(); /* commit the start state before the walk */
+    setTimeout(function(){ place(L.mid); }, 30);
+    setTimeout(function(){ door.classList.remove("open"); }, 900);
+    setTimeout(function(){ door.classList.add("bye"); door.classList.remove("show"); }, 1900);
+    setTimeout(stopRain, 2800);
+  }, 3100);
+  fig.addEventListener("transitionend", function step(ev){
+    if(ev.propertyName!=="transform") return;
+    fig.removeEventListener("transitionend", step);
+    fig.classList.remove("walking");
+    fig.style.transitionDuration="";
+    fig.classList.add("sitfall","seated");
+    place(L.seat);
+    setTimeout(function(){
+      var rig=fig.querySelector(".rig");
+      rig.classList.add("waving");
+      setTimeout(function(){ rig.classList.remove("waving"); }, 1200);
+      showBubble(COPY.inline.lede, COPY.inline.rest, false, revealPanel);
+    }, 480);
+  });
+}
+/* he is already walking somewhere better, so this card is only the receipt:
+   he is sat down over there, and the bubble to talk to is the one on the
+   desktop. No ledge here — the whole seated pose is framed inside the scene. */
+function standStill(){
+  $("kind").textContent="on your desktop";
+  L=layout();
+  var s=L.v.s;
+  scene.style.height=Math.round(210*s+20)+"px";
+  fig.classList.add("instant","seated");
+  place({x:14, y:12, s:s});
+  panel.classList.add("gone"); $("metaarea").classList.add("gone");
+  var rig=fig.querySelector(".rig");
+  setTimeout(function(){
+    rig.classList.add("waving");
+    setTimeout(function(){ rig.classList.remove("waving"); }, 1200);
+    showBubble(COPY.desktop.lede, COPY.desktop.rest, REDUCED, sizeChanged);
+  }, 300);
+}
+function revealPanel(){ panel.classList.remove("hidden"); sizeChanged(); }
+window.addEventListener("resize", function(){
+  if(!L) return;
+  L=layout();
+  if(fig.classList.contains("seated")){ fig.classList.add("instant"); place(L.seat); }
+});
+
+/* ---------- speech ----------
+   The overlay's mouth frames are crops of one head at different scales, and
+   three of the four carry a stray thumbnail below the chin. MOUTH_CHIN is the
+   alpha-scanned last row of the head in each 120px frame: scaling by 120/chin
+   lands every skull at the same HEAD_H, and clipping below the chin keeps the
+   stray off his collar. Head anchored, jaw moving — which is the point. */
+var HEAD_H=58, MOUTH_CHIN=[92,92,120,83];
+function frameMouth(m,i){
+  var chin=MOUTH_CHIN[i]||120;
+  m.style.height=(HEAD_H*120/chin).toFixed(1)+"px";
+  m.style.clipPath="inset(0 0 "+((1-chin/120)*100).toFixed(1)+"% 0)";
+  m.src=MOUTHS[i];
+}
+function startMouth(){
+  if(REDUCED||!fig.classList.contains("seated")) return;
+  /* frame 3 is a head-down pose that does not sit on the seated neck, so the
+     loop stays on the three forward-facing mouths */
+  var m=$("mouth"), seq=[1,2,0,2,1,0,2,0], i=0;
+  fig.classList.add("talking");
+  frameMouth(m, 1%MOUTHS.length);
+  if(mouthTimer) clearInterval(mouthTimer);
+  mouthTimer=setInterval(function(){ i++; frameMouth(m, seq[i%seq.length]%MOUTHS.length); },115);
+}
+function stopMouth(){
+  if(mouthTimer){clearInterval(mouthTimer); mouthTimer=null;}
+  fig.classList.remove("talking");
+}
+function showBubble(lede,text,instant,done){
+  var b=$("bubble");
+  b.classList.add("show");
+  $("blede").textContent=lede;
+  var bt=$("btext");
+  if(typing){clearInterval(typing);typing=null}
+  var plain=String(text).replace(/~~(.+?)~~/g,"$1");
+  var finish=function(){ stopMouth(); bt.innerHTML=fmt(text); if(done) done(); };
+  if(instant||REDUCED){ finish(); return; }
+  var i=0;
+  bt.innerHTML='<span id="tw"></span><span class="cursor"></span>';
+  var tw=$("tw");
+  startMouth();
+  typing=setInterval(function(){
+    i+=2;
+    tw.textContent=plain.slice(0,i);
+    b.scrollTop=b.scrollHeight;
+    if(i>=plain.length){ clearInterval(typing); typing=null; finish(); }
+  },16);
+  b.onclick=function(){ if(typing){clearInterval(typing); typing=null; finish();} };
+}
+function speakAnswer(r){
+  $("kind").textContent=r.kind||"answer";
+  showBubble(r.lede||"", r.rest||"", false, function(){ renderMeta(r); });
+}
+function renderMeta(r){
+  var m=$("metaarea"), h="";
+  var srcs=(r.sources||[]).map(function(s){return '<span class="src">§'+esc(s)+'</span>'}).join("");
+  var flags=(r.flags||[]).map(function(f){return '<span class="src">⚑ '+esc(f)+'</span>'}).join("");
+  if(srcs||flags) h+='<div class="meta">'+srcs+flags+'</div>';
+  if(r.receipt) h+='<div class="receipt">'+esc(r.receipt)+'</div>';
+  if(r.trace&&r.trace.length){
+    h+='<details><summary>trace · '+r.trace.length+' stages, measured</summary><div class="trace">';
+    h+=r.trace.map(function(t,i){return String(i+1).padStart(2,"0")+" <b>"+esc(t.stage)+"</b> "+esc(String(t.ms))+" ms · "+esc(t.note)}).join("<br>");
+    h+='</div></details>';
+  }
+  m.innerHTML=h;
+  m.classList.remove("hidden");
+  sizeChanged();
+}
+function speakBusy(){
+  $("blede").textContent="Good question.";
+  $("btext").innerHTML='Let me run that through the machinery&hellip; <span class="cursor"></span>';
+  $("bubble").classList.add("show");
+}
+function speakErr(m){ showBubble("Hm.", m+" Degrading loudly, never silently.", true); }
+
+/* ---------- host bridge (MCP Apps, SEP-1865) ---------- */
+function post(m){ try{ window.parent.postMessage(m,"*"); }catch(e){} }
+function rpc(method,params,timeout){
+  return new Promise(function(res,rej){
+    var id=++seq; pending[id]={res:res,rej:rej};
+    post({jsonrpc:"2.0",id:id,method:method,params:params||{}});
+    if(timeout) setTimeout(function(){ if(pending[id]){delete pending[id];rej(new Error("timeout"))} },timeout);
+  });
+}
+function sizeChanged(){
+  post({jsonrpc:"2.0",method:"ui/notifications/size-changed",
+        params:{height:document.body.scrollHeight+4}});
+}
+function applyCtx(ctx){
+  if(!ctx) return;
+  var t=ctx.theme||ctx.colorScheme;
+  if(t) document.documentElement.setAttribute("data-theme",/dark/i.test(String(t))?"dark":"light");
+}
+function normalize(out){
+  if(!out) return null;
+  if(out.structuredContent) return out.structuredContent;
+  if(out.result&&out.result.structuredContent) return out.result.structuredContent;
+  var c=(out.content||(out.result&&out.result.content)||[])[0];
+  if(c&&c.text) return {kind:"text",lede:"",rest:c.text,sources:[],flags:[],trace:[]};
+  return null;
+}
+/* A summon result decides which show to run and carries the words with it, so
+   the server stays the single source of the copy (the constants above are the
+   fallback for a card that boots before any result arrives). Everything else
+   is an ask_billy answer. */
+function consume(r){
+  if(!r) return;
+  if(r.mode==="desktop"||r.mode==="inline"){
+    if(r.lede) COPY[r.mode]={lede:r.lede, rest:r.rest||""};
+    boot(r.mode);
+    return;
+  }
+  if(r.lede||r.rest) speakAnswer(r);
+}
+window.addEventListener("message",function(ev){
+  var m=ev.data; if(!m||m.jsonrpc!=="2.0") return;
+  if(m.id!=null&&pending[m.id]&&(m.result!==undefined||m.error)){
+    var p=pending[m.id]; delete pending[m.id];
+    return m.error?p.rej(new Error(m.error.message||"host error")):p.res(m.result);
+  }
+  if(m.method==="ui/notifications/tool-result"){ consume(normalize(m.params)); return; }
+  if(m.method==="ui/notifications/host-context-changed"){ applyCtx(m.params); return; }
+  if(m.id!=null&&m.method){ post({jsonrpc:"2.0",id:m.id,result:{}}); }
+});
+function openaiSeed(){ if(window.openai&&window.openai.toolOutput) consume(normalize(window.openai.toolOutput)); }
+window.addEventListener("openai:set_globals",openaiSeed);
+
+function ask(q){
+  q=String(q||"").trim(); if(!q) return;
+  speakBusy(); $("go").disabled=true;
+  var done=function(out){ $("go").disabled=false; var r=normalize(out); if(r&&(r.lede||r.rest)) speakAnswer(r); else speakErr("The host returned nothing I can say."); };
+  var fail=function(e){ $("go").disabled=false; speakErr("I could not reach the pipeline ("+e.message+")."); };
+  if(window.openai&&window.openai.callTool){ window.openai.callTool("ask_billy",{question:q}).then(done,fail); }
+  else if(bridged){ rpc("tools/call",{name:"ask_billy",arguments:{question:q}},60000).then(done,fail); }
+  else{ speakErr("No host bridge found here."); }
+}
+$("go").addEventListener("click",function(){ ask($("q").value) });
+$("q").addEventListener("keydown",function(e){ if(e.key==="Enter") ask($("q").value) });
+CHIPS.forEach(function(c){
+  var b=document.createElement("button");
+  b.className="chip"; b.textContent=c;
+  b.addEventListener("click",function(){ $("q").value=c; ask(c) });
+  $("chips").appendChild(b);
+});
+
+/* ---------- boot ----------
+   The host delivers the tool result on its own schedule, so the show waits a
+   beat for the mode; if nothing arrives, the in-chat walk-on is the safe
+   default (the desktop path is the one that needs a signal to suppress it). */
+if(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches){
+  document.documentElement.setAttribute("data-theme","dark");
+}
+var wantMode=null, started=false;
+function start(force){
+  if(started||(document.hidden&&!force)) return;
+  started=true;
+  setTimeout(function(){ enter(wantMode||"inline"); }, 200);
+  setTimeout(sizeChanged, 400);
+}
+function boot(mode){ if(mode) wantMode=mode; start(false); }
+document.addEventListener("visibilitychange",function(){ start(false); });
+rpc("ui/initialize",{appInfo:{name:"hire-billy-summon",version:"1.0"}},1800)
+  .then(function(r){
+    bridged=true; applyCtx(r&&r.hostContext);
+    if(r&&r.hostContext&&r.hostContext.containerDimensions) hostDims=r.hostContext.containerDimensions;
+    post({jsonrpc:"2.0",method:"ui/notifications/initialized"});
+  })
+  .catch(function(){ openaiSeed(); });
+/* A collapsed or off-screen iframe would otherwise burn the whole entrance
+   while nobody is watching, so the show waits for the tab to be visible; the
+   timeout covers hosts that never report visibility at all. */
+var FORCE=/(^|[?&])mode=(desktop|inline)/.exec(location.search);
+if(FORCE){ wantMode=FORCE[2]; start(true); }
+else setTimeout(function(){ start(true); }, 2400);
+})();
+</script>
+</body>
+</html>

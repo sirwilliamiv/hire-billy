@@ -9,6 +9,7 @@
     "serve": "node serve.js",
     "mcp": "node mcp/server.js",
     "sync": "node scripts/sync-corpus.js",
+    "build:summon": "node scripts/build-summon.js",
     "test": "node scripts/smoke.js"
   },
   "dependencies": {

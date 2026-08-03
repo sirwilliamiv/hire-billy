@@ -20,33 +20,60 @@
   <button onclick="setTheme('dark')">dark</button>
   <button onclick="setW(700)">wide</button>
   <button onclick="setW(380)">narrow</button>
+  <button onclick="load('panel')">ask panel</button>
+  <button onclick="load('summon','inline')">summon: inline</button>
+  <button onclick="load('summon','desktop')">summon: desktop</button>
   <button onclick="reload()">reload</button>
 </div>
 <div class="chat" id="chat">
-  <div class="msg user">use hire-billy to tell me about this candidate</div>
-  <div class="msg">Calling ask_billy…</div>
+  <div class="msg user" id="prompt">use hire-billy to tell me about this candidate</div>
+  <div class="msg" id="calling">Calling ask_billy…</div>
   <iframe id="f" src="/widget?autostart=1" allowtransparency="true"></iframe>
   <div class="input">Reply to Claude…</div>
 </div>
 <script>
 var theme = 'dark';
+/* which surface is in the frame, and (for summon) what the tool was asked to
+   do: the card only runs the desktop receipt when a real result says so, so
+   the harness calls the tool for real and forwards it like a host would */
+var surface = 'panel', want = null;
 function setTheme(t){ theme = t; post({jsonrpc:'2.0',method:'ui/notifications/host-context-changed',params:{theme:t}}); }
 function setW(w){ document.getElementById('chat').style.width = w + 'px'; }
-function reload(){ document.getElementById('f').src = '/widget?autostart=1&r=' + Math.random(); }
+function load(kind, platform){
+  surface = kind; want = platform || null;
+  document.getElementById('prompt').textContent = kind === 'summon' ? 'summon billy' : 'use hire-billy to tell me about this candidate';
+  document.getElementById('calling').textContent = 'Calling ' + (kind === 'summon' ? 'summon_billy…' : 'ask_billy…');
+  reload();
+}
+function reload(){
+  document.getElementById('f').src = (surface === 'summon' ? '/summon?r=' : '/widget?autostart=1&r=') + Math.random();
+}
 function post(m){ document.getElementById('f').contentWindow.postMessage(m, '*'); }
+async function callTool(name, args){
+  var r = await fetch('/mcp', {method:'POST',
+    headers:{'content-type':'application/json', accept:'application/json, text/event-stream'},
+    body: JSON.stringify({jsonrpc:'2.0', id:99, method:'tools/call', params:{name:name, arguments:args}})});
+  return (await r.json()).result;
+}
 window.addEventListener('message', async function(e){
   var m = e.data; if(!m || m.jsonrpc !== '2.0') return;
   console.log('[widget->host]', JSON.stringify(m).slice(0, 200));
   if(m.method === 'ui/initialize'){
-    return post({jsonrpc:'2.0', id:m.id, result:{hostContext:{theme:theme, containerDimensions:{width:document.getElementById('f').clientWidth}}}});
+    post({jsonrpc:'2.0', id:m.id, result:{hostContext:{theme:theme, containerDimensions:{width:document.getElementById('f').clientWidth}}}});
+    if(surface === 'summon'){
+      /* the remote transport can only ever answer "inline", so previewing the
+         receipt state means sending the bare mode the local stdio server would
+         send and letting the card supply its own desktop copy */
+      var res = want === 'desktop'
+        ? {structuredContent:{mode:'desktop'}}
+        : await callTool('summon_billy', want ? {platform:want} : {});
+      post({jsonrpc:'2.0', method:'ui/notifications/tool-result', params:res});
+    }
+    return;
   }
   if(m.method === 'tools/call'){
     try{
-      var r = await fetch('/mcp', {method:'POST',
-        headers:{'content-type':'application/json', accept:'application/json, text/event-stream'},
-        body: JSON.stringify({jsonrpc:'2.0', id:99, method:'tools/call', params:m.params})});
-      var j = await r.json();
-      return post({jsonrpc:'2.0', id:m.id, result:j.result});
+      return post({jsonrpc:'2.0', id:m.id, result: await callTool(m.params.name, m.params.arguments)});
     }catch(err){
       return post({jsonrpc:'2.0', id:m.id, error:{code:-32000, message:String(err)}});
     }

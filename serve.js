@@ -71,6 +71,10 @@ const server = createServer(async (req, res) => {
     res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
     return res.end(readFileSync(join(HERE, 'ui', 'widget.html')));
   }
+  if (req.method === 'GET' && path === '/summon') {
+    res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+    return res.end(readFileSync(join(HERE, 'ui', 'summon.html')));
+  }
   if (req.method === 'GET' && path === '/dev/host') {
     res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
     return res.end(readFileSync(join(HERE, 'ui', 'dev', 'host.html')));
