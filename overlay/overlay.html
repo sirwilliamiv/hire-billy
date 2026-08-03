@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+:root{ --blue:#2B47FF; --lime:#CBFF4D; --ink:#101322; --card:#ffffff; --line:#e4e2d9; --del:#b3392f; }
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:transparent;overflow:hidden;width:100vw;height:100vh;
+  font:14px/1.5 ui-sans-serif,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
+#fig{position:fixed;top:0;left:0;width:120px;height:245px;pointer-events:none;z-index:2;
+     transition:transform 5s cubic-bezier(.45,.05,.55,.95);will-change:transform;
+     filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
+#fig.instant{transition:none}
+#fig.sitfall{transition:transform .45s cubic-bezier(.34,1.4,.64,1)}
+#fig svg{overflow:visible}
+#fig line,#fig circle{stroke:var(--ink);stroke-width:5;stroke-linecap:round;fill:none}
+#fig .outline line,#fig .outline circle{stroke:#fff;stroke-width:9}
+#fig .face circle{stroke:none;fill:var(--ink)}
+#fig .face path{stroke-width:2.4;stroke:var(--ink);fill:none}
+.limb{transform-box:view-box;transition:transform .4s}
+.walking .legL{animation:legA .55s ease-in-out infinite}
+.walking .legR{animation:legB .55s ease-in-out infinite}
+.walking .armL{animation:legB .55s ease-in-out infinite}
+.walking .armR{animation:legA .55s ease-in-out infinite}
+.walking .body{animation:bob .275s ease-in-out infinite}
+@keyframes legA{0%,100%{transform:rotate(26deg)}50%{transform:rotate(-24deg)}}
+@keyframes legB{0%,100%{transform:rotate(-24deg)}50%{transform:rotate(26deg)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.seated .legL{transform:rotate(-70deg)}
+.seated .legR{transform:rotate(-94deg)}
+.seated .shinL{transform:rotate(74deg)}
+.seated .shinR{transform:rotate(96deg)}
+.seated .armL{transform:rotate(-18deg)}
+.seated .armR{transform:rotate(-38deg)}
+.waving .armR{animation:wave .5s ease-in-out 2}
+@keyframes wave{0%,100%{transform:rotate(-38deg)}50%{transform:rotate(-165deg)}}
+#bubble{position:fixed;z-index:1;width:min(430px,44vw);background:var(--card);
+  border:1px solid var(--line);border-radius:16px;padding:14px 16px;
+  box-shadow:0 14px 40px rgba(0,0,0,.3);opacity:0;transform:translateY(10px);
+  transition:opacity .4s,transform .4s}
+#bubble.show{opacity:1;transform:none}
+#bubble::before{content:"";position:absolute;left:-8px;bottom:26px;width:15px;height:15px;
+  background:var(--card);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+.blede{font-family:Georgia,serif;font-size:17px;margin-bottom:5px}
+.btext{font-size:13px;white-space:pre-wrap}
+.btext del{color:var(--del)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-size:12px;background:#f4f2ec;border:1px solid var(--line);border-radius:999px;padding:4px 11px;cursor:pointer}
+.chip:hover{border-color:var(--blue)}
+.bye{position:absolute;top:8px;right:10px;border:0;background:none;color:#999;cursor:pointer;font-size:14px}
+.cursor{display:inline-block;width:7px;height:14px;background:var(--blue);vertical-align:-2px;animation:blink .8s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+</style>
+</head>
+<body>
+<div id="fig" class="instant">
+  <svg viewBox="0 0 120 245" width="120" height="245">
+    <g class="body">
+      <g class="outline">
+        <circle cx="60" cy="32" r="19"/><line x1="60" y1="51" x2="60" y2="132"/>
+      </g>
+      <g class="armL limb" style="transform-origin:60px 72px"><line x1="60" y1="72" x2="60" y2="116"/></g>
+      <g class="legL limb" style="transform-origin:60px 132px"><line x1="60" y1="132" x2="60" y2="182"/>
+        <g class="shinL limb" style="transform-origin:60px 182px"><line x1="60" y1="182" x2="60" y2="228"/></g></g>
+      <circle cx="60" cy="32" r="19" fill="#fff"/>
+      <g class="face"><circle cx="53" cy="28" r="2.4"/><circle cx="67" cy="28" r="2.4"/>
+        <path d="M52 38 q8 7 16 0"/></g>
+      <line x1="60" y1="51" x2="60" y2="132"/>
+      <g class="legR limb" style="transform-origin:60px 132px"><line x1="60" y1="132" x2="60" y2="182"/>
+        <g class="shinR limb" style="transform-origin:60px 182px"><line x1="60" y1="182" x2="60" y2="228"/></g></g>
+      <g class="armR limb" style="transform-origin:60px 72px"><line x1="60" y1="72" x2="60" y2="116"/></g>
+    </g>
+  </svg>
+</div>
+<div id="bubble">
+  <button class="bye" id="bye">✕</button>
+  <div class="blede" id="blede"></div>
+  <div class="btext" id="btext"></div>
+  <div class="chips" id="chips"></div>
+</div>
+<script>
+(function(){
+"use strict";
+var qs = new URLSearchParams(location.search);
+var SW = +qs.get("screenW") || innerWidth, SH = +qs.get("screenH") || innerHeight;
+var CLAUDE = null; try{ CLAUDE = JSON.parse(qs.get("claude")); }catch(e){}
+var MCP = "http://localhost:4173/mcp";
+
+var GREET_LEDE = "Hey, I'm Billy. Yes, on your actual screen.";
+var GREET = "This is my application to work with you at Rocket Money. I found your Claude window and sat down on it, because the best cover letter for this role seemed to be a working demo of the experience you're hiring for. Ask me anything below, or let's talk for real over phone or Zoom.";
+var CHIPS = ["What are your biggest weaknesses?","Why should we not hire you?","What have you actually built?"];
+
+var fig = document.getElementById("fig");
+/* seat: on the Claude window's bottom edge (its input bar), else screen bottom */
+var seat = CLAUDE
+  ? { x: CLAUDE.x + Math.round(CLAUDE.w*0.42), hipY: CLAUDE.y + CLAUDE.h - 74 }
+  : { x: Math.round(SW*0.22), hipY: SH - 100 };
+var start = { x: SW + 60, y: seat.hipY - 132 - 40, s: .55 };
+var mid   = { x: seat.x,  y: seat.hipY - 245 + 26, s: 1 };
+var sit   = { x: seat.x,  y: seat.hipY - 132, s: 1 };
+function place(p){ fig.style.transform = "translate("+p.x+"px,"+(p.y)+"px) scale("+(p.s||1)+")"; }
+
+var bubble=document.getElementById("bubble");
+function positionBubble(){
+  var bx = seat.x + 130, by = sit.y - 40;
+  if (bx + bubble.offsetWidth > SW - 20) bx = SW - bubble.offsetWidth - 20;
+  bubble.style.left = bx+"px"; bubble.style.top = Math.max(20, by)+"px";
+  reportRects();
+}
+function reportRects(){
+  if(!window.overlay) return;
+  var r = bubble.getBoundingClientRect();
+  window.overlay.rects([{x:r.x-6,y:r.y-6,w:r.width+12,h:r.height+12}]);
+}
+var typing=null;
+function speak(lede, text, done){
+  document.getElementById("blede").textContent = lede;
+  var bt = document.getElementById("btext");
+  if(typing){clearInterval(typing);typing=null}
+  var plain = text.replace(/~~(.+?)~~/g,"$1");
+  bt.innerHTML = '<span id="tw"></span><span class="cursor"></span>';
+  var tw = document.getElementById("tw"), i = 0;
+  typing = setInterval(function(){
+    i += 2; tw.textContent = plain.slice(0,i);
+    if(i >= plain.length){
+      clearInterval(typing); typing=null;
+      bt.innerHTML = text.replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c]}).replace(/~~(.+?)~~/g,"<del>$1</del>");
+      if(done) done();
+    }
+    reportRects();
+  },16);
+}
+function askBilly(q){
+  speak("Good question.", "Let me run that through the machinery…");
+  fetch(MCP,{method:"POST",headers:{"content-type":"application/json",accept:"application/json, text/event-stream"},
+    body:JSON.stringify({jsonrpc:"2.0",id:1,method:"tools/call",params:{name:"ask_billy",arguments:{question:q}}})})
+  .then(function(r){return r.json()})
+  .then(function(j){ var s=j.result&&j.result.structuredContent;
+    if(s) speak(s.lede, s.rest + (s.receipt ? "\n\nreceipt: "+s.receipt : ""));
+    else speak("Hm.","The pipeline returned nothing I can say."); })
+  .catch(function(e){ speak("Hm.","I could not reach the local pipeline ("+e.message+"). Is serve.js running?"); });
+}
+CHIPS.forEach(function(c){
+  var b=document.createElement("button"); b.className="chip"; b.textContent=c;
+  b.onclick=function(){askBilly(c)};
+  document.getElementById("chips").appendChild(b);
+});
+document.getElementById("bye").onclick=function(){ window.overlay && window.overlay.quit(); };
+
+/* choreography: enter from the right edge of the SCREEN, walk to the seat */
+place(start);
+fig.getBoundingClientRect();
+fig.classList.remove("instant");
+fig.classList.add("walking");
+requestAnimationFrame(function(){ place(mid); });
+fig.addEventListener("transitionend", function step(){
+  fig.removeEventListener("transitionend", step);
+  fig.classList.remove("walking");
+  fig.style.transitionDuration="";
+  fig.classList.add("sitfall","seated");
+  place(sit);
+  setTimeout(function(){
+    fig.classList.add("waving");
+    setTimeout(function(){fig.classList.remove("waving")},1100);
+    bubble.classList.add("show");
+    positionBubble();
+    speak(GREET_LEDE, GREET);
+  }, 550);
+});
+window.addEventListener("resize", positionBubble);
+})();
+</script>
+</body>
+</html>
