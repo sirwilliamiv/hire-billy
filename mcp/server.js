@@ -6,4 +6,4 @@
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { buildServer } from './factory.js';
 
-await buildServer().connect(new StdioServerTransport());
+await buildServer({ local: true }).connect(new StdioServerTransport());

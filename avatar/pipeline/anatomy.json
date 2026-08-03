@@ -1,0 +1,148 @@
+{
+  "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference-clean.png",
+  "overlayImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/landmarks.png",
+  "overlayLegend": {
+    "C": "center symmetry axis",
+    "1..N": "head-unit horizontal ticks (blue, dashed)",
+    "H": "hairline guide (default fraction of the first head-unit band)",
+    "E": "eye line guide",
+    "N": "nose base guide",
+    "M": "mouth line guide",
+    "S": "shoulder line guide (default fraction, adjust to observed pose)",
+    "P": "hip line guide (default fraction, adjust to observed pose)",
+    "grayDashed": "rule-of-thirds compositional grid"
+  },
+  "anatomy": {
+    "styleHeads": 7.5,
+    "proportions": {
+      "headUnit": 0.53,
+      "torso": 1.1,
+      "legs": null,
+      "shoulderWidth": 1.9,
+      "hipWidth": null,
+      "notes": "Bust crop: head bbox (incl. hair) spans y 58-330 of 512 => headUnit 0.53 of image height, head width incl. hair ~250px (0.92 of head height). Torso visible only crown-to-mid-chest; shoulderWidth 1.9 HU measured at the S-line but lateral extents are clipped by the circular crop (inferred, confidence 0.6). legs/hipWidth not visible (cropped) - left null per contract, not guessed.",
+      "evidenceRef": "landmarks.png full frame"
+    },
+    "pose": {
+      "type": "frontal symmetric bust, slight head roll (~4 deg, crown toward anatomical right), shoulders level, facing camera",
+      "jointAngles": {
+        "neck": [
+          0,
+          0,
+          -4
+        ],
+        "leftShoulder": [
+          0,
+          0,
+          0
+        ],
+        "rightShoulder": [
+          0,
+          0,
+          0
+        ],
+        "leftElbow": [
+          0,
+          0,
+          0
+        ],
+        "rightElbow": [
+          0,
+          0,
+          0
+        ],
+        "leftWrist": [
+          0,
+          0,
+          0
+        ],
+        "rightWrist": [
+          0,
+          0,
+          0
+        ],
+        "leftHip": [
+          0,
+          0,
+          0
+        ],
+        "rightHip": [
+          0,
+          0,
+          0
+        ],
+        "leftKnee": [
+          0,
+          0,
+          0
+        ],
+        "rightKnee": [
+          0,
+          0,
+          0
+        ],
+        "leftAnkle": [
+          0,
+          0,
+          0
+        ],
+        "rightAnkle": [
+          0,
+          0,
+          0
+        ]
+      },
+      "occlusionNote": "Elbow/wrist/hip/knee/ankle joints are outside the crop; angles left at neutral rest with low confidence per reconstruction.md (do not invent)."
+    },
+    "faceLandmarks": {
+      "hairline": 0.34,
+      "eyeLine": 0.52,
+      "eyeSpacing": 0.22,
+      "noseBase": 0.72,
+      "mouthLine": 0.86,
+      "earTop": 0.52,
+      "earBottom": 0.74,
+      "notes": "Recalibrated by pixel probe: head bbox y 31-335 of 512. Hair volume above forehead 0.34 of head height.",
+      "evidenceRef": "landmarks.png rows E/N/M vs observed features"
+    },
+    "features": [
+      {
+        "id": "hair-silhouette",
+        "desc": "voluminous wavy swept-back brown hair, irregular curls, asymmetric temple masses (fuller on anatomical left)",
+        "confidence": 0.9
+      },
+      {
+        "id": "beard",
+        "desc": "short full beard + mustache, ginger-cast, dense chin/mustache, sparse upper cheeks",
+        "confidence": 0.9
+      },
+      {
+        "id": "smile",
+        "desc": "broad open smile, upper teeth row visible, lifted cheeks, nasolabial folds",
+        "confidence": 0.95
+      },
+      {
+        "id": "eyes",
+        "desc": "blue-gray irises, smile-narrowed lids, crow's-feet, catchlight upper-left",
+        "confidence": 0.85
+      },
+      {
+        "id": "nose",
+        "desc": "straight bridge, slightly rounded tip",
+        "confidence": 0.8
+      },
+      {
+        "id": "shirt",
+        "desc": "light-blue chambray collared shirt, open spread collar, visible placket buttons",
+        "confidence": 0.9
+      },
+      {
+        "id": "head-tilt",
+        "desc": "slight head roll ~4 deg in reference pose",
+        "confidence": 0.7
+      }
+    ],
+    "confidence": 0.75
+  },
+  "authoringInstruction": "Open overlayImage and read the reference against its head-unit ticks, thirds grid, face-line guides, shoulder/hip lines, and center axis. Replace every null/placeholder value in anatomy with normalized coordinates or joint angles actually observed; the drawn guide lines are generic starting positions, not measurements."
+}

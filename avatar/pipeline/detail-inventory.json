@@ -1,0 +1,291 @@
+{
+  "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference-clean.png",
+  "zonesDir": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops",
+  "detailInventory": {
+    "scanMethod": "grid-3x3",
+    "targetMinDetails": 10,
+    "details": [
+      {
+        "id": "hair-curl-clumps",
+        "kind": "ridge",
+        "description": "10-14 irregular wavy curl clump masses; swept back and up from forehead; fuller volume on anatomical left temple; silhouette-interrupting lobes",
+        "region": {
+          "x": 0.15,
+          "y": 0.05,
+          "width": 0.7,
+          "height": 0.35,
+          "units": "normalized"
+        },
+        "scale": "macro",
+        "affects": "hair silhouette geometry",
+        "mapsTo": {
+          "type": "component.localFeatures",
+          "ref": "hair/curlClumps"
+        },
+        "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r0c1.png",
+        "confidence": 0.9
+      },
+      {
+        "id": "hair-crest-gloss",
+        "kind": "gloss",
+        "description": "caramel low-roughness highlight bands along curl crests, streaked along strand direction (anisotropic)",
+        "region": {
+          "x": 0.3,
+          "y": 0.05,
+          "width": 0.45,
+          "height": 0.3,
+          "units": "normalized"
+        },
+        "scale": "meso",
+        "affects": "hair material response",
+        "mapsTo": {
+          "type": "material.localOverrides",
+          "ref": "mat-hair/crestAnisotropy"
+        },
+        "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r0c1.png",
+        "confidence": 0.75
+      },
+      {
+        "id": "front-hairline-wisps",
+        "kind": "contour",
+        "description": "feathered irregular wisps at the forehead hairline, partial occlusion of upper forehead; not a hard helmet edge",
+        "region": {
+          "x": 0.35,
+          "y": 0.22,
+          "width": 0.3,
+          "height": 0.12,
+          "units": "normalized"
+        },
+        "scale": "micro",
+        "affects": "hairline edge treatment",
+        "mapsTo": {
+          "type": "component.localFeatures",
+          "ref": "hair/frontWisps"
+        },
+        "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r0c1.png",
+        "confidence": 0.85
+      },
+      {
+        "id": "brow-band",
+        "kind": "linework",
+        "description": "two brown eyebrow bands following brow ridge, slightly asymmetric with smile lift",
+        "region": {
+          "x": 0.36,
+          "y": 0.36,
+          "width": 0.28,
+          "height": 0.06,
+          "units": "normalized"
+        },
+        "scale": "meso",
+        "affects": "face albedo + brow relief",
+        "mapsTo": {
+          "type": "material.localOverrides",
+          "ref": "mat-skin/browDecal"
+        },
+        "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+        "confidence": 0.85
+      },
+      {
+        "id": "eye-catchlight",
+        "kind": "gloss",
+        "description": "strong specular catchlight upper-left on both irises; glossy sclera; iris blue-gray with darker limbal ring",
+        "region": {
+          "x": 0.37,
+          "y": 0.4,
+          "width": 0.26,
+          "height": 0.07,
+          "units": "normalized"
+        },
+        "scale": "micro",
+        "affects": "eye material",
+        "mapsTo": {
+          "type": "material.localOverrides",
+          "ref": "mat-eye/catchlight"
+        },
+        "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+        "confidence": 0.85
+      },
+      {
+        "id": "crows-feet",
+        "kind": "groove",
+        "description": "radial crease lines at outer eye corners (smile-compressed), soft shadow lines",
+        "region": {
+          "x": 0.28,
+          "y": 0.4,
+          "width": 0.44,
+          "height": 0.08,
+          "units": "normalized"
+        },
+        "scale": "micro",
+        "affects": "skin normal relief",
+        "mapsTo": {
+          "type": "material.localOverrides",
+          "ref": "mat-skin/crowsFeet"
+        },
+        "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c0.png",
+        "confidence": 0.7
+      },
+      {
+        "id": "nasolabial-folds",
+        "kind": "groove",
+        "description": "deep smile creases from nose alae to mouth corners, both sides; identity-defining with the open smile",
+        "region": {
+          "x": 0.36,
+          "y": 0.48,
+          "width": 0.28,
+          "height": 0.14,
+          "units": "normalized"
+        },
+        "scale": "meso",
+        "affects": "face geometry/normal",
+        "mapsTo": {
+          "type": "component.localFeatures",
+          "ref": "head/nasolabialFolds"
+        },
+        "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+        "confidence": 0.9
+      },
+      {
+        "id": "smile-teeth-row",
+        "kind": "seam",
+        "description": "upper teeth row visible in open smile; near-white, glossy, subtle tooth separation seams; lower lip covers bottom row",
+        "region": {
+          "x": 0.4,
+          "y": 0.55,
+          "width": 0.2,
+          "height": 0.06,
+          "units": "normalized"
+        },
+        "scale": "meso",
+        "affects": "mouth component",
+        "mapsTo": {
+          "type": "component.localFeatures",
+          "ref": "mouth/teethRow"
+        },
+        "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+        "confidence": 0.9
+      },
+      {
+        "id": "beard-coverage-gradient",
+        "kind": "stain",
+        "description": "beard/mustache coverage gradient: dense at chin+mustache (0.8), sparse on upper cheeks (0.3); ginger-cast hue vs scalp hair",
+        "region": {
+          "x": 0.32,
+          "y": 0.5,
+          "width": 0.36,
+          "height": 0.22,
+          "units": "normalized"
+        },
+        "scale": "meso",
+        "affects": "beard material coverage mask",
+        "mapsTo": {
+          "type": "material.localOverrides",
+          "ref": "mat-beard/coverageMask"
+        },
+        "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+        "confidence": 0.85
+      },
+      {
+        "id": "t-zone-sheen",
+        "kind": "gloss",
+        "description": "lower-roughness sheen on forehead and nose tip/bridge (roughness ~0.4 vs 0.55 base)",
+        "region": {
+          "x": 0.4,
+          "y": 0.28,
+          "width": 0.2,
+          "height": 0.25,
+          "units": "normalized"
+        },
+        "scale": "micro",
+        "affects": "skin roughness zoning",
+        "mapsTo": {
+          "type": "material.localOverrides",
+          "ref": "mat-skin/tZoneRoughness"
+        },
+        "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+        "confidence": 0.7
+      },
+      {
+        "id": "chambray-weave",
+        "kind": "linework",
+        "description": "fine woven chambray micro-texture over the shirt; desaturated light blue with white weft flecks",
+        "region": {
+          "x": 0.1,
+          "y": 0.72,
+          "width": 0.8,
+          "height": 0.28,
+          "units": "normalized"
+        },
+        "scale": "micro",
+        "affects": "shirt albedo/normal micro band",
+        "mapsTo": {
+          "type": "material.localOverrides",
+          "ref": "mat-shirt/weave"
+        },
+        "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c1.png",
+        "confidence": 0.85
+      },
+      {
+        "id": "collar-and-placket",
+        "kind": "seam",
+        "description": "open spread collar with raised fold ridge; center placket strip with stitch seams running down",
+        "region": {
+          "x": 0.38,
+          "y": 0.66,
+          "width": 0.24,
+          "height": 0.3,
+          "units": "normalized"
+        },
+        "scale": "meso",
+        "affects": "shirt construction geometry",
+        "mapsTo": {
+          "type": "component.localFeatures",
+          "ref": "shirt/collarPlacket"
+        },
+        "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c1.png",
+        "confidence": 0.9
+      },
+      {
+        "id": "placket-buttons",
+        "kind": "fastener",
+        "description": "white plastic buttons on placket, 2 visible below collar, linear spacing; low-roughness discs",
+        "region": {
+          "x": 0.44,
+          "y": 0.8,
+          "width": 0.12,
+          "height": 0.18,
+          "units": "normalized"
+        },
+        "scale": "micro",
+        "affects": "instanced button system",
+        "mapsTo": {
+          "type": "component.localFeatures",
+          "ref": "shirt/buttonRow"
+        },
+        "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c1.png",
+        "confidence": 0.8
+      },
+      {
+        "id": "shirt-fold-wrinkles",
+        "kind": "ridge",
+        "description": "soft fold ridges radiating from shoulders/armpits and beside placket; rounded cloth relief, not sharp creases",
+        "region": {
+          "x": 0.08,
+          "y": 0.7,
+          "width": 0.84,
+          "height": 0.3,
+          "units": "normalized"
+        },
+        "scale": "meso",
+        "affects": "shirt geometry relief",
+        "mapsTo": {
+          "type": "component.localFeatures",
+          "ref": "shirt/foldRidges"
+        },
+        "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c0.png",
+        "confidence": 0.8
+      }
+    ]
+  },
+  "authoringInstruction": "Open each zone crop under zonesDir and replace every detail stub's kind, description, scale, affects, mapsTo, and confidence with what is actually observed. Add more detail entries per zone if a single zone contains multiple distinct marks; do not leave stubs unfilled or unlinked (mapsTo must reference a real component.localFeatures or material.localOverrides entry)."
+}

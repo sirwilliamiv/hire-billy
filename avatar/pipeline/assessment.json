@@ -1,0 +1,727 @@
+{
+  "targetName": "Billy Portrait Bust",
+  "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference-clean.png",
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "portrait bust (adult male head + neck + shoulders)",
+      "primaryDomain": "character",
+      "formLanguage": [
+        "organic",
+        "character-like",
+        "fabric-like (shirt)"
+      ],
+      "structureKind": [
+        "compound object",
+        "layered shell (hair over cranium, beard over skin)",
+        "deformable surface"
+      ],
+      "motionPotential": [
+        "whole-object transform",
+        "articulated (neck pivot)",
+        "expression morph potential"
+      ],
+      "materialFamilies": [
+        "skin-like",
+        "hair-fiber",
+        "cloth",
+        "eye (glossy dielectric)",
+        "teeth (glossy dielectric)"
+      ],
+      "notes": "Circular avatar headshot; front view only. Target: reusable geometry SHELL with swappable skins (matrix-rain shader + projected photo likeness). See image-analysis.md."
+    },
+    "complexity": {
+      "tier": "complex",
+      "scores": {
+        "silhouetteComplexity": 3,
+        "componentCount": 2,
+        "hierarchyDepth": 2,
+        "repetitionDensity": 2,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 4,
+        "mesoComponents": 14,
+        "microFeatureGroups": 7,
+        "materialLayers": 6,
+        "repetitionSystems": 2
+      },
+      "reasoning": [
+        "Hair silhouette heavily interrupted/organic (score 3): irregular wavy curls define identity.",
+        "Macro parts: cranium/face mass, hair volume, neck, torso/shirt. Meso: brow, eye sockets x2, nose, cheeks, mouth+teeth, chin/jaw, ears x2, hair clump groups, collar, placket, shoulders.",
+        "Repetition systems: hair curl clumps (10-14 masses), beard stipple zones.",
+        "Occlusion: back of head, nape, ear tops, under-jaw hidden in single front view (score 2).",
+        "Action readiness low: bust prop with neck pivot + skin-swap API, no limbs."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "complex",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "Choose simple/moderate/complex/ultra-complex from observed structure, not from a hardcoded domain."
+    },
+    "unknownsToResolveBeforeImplementation": [
+      "Back-of-head/nape hair silhouette: hidden; will interpolate from temple curl volume (speculative).",
+      "Ear geometry: mostly occluded by hair; generic ear proxy at low prominence.",
+      "Cranium and nose depth (z): estimated from population norms for a front-only reference.",
+      "Hair part line / crown swirl: not visible from front.",
+      "Exact iris hue (blue vs blue-green) at 512px resolution."
+    ],
+    "detailInventory": {
+      "scanMethod": "grid-3x3",
+      "targetMinDetails": 10,
+      "note": "see detail-inventory.json",
+      "details": [
+        {
+          "id": "hair-curl-clumps",
+          "kind": "ridge",
+          "description": "10-14 irregular wavy curl clump masses; swept back and up from forehead; fuller volume on anatomical left temple; silhouette-interrupting lobes",
+          "region": {
+            "x": 0.15,
+            "y": 0.05,
+            "width": 0.7,
+            "height": 0.35,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "hair silhouette geometry",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "hair/curlClumps"
+          },
+          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r0c1.png",
+          "confidence": 0.9
+        },
+        {
+          "id": "hair-crest-gloss",
+          "kind": "gloss",
+          "description": "caramel low-roughness highlight bands along curl crests, streaked along strand direction (anisotropic)",
+          "region": {
+            "x": 0.3,
+            "y": 0.05,
+            "width": 0.45,
+            "height": 0.3,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "hair material response",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "mat-hair/crestAnisotropy"
+          },
+          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r0c1.png",
+          "confidence": 0.75
+        },
+        {
+          "id": "front-hairline-wisps",
+          "kind": "contour",
+          "description": "feathered irregular wisps at the forehead hairline, partial occlusion of upper forehead; not a hard helmet edge",
+          "region": {
+            "x": 0.35,
+            "y": 0.22,
+            "width": 0.3,
+            "height": 0.12,
+            "units": "normalized"
+          },
+          "scale": "micro",
+          "affects": "hairline edge treatment",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "hair/frontWisps"
+          },
+          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r0c1.png",
+          "confidence": 0.85
+        },
+        {
+          "id": "brow-band",
+          "kind": "linework",
+          "description": "two brown eyebrow bands following brow ridge, slightly asymmetric with smile lift",
+          "region": {
+            "x": 0.36,
+            "y": 0.36,
+            "width": 0.28,
+            "height": 0.06,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "face albedo + brow relief",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "mat-skin/browDecal"
+          },
+          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "confidence": 0.85
+        },
+        {
+          "id": "eye-catchlight",
+          "kind": "gloss",
+          "description": "strong specular catchlight upper-left on both irises; glossy sclera; iris blue-gray with darker limbal ring",
+          "region": {
+            "x": 0.37,
+            "y": 0.4,
+            "width": 0.26,
+            "height": 0.07,
+            "units": "normalized"
+          },
+          "scale": "micro",
+          "affects": "eye material",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "mat-eye/catchlight"
+          },
+          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "confidence": 0.85
+        },
+        {
+          "id": "crows-feet",
+          "kind": "groove",
+          "description": "radial crease lines at outer eye corners (smile-compressed), soft shadow lines",
+          "region": {
+            "x": 0.28,
+            "y": 0.4,
+            "width": 0.44,
+            "height": 0.08,
+            "units": "normalized"
+          },
+          "scale": "micro",
+          "affects": "skin normal relief",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "mat-skin/crowsFeet"
+          },
+          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c0.png",
+          "confidence": 0.7
+        },
+        {
+          "id": "nasolabial-folds",
+          "kind": "groove",
+          "description": "deep smile creases from nose alae to mouth corners, both sides; identity-defining with the open smile",
+          "region": {
+            "x": 0.36,
+            "y": 0.48,
+            "width": 0.28,
+            "height": 0.14,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "face geometry/normal",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "head/nasolabialFolds"
+          },
+          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "confidence": 0.9
+        },
+        {
+          "id": "smile-teeth-row",
+          "kind": "seam",
+          "description": "upper teeth row visible in open smile; near-white, glossy, subtle tooth separation seams; lower lip covers bottom row",
+          "region": {
+            "x": 0.4,
+            "y": 0.55,
+            "width": 0.2,
+            "height": 0.06,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "mouth component",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "mouth/teethRow"
+          },
+          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "confidence": 0.9
+        },
+        {
+          "id": "beard-coverage-gradient",
+          "kind": "stain",
+          "description": "beard/mustache coverage gradient: dense at chin+mustache (0.8), sparse on upper cheeks (0.3); ginger-cast hue vs scalp hair",
+          "region": {
+            "x": 0.32,
+            "y": 0.5,
+            "width": 0.36,
+            "height": 0.22,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "beard material coverage mask",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "mat-beard/coverageMask"
+          },
+          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "confidence": 0.85
+        },
+        {
+          "id": "t-zone-sheen",
+          "kind": "gloss",
+          "description": "lower-roughness sheen on forehead and nose tip/bridge (roughness ~0.4 vs 0.55 base)",
+          "region": {
+            "x": 0.4,
+            "y": 0.28,
+            "width": 0.2,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "micro",
+          "affects": "skin roughness zoning",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "mat-skin/tZoneRoughness"
+          },
+          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "confidence": 0.7
+        },
+        {
+          "id": "chambray-weave",
+          "kind": "linework",
+          "description": "fine woven chambray micro-texture over the shirt; desaturated light blue with white weft flecks",
+          "region": {
+            "x": 0.1,
+            "y": 0.72,
+            "width": 0.8,
+            "height": 0.28,
+            "units": "normalized"
+          },
+          "scale": "micro",
+          "affects": "shirt albedo/normal micro band",
+          "mapsTo": {
+            "type": "material.localOverrides",
+            "ref": "mat-shirt/weave"
+          },
+          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c1.png",
+          "confidence": 0.85
+        },
+        {
+          "id": "collar-and-placket",
+          "kind": "seam",
+          "description": "open spread collar with raised fold ridge; center placket strip with stitch seams running down",
+          "region": {
+            "x": 0.38,
+            "y": 0.66,
+            "width": 0.24,
+            "height": 0.3,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "shirt construction geometry",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "shirt/collarPlacket"
+          },
+          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c1.png",
+          "confidence": 0.9
+        },
+        {
+          "id": "placket-buttons",
+          "kind": "fastener",
+          "description": "white plastic buttons on placket, 2 visible below collar, linear spacing; low-roughness discs",
+          "region": {
+            "x": 0.44,
+            "y": 0.8,
+            "width": 0.12,
+            "height": 0.18,
+            "units": "normalized"
+          },
+          "scale": "micro",
+          "affects": "instanced button system",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "shirt/buttonRow"
+          },
+          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c1.png",
+          "confidence": 0.8
+        },
+        {
+          "id": "shirt-fold-wrinkles",
+          "kind": "ridge",
+          "description": "soft fold ridges radiating from shoulders/armpits and beside placket; rounded cloth relief, not sharp creases",
+          "region": {
+            "x": 0.08,
+            "y": 0.7,
+            "width": 0.84,
+            "height": 0.3,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "shirt geometry relief",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "shirt/foldRidges"
+          },
+          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c0.png",
+          "confidence": 0.8
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": true,
+      "styleHeads": 7.5,
+      "proportions": {
+        "headUnit": 0.53,
+        "torso": 1.1,
+        "legs": null,
+        "shoulderWidth": 1.9,
+        "hipWidth": null,
+        "notes": "Bust crop: head bbox (incl. hair) spans y 58-330 of 512 => headUnit 0.53 of image height, head width incl. hair ~250px (0.92 of head height). Torso visible only crown-to-mid-chest; shoulderWidth 1.9 HU measured at the S-line but lateral extents are clipped by the circular crop (inferred, confidence 0.6). legs/hipWidth not visible (cropped) - left null per contract, not guessed.",
+        "evidenceRef": "landmarks.png full frame"
+      },
+      "pose": {
+        "type": "frontal symmetric bust, slight head roll (~4 deg, crown toward anatomical right), shoulders level, facing camera",
+        "jointAngles": {
+          "neck": [
+            0,
+            0,
+            -4
+          ],
+          "leftShoulder": [
+            0,
+            0,
+            0
+          ],
+          "rightShoulder": [
+            0,
+            0,
+            0
+          ],
+          "leftElbow": [
+            0,
+            0,
+            0
+          ],
+          "rightElbow": [
+            0,
+            0,
+            0
+          ],
+          "leftWrist": [
+            0,
+            0,
+            0
+          ],
+          "rightWrist": [
+            0,
+            0,
+            0
+          ],
+          "leftHip": [
+            0,
+            0,
+            0
+          ],
+          "rightHip": [
+            0,
+            0,
+            0
+          ],
+          "leftKnee": [
+            0,
+            0,
+            0
+          ],
+          "rightKnee": [
+            0,
+            0,
+            0
+          ],
+          "leftAnkle": [
+            0,
+            0,
+            0
+          ],
+          "rightAnkle": [
+            0,
+            0,
+            0
+          ]
+        },
+        "occlusionNote": "Elbow/wrist/hip/knee/ankle joints are outside the crop; angles left at neutral rest with low confidence per reconstruction.md (do not invent)."
+      },
+      "faceLandmarks": {
+        "hairline": 0.26,
+        "eyeLine": 0.54,
+        "eyeSpacing": 0.22,
+        "noseBase": 0.72,
+        "mouthLine": 0.84,
+        "earTop": 0.52,
+        "earBottom": 0.74,
+        "notes": "Normalized to head bbox (y 58-330, x ~175-425 incl. hair). Hairline is low-normalized 0.26 because ~0.26 of head height is hair volume above the forehead. Ears mostly occluded by hair - earTop/earBottom inferred from visible left-ear sliver + eye/nose bracketing rule (confidence 0.45). eyeSpacing = inner-corner gap (~56px) / head width (~250px).",
+        "evidenceRef": "landmarks.png rows E/N/M vs observed features"
+      },
+      "features": [
+        {
+          "id": "hair-silhouette",
+          "desc": "voluminous wavy swept-back brown hair, irregular curls, asymmetric temple masses (fuller on anatomical left)",
+          "confidence": 0.9
+        },
+        {
+          "id": "beard",
+          "desc": "short full beard + mustache, ginger-cast, dense chin/mustache, sparse upper cheeks",
+          "confidence": 0.9
+        },
+        {
+          "id": "smile",
+          "desc": "broad open smile, upper teeth row visible, lifted cheeks, nasolabial folds",
+          "confidence": 0.95
+        },
+        {
+          "id": "eyes",
+          "desc": "blue-gray irises, smile-narrowed lids, crow's-feet, catchlight upper-left",
+          "confidence": 0.85
+        },
+        {
+          "id": "nose",
+          "desc": "straight bridge, slightly rounded tip",
+          "confidence": 0.8
+        },
+        {
+          "id": "shirt",
+          "desc": "light-blue chambray collared shirt, open spread collar, visible placket buttons",
+          "confidence": 0.9
+        },
+        {
+          "id": "head-tilt",
+          "desc": "slight head roll ~4 deg in reference pose",
+          "confidence": 0.7
+        }
+      ],
+      "confidence": 0.75,
+      "note": "Filled from extract_landmarks.py overlay measurement; see anatomy.json + landmarks.png."
+    },
+    "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference-clean.png"
+  },
+  "qualityContract": {
+    "qualityBar": "complex",
+    "definitionOfDone": [
+      "Rendered bust reads as THIS person at a glance: wavy voluminous swept-back hair silhouette, short ginger-cast beard, broad open smile with upper teeth, blue-gray eyes with catchlight, chambray collared shirt.",
+      "Geometry is a self-contained SHELL: one head/bust mesh hierarchy with stable UVs and named sub-meshes, exposing a skin/material swap API (applySkin) so any material set (matrix-rain shader, projected-photo likeness, or future skins) can be applied without touching geometry.",
+      "Face landmark placement matches measured anatomy: eyeLine 0.54, noseBase 0.72, mouthLine 0.84, eyeSpacing 0.22 of head width, hairline 0.26 (hair volume above).",
+      "Hair is 10-14 stylized clump masses matching the reference silhouette (fuller on anatomical left temple), not strands, not a helmet blob.",
+      "Explodable + clickable part hierarchy (part coverage gate) with neck pivot socket."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 4,
+      "mesoComponents": 10,
+      "microFeatureGroups": 6,
+      "materialLayers": 5,
+      "repetitionSystems": 2,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Overall silhouette and proportions",
+        "required": true,
+        "qualityCriteria": [
+          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model reads as a generic placeholder instead of the reference object",
+          "major proportions are guessed without evidence"
+        ]
+      },
+      {
+        "id": "primary-structure",
+        "name": "Primary structure and hierarchy",
+        "required": true,
+        "qualityCriteria": [
+          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "large visible parts are merged into one mesh",
+          "component hierarchy is too shallow for the observed complexity"
+        ]
+      },
+      {
+        "id": "attachment-joint-correctness",
+        "name": "Attachment and joint correctness",
+        "required": true,
+        "qualityCriteria": [
+          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "child part root floats away from the parent",
+          "branch/limb/tube is centered in space instead of pivoting from its root",
+          "parent-child transform mixes world and local coordinates"
+        ]
+      },
+      {
+        "id": "surface-material-response",
+        "name": "Surface material response",
+        "required": true,
+        "qualityCriteria": [
+          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
+          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
+          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "surface looks like flat plastic",
+          "local material variation is missing or not tied to image evidence"
+        ]
+      },
+      {
+        "id": "reference-lookdev",
+        "name": "Reference color, material, and lighting response",
+        "required": true,
+        "qualityCriteria": [
+          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
+          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
+          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
+          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "model has acceptable shape but reads as flat shaded or plastic",
+          "colors are a generic average instead of reference-observed local color zones",
+          "lighting is evenly ambient and cannot reproduce the source value range"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "authoringInstruction": "Fill observed object class, complexity reasoning, featureGroups, visualDeltaChecks, and unknowns before generating or implementing ObjectSculptSpec.",
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Billy Portrait Bust human head bust anatomy proportions landmarks hair clumps stylized cards silhouette skin albedo roughness subsurface eye iris catchlight glossy sphere cloth shirt collar folds",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.pbr-roughness",
+        "file_path": "grimoire/glossary/3d_vocabulary.md",
+        "heading": "Material And PBR",
+        "key_path": null,
+        "score": 8.485019761707,
+        "snippets": [
+          "Roughness is microfacet scatter: high roughness reads matte and low roughness reads glossy. Recognition cues: low roughness reads as a sharp, mirror-like, tight specular highlight; high roughness reads as a blurry, wide, dim highlight and matte ..."
+        ],
+        "source_refs": [
+          {
+            "path": "grimoire/glossary/3d_vocabulary.md",
+            "heading": "Material And PBR",
+            "key_path": null
+          },
+          {
+            "path": "grimoire/intake/image_analysis.md",
+            "heading": "Layer 5 \u2014 Materials & surface (PBR)",
+            "key_path": null
+          },
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[1]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "grimoire/glossary/3d_vocabulary.md"
+          },
+          {
+            "kind": "notebooklm-research",
+            "ref": "notebooklm:4b03c2f9-8393-411f-b5b4-039ab9532843",
+            "note": "Validated generic schema vocabulary; numeric claims remain backed by local source_refs."
+          },
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation \u2014 merged recognition cues + Three.js target instead of duplicating this entity."
+          }
+        ]
+      },
+      {
+        "record_id": "core.pbr-subsurface-scattering-sss",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[5]",
+        "score": 8.375008471137,
+        "snippets": [
+          "Light transport property for opaque dielectrics where light penetrates and scatters internally before exiting (skin, wax, marble, some polymers). \u0110\u1eb7c t\u00ednh truy\u1ec1n \u00e1nh s\u00e1ng c\u1ee7a v\u1eadt li\u1ec7u \u0111i\u1ec7n m\u00f4i m\u1edd \u0111\u1ee5c, \u00e1nh s\u00e1ng xuy\u00ean v\u00e0o v\u00e0 t\u00e1n x\u1ea1 b\u00ean trong tr\u01b0\u1edbc ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[5]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.pbr-color-space-srgb-vs-linearnocolorspace",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[11]",
+        "score": 6.615447681944,
+        "snippets": [
+          "... (c\u1ea7n gamma/sRGB) v\u00e0 c\u00e1c b\u1ea3n \u0111\u1ed3 d\u1eef li\u1ec7u to\u00e1n h\u1ecdc (ph\u1ea3i gi\u1eef tuy\u1ebfn t\u00ednh/kh\u00f4ng hi\u1ec7u ch\u1ec9nh). Recognition cues: Base color/albedo and emissive textures are the only ones that should look like natural photographic color; Normal, roughness, ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[11]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  }
+}

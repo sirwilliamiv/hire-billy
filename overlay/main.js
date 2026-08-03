@@ -45,6 +45,14 @@ app.whenReady().then(() => {
 
   ipcMain.on('quit', () => app.quit());
 
+  /* answers come from the shared pipeline, in this very process */
+  ipcMain.handle('ask', async (e, q) => {
+    const { runPipeline } = await import('../core/pipeline.js');
+    const r = await runPipeline(String(q || ''));
+    const { kind, lede, rest, sources, flags, struck, receipt, trace } = r;
+    return { kind, lede, rest, sources, flags, struck, receipt, trace };
+  });
+
   win.webContents.on('console-message', (e, level, msg) => console.log('[renderer]', msg));
   win.webContents.on('did-fail-load', (e, code, desc) => console.log('[fail-load]', code, desc));
   win.webContents.on('did-finish-load', () => console.log('[loaded] bounds', JSON.stringify(d.bounds)));

@@ -1,0 +1,89 @@
+{
+  "ok": false,
+  "verdict": "conditional",
+  "confidence": 0.667,
+  "estimatedFidelity": 0.667,
+  "targetThreshold": 0.7,
+  "materialId": "mat-skin",
+  "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/crop-skin.png",
+  "outDir": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin",
+  "palette": [
+    "#D3B19B",
+    "#DCBCA6",
+    "#C8A38B",
+    "#E3C6B0",
+    "#BC977D"
+  ],
+  "maps": {
+    "albedo": {
+      "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_albedo.png",
+      "url": "mat-skin_albedo.png",
+      "channel": "albedo",
+      "source": "reference-pixel-extraction"
+    },
+    "roughness": {
+      "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_roughness.png",
+      "url": "mat-skin_roughness.png",
+      "channel": "roughness",
+      "source": "reference-pixel-extraction"
+    },
+    "height": {
+      "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_height.png",
+      "url": "mat-skin_height.png",
+      "channel": "height",
+      "source": "reference-pixel-extraction"
+    },
+    "normal": {
+      "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_normal.png",
+      "url": "mat-skin_normal.png",
+      "channel": "normal",
+      "source": "reference-pixel-extraction"
+    },
+    "ao": {
+      "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_ao.png",
+      "url": "mat-skin_ao.png",
+      "channel": "ao",
+      "source": "reference-pixel-extraction"
+    }
+  },
+  "diagnostics": {
+    "sourceWidth": 80,
+    "sourceHeight": 32,
+    "mapSize": 1024,
+    "cropBBoxPixels": {
+      "x": 0,
+      "y": 0,
+      "width": 80,
+      "height": 32
+    },
+    "mask": {
+      "backgroundColor": "#DFBFA9",
+      "backgroundNoise": 71.722,
+      "transparentPixelFraction": 0.0,
+      "foregroundCoverage": 1.0
+    },
+    "mapStats": {
+      "valueRange": 0.1846,
+      "heightP90Gradient": 0.00865,
+      "roughnessBase": 0.689,
+      "roughnessVariation": 0.05,
+      "normalStrength": 0.166,
+      "blurRadius": 21
+    },
+    "palette": [
+      "#D3B19B",
+      "#DCBCA6",
+      "#C8A38B",
+      "#E3C6B0",
+      "#BC977D"
+    ]
+  },
+  "warnings": [
+    "image is not clearly isolated from background; using most pixels as material evidence",
+    "object/background separation is weak",
+    "single-image inverse rendering cannot prove true physical PBR; confidence is capped",
+    "low value range weakens height/roughness inference",
+    "low high-frequency detail weakens normal/roughness inference"
+  ],
+  "limitation": "single-image PBR extraction is an estimate; 70%+ extraction confidence still needs render screenshot review"
+}

@@ -38,8 +38,8 @@ const ok = (name, cond) => { console.log((cond ? 'PASS' : 'FAIL') + '  ' + name)
   const client = new Client({ name: 'smoke', version: '0.0.1' });
   await client.connect(transport);
   const tools = await client.listTools();
-  ok('mcp exposes 2 tools', tools.tools.length === 2 &&
-      tools.tools.map(t => t.name).sort().join(',') === 'ask_billy,get_model_card');
+  ok('local mcp exposes 3 tools incl summon', tools.tools.length === 3 &&
+      tools.tools.map(t => t.name).sort().join(',') === 'ask_billy,get_model_card,summon_billy');
   const a = await client.callTool({ name: 'ask_billy', arguments: { question: 'What are his weaknesses?' } });
   const at = a.content[0].text;
   ok('mcp ask_billy grounded', at.includes('load-bearing') && at.includes('§limitations') && at.includes('trace (measured)'));
@@ -88,7 +88,7 @@ const ok = (name, cond) => { console.log((cond ? 'PASS' : 'FAIL') + '  ' + name)
 
   const tools = await rpc('tools/list', {});
   const askTool = (tools.result?.tools || []).find(t => t.name === 'ask_billy');
-  ok('http mcp lists tools', (tools.result?.tools || []).length === 2);
+  ok('http mcp lists tools (no summon remotely)', (tools.result?.tools || []).length === 2 && !(tools.result?.tools || []).some(t => t.name === 'summon_billy'));
   ok('ask_billy declares widget (_meta.ui)', askTool?._meta?.ui?.resourceUri === 'ui://hire-billy/panel');
   ok('ask_billy declares openai alias', askTool?._meta?.['openai/outputTemplate'] === 'ui://hire-billy/panel');
 

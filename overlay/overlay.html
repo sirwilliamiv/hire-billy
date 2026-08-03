@@ -84,7 +84,6 @@ html,body{background:transparent;overflow:hidden;width:100vw;height:100vh;
 var qs = new URLSearchParams(location.search);
 var SW = +qs.get("screenW") || innerWidth, SH = +qs.get("screenH") || innerHeight;
 var CLAUDE = null; try{ CLAUDE = JSON.parse(qs.get("claude")); }catch(e){}
-var MCP = "http://localhost:4173/mcp";
 
 var GREET_LEDE = "Hey, I'm Billy. Yes, on your actual screen.";
 var GREET = "This is my application to work with you at Rocket Money. I found your Claude window and sat down on it, because the best cover letter for this role seemed to be a working demo of the experience you're hiring for. Ask me anything below, or let's talk for real over phone or Zoom.";
@@ -132,13 +131,11 @@ function speak(lede, text, done){
 }
 function askBilly(q){
   speak("Good question.", "Let me run that through the machinery…");
-  fetch(MCP,{method:"POST",headers:{"content-type":"application/json",accept:"application/json, text/event-stream"},
-    body:JSON.stringify({jsonrpc:"2.0",id:1,method:"tools/call",params:{name:"ask_billy",arguments:{question:q}}})})
-  .then(function(r){return r.json()})
-  .then(function(j){ var s=j.result&&j.result.structuredContent;
-    if(s) speak(s.lede, s.rest + (s.receipt ? "\n\nreceipt: "+s.receipt : ""));
+  window.overlay.ask(q)
+  .then(function(s){
+    if(s&&s.lede) speak(s.lede, s.rest + (s.receipt ? "\n\nreceipt: "+s.receipt : ""));
     else speak("Hm.","The pipeline returned nothing I can say."); })
-  .catch(function(e){ speak("Hm.","I could not reach the local pipeline ("+e.message+"). Is serve.js running?"); });
+  .catch(function(e){ speak("Hm.","The pipeline errored ("+e.message+")."); });
 }
 CHIPS.forEach(function(c){
   var b=document.createElement("button"); b.className="chip"; b.textContent=c;

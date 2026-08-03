@@ -11,6 +11,8 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { runPipeline, formatAnswer, formatCard, CORPUS } from '../core/pipeline.js';
@@ -32,7 +34,7 @@ const traceShape = z.object({
   note: z.string(),
 }).passthrough();
 
-export function buildServer() {
+export function buildServer({ local = false } = {}) {
   const server = new McpServer({ name: 'hire-billy', version: CORPUS.meta.version + '.0' });
 
   server.registerTool(
@@ -96,6 +98,35 @@ export function buildServer() {
       contents: [{ uri: WIDGET_URI, mimeType: 'text/html;profile=mcp-app', text: WIDGET_HTML }],
     })
   );
+
+  /* Local stdio servers run on the viewer's machine with their permissions,
+     so they may offer the full experience: the candidate walks onto the
+     actual screen. The remote connector never gets this tool; the client's
+     tool-approval prompt is the consent gate for those who do. */
+  if (local) {
+    const overlayDir = join(HERE, '..', 'overlay');
+    const electronBin = join(overlayDir, 'node_modules', '.bin', 'electron');
+    server.registerTool(
+      'summon_billy',
+      {
+        title: 'Summon Billy onto the screen',
+        description:
+          'Launches a small transparent overlay on this computer: an animated figure of the candidate ' +
+          'walks across the desktop, sits down on the Claude window, and answers questions in a speech ' +
+          'bubble. Purely visual, click-through except the bubble, closes with its X button. ' +
+          'Use when the user wants the full Hire Billy experience.',
+        inputSchema: {},
+      },
+      async () => {
+        if (!existsSync(electronBin)) {
+          return { content: [{ type: 'text', text: 'The overlay runtime is not installed here (overlay/node_modules missing). Run: cd overlay && npm install' }] };
+        }
+        const child = spawn(electronBin, ['.'], { cwd: overlayDir, detached: true, stdio: 'ignore' });
+        child.unref();
+        return { content: [{ type: 'text', text: 'He is on his way. Watch the right edge of your screen: he will walk over and sit down on the Claude window. The bubble is interactive; the X on it sends him home.' }] };
+      }
+    );
+  }
 
   return server;
 }
