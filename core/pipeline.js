@@ -31,7 +31,7 @@ const SCREENS = [
 
 /* stage 05: exact answers, written once, correct every time */
 const ROUTES = [
-  [/what is this|what can i ask|who are you|what are you|how does this work/i, 'what_is_this', {
+  [/what is this|what can i ask|who are you\b|what are you\b|how does this work/i, 'what_is_this', {
     lede: 'A cover letter that runs.',
     rest: 'Instead of telling you how the candidate thinks about AI products, this product is one: a signed corpus about him, one model call for phrasing, and a grounding stage that strikes anything the corpus cannot back. Ask what he is. Ask what he is not. The machinery shows its work either way.',
     sources: ['scope'],
@@ -167,9 +167,12 @@ export async function runPipeline(question) {
   const flags = SCREENS.filter(([re]) => re.test(q)).map(([, name]) => name);
   mark('screen', flags.length ? `${flags.length} matched, recorded, request continues as written` : 'no matches', { flags });
 
-  /* 05 route */
+  /* 05 route: meta-questions only, and a content match always outranks one.
+     "What is this?" is a product question; "What are your biggest weaknesses?"
+     is a candidate question even though it brushes the same words. */
+  const contentIntent = MAPPED.some(m => m.re.test(q));
   for (const [re, hit, ans] of ROUTES) {
-    if (re.test(q)) {
+    if (re.test(q) && !contentIntent) {
       mark('route', `exact match: ${hit}, the next three stages are unnecessary and do not run`);
       const g = ground(ans.rest);
       mark('ground', 'the same checks, on a string the model never touched', { struck: g.struck });

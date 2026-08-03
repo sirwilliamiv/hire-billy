@@ -96,6 +96,15 @@ const ok = (name, cond) => { console.log((cond ? 'PASS' : 'FAIL') + '  ' + name)
   const widget = res.result?.contents?.[0];
   ok('widget resource served as mcp-app html', widget?.mimeType === 'text/html;profile=mcp-app' && widget?.text?.includes('HIRE BILLY'));
 
+  /* route-vs-mapped regressions: the most predictable interview phrasings
+     must reach §limitations, never short-circuit to the product blurb */
+  const r1 = await rpc('tools/call', { name: 'ask_billy', arguments: { question: 'What are your biggest weaknesses?' } });
+  ok('predictable phrasing reaches limitations', r1.result?.structuredContent?.sources?.includes('limitations'));
+  const r2 = await rpc('tools/call', { name: 'ask_billy', arguments: { question: 'What is this thing, and what are your biggest weaknesses as a candidate?' } });
+  ok('multi-part question prefers content over meta', r2.result?.structuredContent?.sources?.includes('limitations'));
+  const r3 = await rpc('tools/call', { name: 'ask_billy', arguments: { question: 'What is this?' } });
+  ok('pure meta question still static', r3.result?.structuredContent?.kind === 'static');
+
   const ans = await rpc('tools/call', { name: 'ask_billy', arguments: { question: 'What are his weaknesses?' } });
   const sc = ans.result?.structuredContent;
   ok('http ask_billy structuredContent', !!sc && sc.lede.includes('load-bearing') && sc.trace.length === 9);
