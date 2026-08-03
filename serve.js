@@ -67,6 +67,14 @@ const server = createServer(async (req, res) => {
     res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
     return res.end(HTML);
   }
+  if (req.method === 'GET' && path === '/widget') {
+    res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+    return res.end(readFileSync(join(HERE, 'ui', 'widget.html')));
+  }
+  if (req.method === 'GET' && path === '/dev/host') {
+    res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+    return res.end(readFileSync(join(HERE, 'ui', 'dev', 'host.html')));
+  }
   if (req.method === 'GET' && path === '/auth') {
     res.writeHead(!GATED || KEYS.includes(keyOf(req)) ? 204 : 401);
     return res.end();

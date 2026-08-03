@@ -90,6 +90,7 @@ export function buildServer() {
       title: 'Hire Billy interrogation panel',
       description: 'Inline UI for interrogating the candidate: grounded answers, struck claims, measured trace.',
       mimeType: 'text/html;profile=mcp-app',
+      _meta: { ui: { prefersBorder: false } },
     },
     async () => ({
       contents: [{ uri: WIDGET_URI, mimeType: 'text/html;profile=mcp-app', text: WIDGET_HTML }],

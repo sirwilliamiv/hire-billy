@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>hire-billy widget harness</title>
+<style>
+  body{margin:0;font:14px/1.5 -apple-system,sans-serif;background:#262624;display:flex;justify-content:center;min-height:100vh}
+  .chat{width:700px;max-width:96vw;background:#30302e;margin:20px 0;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
+  .msg{background:#3d3d3b;color:#eee;border-radius:12px;padding:10px 14px;max-width:75%}
+  .msg.user{align-self:flex-end;background:#4a4a6a}
+  iframe{border:0;width:100%;border-radius:12px;background:transparent;height:430px;transition:height .3s}
+  .input{background:#3d3d3b;border-radius:12px;padding:12px 14px;color:#888}
+  .bar{position:fixed;top:8px;left:8px;display:flex;gap:8px;z-index:9}
+  .bar button{font:12px monospace;padding:4px 10px;border-radius:8px;border:0;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="bar">
+  <button onclick="setTheme('light')">light</button>
+  <button onclick="setTheme('dark')">dark</button>
+  <button onclick="setW(700)">wide</button>
+  <button onclick="setW(380)">narrow</button>
+  <button onclick="reload()">reload</button>
+</div>
+<div class="chat" id="chat">
+  <div class="msg user">use hire-billy to tell me about this candidate</div>
+  <div class="msg">Calling ask_billy…</div>
+  <iframe id="f" src="/widget" allowtransparency="true"></iframe>
+  <div class="input">Reply to Claude…</div>
+</div>
+<script>
+var theme = 'dark';
+function setTheme(t){ theme = t; post({jsonrpc:'2.0',method:'ui/notifications/host-context-changed',params:{theme:t}}); }
+function setW(w){ document.getElementById('chat').style.width = w + 'px'; }
+function reload(){ document.getElementById('f').src = '/widget?' + Math.random(); }
+function post(m){ document.getElementById('f').contentWindow.postMessage(m, '*'); }
+window.addEventListener('message', async function(e){
+  var m = e.data; if(!m || m.jsonrpc !== '2.0') return;
+  console.log('[widget->host]', JSON.stringify(m).slice(0, 200));
+  if(m.method === 'ui/initialize'){
+    return post({jsonrpc:'2.0', id:m.id, result:{hostContext:{theme:theme, containerDimensions:{width:document.getElementById('f').clientWidth}}}});
+  }
+  if(m.method === 'tools/call'){
+    try{
+      var r = await fetch('/mcp', {method:'POST',
+        headers:{'content-type':'application/json', accept:'application/json, text/event-stream'},
+        body: JSON.stringify({jsonrpc:'2.0', id:99, method:'tools/call', params:m.params})});
+      var j = await r.json();
+      return post({jsonrpc:'2.0', id:m.id, result:j.result});
+    }catch(err){
+      return post({jsonrpc:'2.0', id:m.id, error:{code:-32000, message:String(err)}});
+    }
+  }
+  if(m.method === 'ui/notifications/size-changed' && m.params && m.params.height){
+    document.getElementById('f').style.height = Math.min(m.params.height, 640) + 'px';
+  }
+});
+</script>
+</body>
+</html>

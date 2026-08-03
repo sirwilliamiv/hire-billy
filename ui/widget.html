@@ -8,134 +8,309 @@
 :root{
   --blue:#2B47FF; --lime:#CBFF4D; --ink:#101322; --paper:#FBFAF6;
   --soft:#5b6072; --line:#e4e2d9; --card:#ffffff; --del:#b3392f;
+  --sky1:#FBFAF6; --sky2:#EFEBE0; --floor:#E7E2D3; --stick:#101322;
 }
 [data-theme="dark"]{
-  --ink:#ECEDF4; --paper:#12141d; --soft:#9aa0b4; --line:#2a2d3c; --card:#1a1d2b; --del:#ff8a7a;
+  --ink:#ECEDF4; --paper:#12141d; --soft:#9aa0b4; --line:#2a2d3c;
+  --card:#1a1d2b; --del:#ff8a7a;
+  --sky1:#161927; --sky2:#12141d; --floor:#1d2030; --stick:#ECEDF4;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{
   font:14px/1.55 ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
-  color:var(--ink); background:var(--paper); padding:14px 16px 12px;
+  color:var(--ink); background:transparent; overflow:hidden; position:relative;
 }
-.head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.dot{width:22px;height:22px;border-radius:6px;background:var(--blue);display:grid;place-items:center;flex:none}
-.dot i{width:8px;height:8px;border-radius:50%;background:var(--lime);display:block}
-.head b{font-size:12px;letter-spacing:.14em}
-.kind{margin-left:auto;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);border:1px solid var(--line);border-radius:999px;padding:2px 8px}
-.lede{font-family:Georgia,"Times New Roman",serif;font-size:19px;line-height:1.3;margin-bottom:8px}
-.rest{color:var(--ink);margin-bottom:10px;white-space:pre-wrap}
-.rest del{color:var(--del);text-decoration-thickness:2px}
-.meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
-.src{font-size:11px;font-family:ui-monospace,Menlo,monospace;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--soft)}
-.receipt{font-size:11px;font-family:ui-monospace,Menlo,monospace;color:var(--soft);margin-bottom:10px}
-details{margin-bottom:12px}
-summary{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);cursor:pointer;user-select:none}
-.trace{font:11px/1.7 ui-monospace,Menlo,monospace;color:var(--soft);margin-top:6px;overflow-x:auto}
-.trace b{color:var(--ink);font-weight:600}
-.askrow{display:flex;gap:8px}
-.askrow input{
-  flex:1;font:inherit;color:var(--ink);background:var(--card);
-  border:1px solid var(--line);border-radius:10px;padding:9px 12px;outline:none
+.scene{
+  position:relative; height:250px; overflow:hidden; border-radius:14px;
+  background:linear-gradient(var(--sky1) 0%, var(--sky2) 60%, var(--floor) 60.5%, var(--floor) 100%);
 }
+.hlines{position:absolute;inset:0;pointer-events:none;opacity:.5}
+.brand{
+  position:absolute; top:10px; left:12px; display:flex; gap:7px; align-items:center;
+  font-size:11px; letter-spacing:.14em; font-weight:700; color:var(--soft)
+}
+.brand .dot{width:16px;height:16px;border-radius:5px;background:var(--blue);display:grid;place-items:center}
+.brand .dot i{width:6px;height:6px;border-radius:50%;background:var(--lime);display:block}
+.kind{position:absolute;top:8px;right:10px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);border:1px solid var(--line);border-radius:999px;padding:2px 8px;background:var(--card)}
+
+/* the person */
+#fig{position:absolute;top:0;left:0;width:120px;height:245px;pointer-events:none;z-index:6;
+     transition:transform 3s cubic-bezier(.45,.05,.55,.95);will-change:transform}
+#fig.instant{transition:none}
+#fig.sitfall{transition:transform .45s cubic-bezier(.34,1.4,.64,1)}
+#fig svg{overflow:visible}
+#fig line,#fig circle{stroke:var(--stick);stroke-width:5;stroke-linecap:round;fill:none}
+#fig .face circle{stroke:none;fill:var(--stick)}
+#fig .face path{stroke-width:2.4}
+#shadow{fill:rgba(0,0,0,.14);stroke:none;transition:opacity .4s}
+.seated #shadow{opacity:0}
+[data-theme="dark"] #shadow{fill:rgba(0,0,0,.45)}
+.limb{transform-box:view-box;transition:transform .4s}
+/* walk cycle */
+.walking .legL{animation:legA .62s ease-in-out infinite}
+.walking .legR{animation:legB .62s ease-in-out infinite}
+.walking .armL{animation:legB .62s ease-in-out infinite}
+.walking .armR{animation:legA .62s ease-in-out infinite}
+.walking .body{animation:bob .31s ease-in-out infinite}
+@keyframes legA{0%,100%{transform:rotate(26deg)}50%{transform:rotate(-24deg)}}
+@keyframes legB{0%,100%{transform:rotate(-24deg)}50%{transform:rotate(26deg)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+/* seated pose: thighs forward, shins hanging */
+.seated .legL{transform:rotate(-70deg)}
+.seated .legR{transform:rotate(-94deg)}
+.seated .shinL{transform:rotate(74deg)}
+.seated .shinR{transform:rotate(96deg)}
+.seated .armL{transform:rotate(-18deg)}
+.seated .armR{transform:rotate(-38deg)}
+.waving .armR{animation:wave .5s ease-in-out 2}
+@keyframes wave{0%,100%{transform:rotate(12deg)}50%{transform:rotate(-150deg)}}
+
+/* speech bubble */
+#bubble{
+  position:absolute; left:calc(var(--figpad,118px) + 32px); right:14px; top:34px; z-index:5;
+  background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:12px 14px; box-shadow:0 8px 24px rgba(0,0,0,.08);
+  opacity:0; transform:translateY(8px) scale(.97); transition:opacity .35s,transform .35s;
+  max-height:180px; overflow-y:auto; cursor:pointer;
+}
+#bubble.show{opacity:1;transform:none}
+#bubble::before{
+  content:""; position:absolute; left:-8px; bottom:22px; width:14px; height:14px;
+  background:var(--card); border-left:1px solid var(--line); border-bottom:1px solid var(--line);
+  transform:rotate(45deg);
+}
+.blede{font-family:Georgia,"Times New Roman",serif;font-size:16px;line-height:1.35;margin-bottom:4px}
+.btext{font-size:13px;color:var(--ink);white-space:pre-wrap}
+.btext del{color:var(--del);text-decoration-thickness:2px}
+.cursor{display:inline-block;width:7px;height:14px;background:var(--blue);vertical-align:-2px;animation:blink .8s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* panel below the scene: the ledge the person sits on */
+.panel{background:var(--paper);border:1px solid var(--line);border-top-width:2px;border-radius:0 0 14px 14px;padding:10px 12px 10px}
+.askrow{display:flex;gap:8px;padding-left:var(--figpad,118px)}
+.askrow input{flex:1;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;outline:none;min-width:0}
 .askrow input:focus{border-color:var(--blue)}
-.askrow button{
-  font:600 13px/1 ui-sans-serif,-apple-system,sans-serif;color:#fff;background:var(--blue);
-  border:0;border-radius:10px;padding:0 16px;cursor:pointer
-}
-.askrow button:disabled{opacity:.5;cursor:default}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.chip{
-  font-size:12px;color:var(--ink);background:var(--card);border:1px solid var(--line);
-  border-radius:999px;padding:4px 11px;cursor:pointer
-}
+.askrow button{font:600 13px/1 ui-sans-serif,-apple-system,sans-serif;color:#fff;background:var(--blue);border:0;border-radius:10px;padding:0 15px;cursor:pointer}
+.askrow button:disabled{opacity:.5}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding-left:var(--figpad,118px)}
+.chip{font-size:12px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 11px;cursor:pointer}
 .chip:hover{border-color:var(--blue)}
-.note{font-size:12px;color:var(--soft);margin-bottom:10px}
-.spin{display:inline-block;width:10px;height:10px;border:2px solid var(--line);border-top-color:var(--blue);border-radius:50%;animation:r .7s linear infinite;vertical-align:-1px;margin-right:6px}
-@keyframes r{to{transform:rotate(360deg)}}
+.metaarea{background:var(--paper);border-radius:12px;margin-top:6px;padding:8px 12px 10px calc(var(--figpad,118px) + 12px);font-size:11px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:5px}
+.src{font-family:ui-monospace,Menlo,monospace;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--soft)}
+.receipt{font-family:ui-monospace,Menlo,monospace;color:var(--soft);margin-bottom:4px}
+details summary{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);cursor:pointer;user-select:none}
+.trace{font:10.5px/1.7 ui-monospace,Menlo,monospace;color:var(--soft);margin-top:4px;overflow-x:auto}
+.trace b{color:var(--ink)}
+.panel.hidden,.metaarea.hidden{visibility:hidden}
+@media (prefers-reduced-motion: reduce){
+  #fig,#bubble{transition:none}
+  .walking .legL,.walking .legR,.walking .armL,.walking .armR,.walking .body{animation:none}
+}
 </style>
 </head>
 <body>
-<div class="head">
-  <span class="dot"><i></i></span>
-  <b>HIRE BILLY</b>
-  <span class="kind" id="kind">corpus-grounded</span>
+<div class="scene" id="scene">
+  <svg class="hlines" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 100 100">
+    <line x1="0" y1="60" x2="100" y2="60" stroke="var(--line)" stroke-width=".35"/>
+    <line x1="50" y1="60" x2="8" y2="100" stroke="var(--line)" stroke-width=".25"/>
+    <line x1="50" y1="60" x2="50" y2="100" stroke="var(--line)" stroke-width=".25"/>
+    <line x1="50" y1="60" x2="92" y2="100" stroke="var(--line)" stroke-width=".25"/>
+  </svg>
+  <div class="brand"><span class="dot"><i></i></span> HIRE BILLY</div>
+  <span class="kind" id="kind">live demo</span>
+  <div id="bubble"><div class="blede" id="blede"></div><div class="btext" id="btext"></div></div>
 </div>
-<div id="out">
-  <p class="note">An interrogable candidate. Ask about the weaknesses first; it is the good part.</p>
+<div id="fig" class="instant">
+  <svg viewBox="0 0 120 245" width="120" height="245">
+    <ellipse id="shadow" cx="60" cy="236" rx="34" ry="6"/>
+    <g class="body">
+      <g class="armL limb" style="transform-origin:60px 72px"><line x1="60" y1="72" x2="60" y2="116"/></g>
+      <g class="legL limb" style="transform-origin:60px 132px"><line x1="60" y1="132" x2="60" y2="182"/>
+        <g class="shinL limb" style="transform-origin:60px 182px"><line x1="60" y1="182" x2="60" y2="228"/></g></g>
+      <circle cx="60" cy="32" r="19"/>
+      <g class="face" id="face" style="opacity:0">
+        <circle cx="53" cy="28" r="2.4"/><circle cx="67" cy="28" r="2.4"/>
+        <path d="M52 38 q8 7 16 0" stroke="var(--stick)" fill="none"/>
+      </g>
+      <line x1="60" y1="51" x2="60" y2="132"/>
+      <g class="legR limb" style="transform-origin:60px 132px"><line x1="60" y1="132" x2="60" y2="182"/>
+        <g class="shinR limb" style="transform-origin:60px 182px"><line x1="60" y1="182" x2="60" y2="228"/></g></g>
+      <g class="armR limb" style="transform-origin:60px 72px"><line x1="60" y1="72" x2="60" y2="116"/></g>
+    </g>
+  </svg>
 </div>
-<div class="askrow">
-  <input id="q" placeholder="Interrogate the candidate…" maxlength="2000">
-  <button id="go">Ask</button>
+<div class="panel hidden" id="panel">
+  <div class="askrow">
+    <input id="q" placeholder="Ask me anything…" maxlength="2000">
+    <button id="go">Ask</button>
+  </div>
+  <div class="chips" id="chips"></div>
 </div>
-<div class="chips" id="chips"></div>
+<div class="metaarea hidden" id="metaarea"></div>
 
 <script>
 (function(){
 "use strict";
 var $=function(id){return document.getElementById(id)};
-var pending={}, seq=0, bridged=false;
+var pending={}, seq=0, bridged=false, typing=null;
+var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+var GREETING_LEDE = "Hey, I'm Billy. Well, a working model of him.";
+var GREETING = "This is my application to work with you at Rocket Money. Ask me questions right here, or better, let's talk over the phone or Zoom. I'm obviously not real, but I figured the strongest cover letter for this role was a working demo of the exact experience you're hiring for: a grounded assistant that can't flatter, shows its work, and knows when to hand off to a human.";
 
 var CHIPS=[
-  "What are his weaknesses?",
-  "Why should we not hire him?",
-  "What did he actually build?",
-  "How does he keep AI honest with money?"
+  "What are your biggest weaknesses?",
+  "Why should we not hire you?",
+  "What have you actually built?",
+  "How do you keep AI honest with money?"
 ];
 
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function fmt(s){return esc(s).replace(/~~(.+?)~~/g,"<del>$1</del>")}
 
-function render(r){
-  if(!r) return;
+/* ---------- choreography ---------- */
+var fig=$("fig"), scene=$("scene"), panel=$("panel");
+var hostDims=null; /* containerDimensions from ui/initialize, when the host shares them */
+function survey(){
+  var W = (hostDims&&hostDims.width) || document.documentElement.clientWidth || 640;
+  var sceneH = scene.offsetHeight;
+  var phone = (screen.width<=500) || W<420;
+  return { W:W, sceneH:sceneH, phone:phone,
+           figScale: phone?0.82:1,
+           walkMs: phone?2200:3000 };
+}
+function layout(){
+  var v = survey();
+  var s = v.figScale, hip = 132*s, standTop = 245*s;
+  document.body.style.setProperty("--figpad", Math.round(104*s+14)+"px");
+  return {
+    v: v,
+    start: {x: v.W*0.72, y: v.sceneH*0.18 - 20, s: 0.22},
+    mid:   {x: 16,       y: v.sceneH - standTop + 26*s, s: s},
+    /* seated: hips (svg y=132) land on the scene's bottom edge, shins hang over the panel */
+    seat:  {x: 16,       y: v.sceneH - hip, s: s}
+  };
+}
+function place(p){ fig.style.transform = "translate("+p.x+"px,"+p.y+"px) scale("+p.s+")"; }
+
+function enter(){
+  var L = layout();
+  if(REDUCED){
+    fig.classList.add("instant","seated");
+    place(L.seat); $("face").style.opacity=1;
+    showBubble(GREETING_LEDE, GREETING, true);
+    revealPanel();
+    return;
+  }
+  fig.classList.add("instant"); place(L.start);
+  fig.getBoundingClientRect(); /* flush */
+  fig.classList.remove("instant");
+  fig.classList.add("walking");
+  fig.style.transitionDuration = L.v.walkMs+"ms";
+  requestAnimationFrame(function(){ place(L.mid); });
+  fig.addEventListener("transitionend", function step(){
+    fig.removeEventListener("transitionend", step);
+    fig.classList.remove("walking");
+    fig.style.transitionDuration="";
+    fig.classList.add("sitfall","seated");
+    place(L.seat);
+    setTimeout(function(){
+      $("face").style.opacity=1;
+      fig.classList.add("waving");
+      setTimeout(function(){fig.classList.remove("waving")},1100);
+      showBubble(GREETING_LEDE, GREETING, false, revealPanel);
+    }, 500);
+  });
+}
+function revealPanel(){
+  panel.classList.remove("hidden");
+  sizeChanged();
+}
+window.addEventListener("resize", function(){
+  if(fig.classList.contains("seated")){ fig.classList.add("instant"); place(layout().seat); }
+});
+
+/* ---------- speech ---------- */
+function showBubble(lede, text, instant, done){
+  var b=$("bubble");
+  b.classList.add("show");
+  $("blede").textContent = lede;
+  var bt=$("btext");
+  if(typing){clearInterval(typing);typing=null}
+  var plain = text.replace(/~~(.+?)~~/g,"$1");
+  if(instant || REDUCED){
+    bt.innerHTML = fmt(text);
+    if(done) done();
+    return;
+  }
+  var i=0;
+  bt.innerHTML='<span id="tw"></span><span class="cursor"></span>';
+  var tw=document.getElementById("tw");
+  typing=setInterval(function(){
+    i+=2;
+    tw.textContent=plain.slice(0,i);
+    b.scrollTop=b.scrollHeight;
+    if(i>=plain.length){
+      clearInterval(typing);typing=null;
+      bt.innerHTML=fmt(text); /* strikes land after the words are said */
+      if(done) done();
+    }
+  },16);
+  b.onclick=function(){
+    if(typing){clearInterval(typing);typing=null;bt.innerHTML=fmt(text);if(done)done();}
+  };
+}
+function speakAnswer(r){
   $("kind").textContent = r.kind || "answer";
-  var h = '<div class="lede">'+fmt(r.lede||"")+'</div>';
-  h += '<div class="rest">'+fmt(r.rest||"")+'</div>';
+  showBubble(r.lede||"", r.rest||"", false, function(){ renderMeta(r); });
+}
+function renderMeta(r){
+  var m=$("metaarea");
+  var h="";
   var srcs=(r.sources||[]).map(function(s){return '<span class="src">§'+esc(s)+'</span>'}).join("");
   var flags=(r.flags||[]).map(function(f){return '<span class="src">⚑ '+esc(f)+'</span>'}).join("");
-  if(srcs||flags) h += '<div class="meta">'+srcs+flags+'</div>';
-  if(r.receipt) h += '<div class="receipt">'+esc(r.receipt)+'</div>';
-  if(r.trace && r.trace.length){
-    h += '<details><summary>trace · '+r.trace.length+' stages, measured</summary><div class="trace">';
-    h += r.trace.map(function(t,i){
-      return String(i+1).padStart(2,"0")+" <b>"+esc(t.stage)+"</b> "+esc(String(t.ms))+" ms · "+esc(t.note);
-    }).join("<br>");
-    h += '</div></details>';
+  if(srcs||flags) h+='<div class="meta">'+srcs+flags+'</div>';
+  if(r.receipt) h+='<div class="receipt">'+esc(r.receipt)+'</div>';
+  if(r.trace&&r.trace.length){
+    h+='<details><summary>trace · '+r.trace.length+' stages, measured</summary><div class="trace">';
+    h+=r.trace.map(function(t,i){return String(i+1).padStart(2,"0")+" <b>"+esc(t.stage)+"</b> "+esc(String(t.ms))+" ms · "+esc(t.note)}).join("<br>");
+    h+='</div></details>';
   }
-  $("out").innerHTML = h;
+  m.innerHTML=h;
+  m.classList.remove("hidden");
   sizeChanged();
 }
-function renderBusy(q){
-  $("out").innerHTML='<p class="note"><span class="spin"></span>Interrogating: '+esc(q)+'</p>';
-  sizeChanged();
+function speakBusy(q){
+  $("blede").textContent="Good question.";
+  $("btext").innerHTML='Let me run that through the machinery&hellip; <span class="cursor"></span>';
 }
-function renderErr(m){
-  $("out").innerHTML='<p class="note">'+esc(m)+' Degrading loudly, never silently.</p>';
-  sizeChanged();
+function speakErr(m){
+  showBubble("Hm.", m+" Degrading loudly, never silently.", true);
 }
 
-/* result normalisation: structuredContent when present, else raw text */
+/* ---------- result plumbing ---------- */
 function normalize(out){
   if(!out) return null;
   if(out.structuredContent) return out.structuredContent;
-  if(out.result && out.result.structuredContent) return out.result.structuredContent;
+  if(out.result&&out.result.structuredContent) return out.result.structuredContent;
   var c=(out.content||(out.result&&out.result.content)||[])[0];
   if(c&&c.text) return {kind:"text",lede:"",rest:c.text,sources:[],flags:[],trace:[]};
   return null;
 }
 
-/* --- MCP Apps bridge: JSON-RPC over postMessage (SEP-1865) --- */
+/* ---------- MCP Apps bridge (SEP-1865) ---------- */
 function post(m){ try{ window.parent.postMessage(m,"*"); }catch(e){} }
 function rpc(method,params,timeout){
   return new Promise(function(res,rej){
-    var id=++seq;
-    pending[id]={res:res,rej:rej};
+    var id=++seq; pending[id]={res:res,rej:rej};
     post({jsonrpc:"2.0",id:id,method:method,params:params||{}});
     if(timeout) setTimeout(function(){ if(pending[id]){delete pending[id];rej(new Error("timeout"))} },timeout);
   });
 }
 function sizeChanged(){
   post({jsonrpc:"2.0",method:"ui/notifications/size-changed",
-        params:{height:document.documentElement.scrollHeight+8}});
+        params:{height:document.body.scrollHeight+4}});
 }
 function applyCtx(ctx){
   if(!ctx) return;
@@ -143,48 +318,39 @@ function applyCtx(ctx){
   if(t) document.documentElement.setAttribute("data-theme",/dark/i.test(String(t))?"dark":"light");
 }
 window.addEventListener("message",function(ev){
-  var m=ev.data;
-  if(!m||m.jsonrpc!=="2.0") return;
+  var m=ev.data; if(!m||m.jsonrpc!=="2.0") return;
   if(m.id!=null&&pending[m.id]&&(m.result!==undefined||m.error)){
     var p=pending[m.id]; delete pending[m.id];
     return m.error?p.rej(new Error(m.error.message||"host error")):p.res(m.result);
   }
   if(m.method==="ui/notifications/tool-input"&&m.params&&m.params.arguments){
-    var q=m.params.arguments.question; if(q){$("q").value=q;renderBusy(q);}
-    return;
+    var q=m.params.arguments.question; if(q){$("q").value=q;speakBusy(q);} return;
   }
   if(m.method==="ui/notifications/tool-result"){
-    var r=normalize(m.params); if(r) render(r);
-    return;
+    var r=normalize(m.params); if(r) speakAnswer(r); return;
   }
   if(m.method==="ui/notifications/host-context-changed"){ applyCtx(m.params); return; }
-  if(m.method==="ui/resource-teardown"&&m.id!=null){ post({jsonrpc:"2.0",id:m.id,result:{}}); return; }
   if(m.id!=null&&m.method){ post({jsonrpc:"2.0",id:m.id,result:{}}); }
 });
 
-/* --- ChatGPT legacy runtime (window.openai) --- */
+/* ChatGPT legacy runtime */
 function openaiSeed(){
   if(window.openai&&window.openai.toolOutput){
     var r=normalize(window.openai.toolOutput)||window.openai.toolOutput;
-    if(r&&(r.lede||r.rest)) render(r);
+    if(r&&(r.lede||r.rest)) speakAnswer(r);
   }
 }
 window.addEventListener("openai:set_globals",openaiSeed);
 
 function ask(q){
   q=String(q||"").trim(); if(!q) return;
-  renderBusy(q); $("go").disabled=true;
-  var done=function(out){ $("go").disabled=false; var r=normalize(out); if(r) render(r); else renderErr("The host returned nothing renderable."); };
-  var fail=function(e){ $("go").disabled=false; renderErr("Could not reach the pipeline ("+e.message+")."); };
-  if(window.openai&&window.openai.callTool){
-    window.openai.callTool("ask_billy",{question:q}).then(done,fail);
-  }else if(bridged){
-    rpc("tools/call",{name:"ask_billy",arguments:{question:q}},60000).then(done,fail);
-  }else{
-    renderErr("No host bridge found. Open hirebilly in a browser instead.");
-  }
+  speakBusy(q); $("go").disabled=true;
+  var done=function(out){ $("go").disabled=false; var r=normalize(out); if(r) speakAnswer(r); else speakErr("The host returned nothing I can say."); };
+  var fail=function(e){ $("go").disabled=false; speakErr("I could not reach the pipeline ("+e.message+")."); };
+  if(window.openai&&window.openai.callTool){ window.openai.callTool("ask_billy",{question:q}).then(done,fail); }
+  else if(bridged){ rpc("tools/call",{name:"ask_billy",arguments:{question:q}},60000).then(done,fail); }
+  else{ speakErr("No host bridge found here."); }
 }
-
 $("go").addEventListener("click",function(){ask($("q").value)});
 $("q").addEventListener("keydown",function(e){if(e.key==="Enter")ask($("q").value)});
 CHIPS.forEach(function(c){
@@ -194,18 +360,18 @@ CHIPS.forEach(function(c){
   $("chips").appendChild(b);
 });
 
-/* handshake: standard bridge first, ChatGPT runtime as fallback */
+/* boot */
 if(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches){
   document.documentElement.setAttribute("data-theme","dark");
 }
-rpc("ui/initialize",{appInfo:{name:"hire-billy-widget",version:"1.0"}},1800)
-  .then(function(r){
-    bridged=true;
-    applyCtx(r&&r.hostContext);
-    post({jsonrpc:"2.0",method:"ui/notifications/initialized"});
-    sizeChanged();
-  })
-  .catch(function(){ openaiSeed(); sizeChanged(); });
+rpc("ui/initialize",{appInfo:{name:"hire-billy-widget",version:"2.0"}},1800)
+  .then(function(r){ bridged=true; applyCtx(r&&r.hostContext);
+    if(r&&r.hostContext&&r.hostContext.containerDimensions) hostDims=r.hostContext.containerDimensions;
+    post({jsonrpc:"2.0",method:"ui/notifications/initialized"}); })
+  .catch(function(){ openaiSeed(); })
+  .finally?function(){}:null;
+setTimeout(enter, 250);
+setTimeout(sizeChanged, 400);
 })();
 </script>
 </body>
