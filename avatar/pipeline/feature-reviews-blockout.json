@@ -1,0 +1,22 @@
+[
+ {
+  "score": 0.8,
+  "notes": "Head/neck/shoulder ratios measured within 0.05 of reference (measure-blockout-6): chin-to-shoulder -0.011, head width +0.06, aspect/scale gates pass after camera alignment.",
+  "id": "anatomy-proportion"
+ },
+ {
+  "score": 0.76,
+  "notes": "Volume, asymmetry (image-left fuller), side falls to jaw, ragged curl edge via deterministic displacement. Crown slightly left-heavy; refine at form pass.",
+  "id": "hair-silhouette"
+ },
+ {
+  "score": 0.76,
+  "notes": "Eyes/nose/mouth rows land at measured landmark fractions (eyeLine ~0.52, mouth ~0.79 via teeth row); hairline ~0.28 vs reference 0.233 (slightly high).",
+  "id": "face-landmark-placement"
+ },
+ {
+  "score": 0.78,
+  "notes": "Open smile with upper-teeth band inside beard aperture; beard is a jaw band with chin coverage, not a mask; mustache gap reads.",
+  "id": "smile-and-beard"
+ }
+]

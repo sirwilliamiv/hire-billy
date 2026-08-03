@@ -79,15 +79,15 @@ function createBillyPortraitBustModel(options = {}) {
   }
   const shirtNode = pivot("shirt", root, [0, -0.9, 0]);
   const shirtProfile = [
-    [-0.95, -0.45],
-    [-0.93, 0.05],
-    [-0.72, 0.28],
-    [-0.35, 0.42],
-    [-0.12, 0.45],
-    [0.12, 0.45],
-    [0.35, 0.42],
-    [0.72, 0.28],
-    [0.93, 0.05],
+    [-1, -0.45],
+    [-0.9, -0.1],
+    [-0.64, 0.17],
+    [-0.31, 0.38],
+    [-0.11, 0.43],
+    [0.11, 0.43],
+    [0.31, 0.38],
+    [0.6, 0.15],
+    [0.86, -0.13],
     [0.95, -0.45]
   ];
   const shirtGeo = new THREE.ExtrudeGeometry(extrudeShape(shirtProfile), {
@@ -251,29 +251,49 @@ function createBillyPortraitBustModel(options = {}) {
   const hairNode = pivot("hair", headNode, [0, 0.1, -0.02]);
   const rand = mulberry32(45329);
   const clumpGeoBase = new THREE.SphereGeometry(1, 18, 14);
+  let clumpSeed = 7;
+  function curlClumpGeo() {
+    const g = clumpGeoBase.clone();
+    const seed = clumpSeed += 13;
+    const pos = g.attributes.position;
+    const v = new THREE.Vector3();
+    for (let i = 0; i < pos.count; i += 1) {
+      v.fromBufferAttribute(pos, i);
+      const n = Math.sin(v.x * 4.1 + seed) * Math.cos(v.y * 3.7 + seed * 1.7) + Math.sin(v.z * 4.6 + seed * 2.3) * Math.cos(v.x * 3.2 - seed);
+      const amp = 1 + n * 0.13;
+      pos.setXYZ(i, v.x * amp, v.y * amp, v.z * amp);
+    }
+    g.computeVertexNormals();
+    return g;
+  }
   const clumpSpecs = [];
   const RING = [
     // [azimuth deg from +z front, elevation deg from equator, base scale]
     // crown sweep (big, voluminous)
-    [0, 68, 1.5],
-    [35, 62, 1.35],
+    [0, 68, 1.3],
+    [35, 62, 1.25],
     [-35, 62, 1.3],
-    [75, 60, 1.3],
-    [-75, 58, 1.2],
-    [120, 58, 1.3],
-    [-120, 58, 1.25],
+    [75, 60, 1.15],
+    [-75, 58, 1.25],
+    [120, 58, 1.25],
+    [-120, 58, 1.3],
     [165, 62, 1.3],
     // upper sides
-    [55, 38, 1.25],
-    [-55, 36, 1.05],
-    // temples down to ear level: +x (anatomical left) fuller per reference
-    [80, 16, 1.45],
-    [-80, 14, 1.1],
-    [105, 10, 1.2],
-    [-105, 8, 1],
+    [55, 38, 1.05],
+    [-55, 36, 1.25],
+    // temples down to ear level: -x (image-left, subject's right) fuller per reference
+    [80, 16, 1.1],
+    [-80, 14, 1.45],
+    [105, 10, 1],
+    [-105, 8, 1.2],
     // behind ears / nape sides
-    [140, 18, 1.15],
-    [-140, 16, 1.05]
+    [140, 18, 1.05],
+    [-140, 16, 1.15],
+    // long side falls: reference hair drops beside the face to jaw level
+    [82, -4, 1.1],
+    [-82, -6, 1.3],
+    [95, -18, 1],
+    [-95, -20, 1.15]
   ];
   for (const [azDeg, elDeg, s] of RING) {
     clumpSpecs.push({ theta: THREE.MathUtils.degToRad(azDeg), phi: THREE.MathUtils.degToRad(elDeg), scale: s });
@@ -285,7 +305,7 @@ function createBillyPortraitBustModel(options = {}) {
     const dirY = Math.sin(c.phi);
     const dirZ = Math.cos(c.theta) * Math.cos(c.phi);
     const px = dirX * headRx * 0.98;
-    const py = dirY * headRy * 0.94 + 0.02;
+    const py = dirY * headRy * 0.88 + 0.02;
     const pz = dirZ * headRz * 0.9;
     const cNode = pivot(`hair-clump-${i}`, hairNode, [px, py, pz], [
       (rand() - 0.5) * 30,
@@ -293,7 +313,7 @@ function createBillyPortraitBustModel(options = {}) {
       (rand() - 0.5) * 30
     ]);
     const s = c.scale * (0.9 + rand() * 0.25);
-    addMesh(`hair-clump-${i}`, cNode, clumpGeoBase.clone(), "hair", [
+    addMesh(`hair-clump-${i}`, cNode, curlClumpGeo(), "hair", [
       0.19 * s * (1 + jitter()),
       0.15 * s * (1 + jitter()),
       0.17 * s * (1 + jitter())
@@ -309,7 +329,7 @@ function createBillyPortraitBustModel(options = {}) {
       0,
       (rand() - 0.5) * 40
     ]);
-    addMesh(`hair-front-${i}`, fNode, clumpGeoBase.clone(), "hair", [0.11, 0.1, 0.1]);
+    addMesh(`hair-front-${i}`, fNode, curlClumpGeo(), "hair", [0.11, 0.1, 0.1]);
   }
   for (let i = 0; i < 4; i += 1) {
     const x = -0.18 + i * 0.12 + (rand() - 0.5) * 0.04;
@@ -318,10 +338,10 @@ function createBillyPortraitBustModel(options = {}) {
       0,
       (rand() - 0.5) * 50
     ]);
-    addMesh(`hair-wisp-${i}`, wNode, clumpGeoBase.clone(), "hair", [0.045, 0.035, 0.04]);
+    addMesh(`hair-wisp-${i}`, wNode, curlClumpGeo(), "hair", [0.045, 0.035, 0.04]);
   }
   const hairBackNode = pivot("hair-back", headNode, [0, 0.14, -0.28]);
-  addMesh("hair-back", hairBackNode, clumpGeoBase.clone(), "hair", [0.36, 0.34, 0.22]);
+  addMesh("hair-back", hairBackNode, curlClumpGeo(), "hair", [0.36, 0.34, 0.22]);
   const runtime = { nodes, meshes, sockets, colliders, destructionGroups, skinTargets };
   root.userData.sculptRuntime = runtime;
   root.userData.applySkin = (skin) => applyBillySkin(root, skin);

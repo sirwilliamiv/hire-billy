@@ -21,10 +21,12 @@
 import * as THREE from 'three';
 import {
   createBillyPortraitBustModel,
+  applyBillySkin,
   createBillyPortraitBustLookDevLights,
   createBillyPortraitBustEnvironment,
   configureBillyPortraitBustRenderer,
 } from './createBillyBustModel.js';
+import { createMatrixSkin, createLikenessSkin, createClaySkin } from './skins.js';
 
 const params = new URLSearchParams(location.search);
 const yaw = parseFloat(params.get('yaw') ?? '0') * Math.PI / 180;
@@ -47,6 +49,29 @@ const model = createBillyPortraitBustModel();
 scene.add(model);
 scene.add(createBillyPortraitBustLookDevLights());
 
+if (params.get('flat') === '1') {
+  // map-stripped evidence mode: unlit flat colors, geometry only
+  model.traverse((o) => {
+    if (o.isMesh) o.material = new THREE.MeshBasicMaterial({ color: o.material.color });
+  });
+}
+
+let activeSkin = null;
+const skinName = params.get('skin');
+if (skinName === 'matrix') {
+  activeSkin = createMatrixSkin();
+  applyBillySkin(model, activeSkin);
+  scene.background = new THREE.Color(0x04080a);
+} else if (skinName === 'likeness') {
+  activeSkin = createLikenessSkin('./likeness-albedo.png', () => {
+    renderer.render(scene, camera);
+    window.__SKIN_READY = true;
+  });
+  applyBillySkin(model, activeSkin);
+} else if (skinName === 'clay') {
+  applyBillySkin(model, createClaySkin());
+}
+
 const camera = new THREE.PerspectiveCamera(fov, innerWidth / innerHeight, 0.01, 100);
 const target = new THREE.Vector3(0, targetY, 0);
 camera.position.set(
@@ -59,6 +84,15 @@ camera.lookAt(target);
 renderer.render(scene, camera);
 window.__READY = true;
 window.__RUNTIME = model.userData.sculptRuntime;
+
+if (activeSkin && activeSkin.update) {
+  const t0 = performance.now();
+  (function loop() {
+    activeSkin.update((performance.now() - t0) / 1000);
+    renderer.render(scene, camera);
+    requestAnimationFrame(loop);
+  })();
+}
 </script>
 </body>
 </html>

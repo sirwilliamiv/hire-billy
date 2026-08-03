@@ -1,0 +1,307 @@
+{
+ "model": "billy-bust",
+ "parts": [
+  {
+   "name": "shirt",
+   "kind": "part",
+   "module": "shirt",
+   "triangles": 236
+  },
+  {
+   "name": "collar",
+   "kind": "part",
+   "module": "collar",
+   "triangles": 480
+  },
+  {
+   "name": "placket",
+   "kind": "part",
+   "module": "placket",
+   "triangles": 12
+  },
+  {
+   "name": "button-0",
+   "kind": "part",
+   "module": "button-0",
+   "triangles": 80
+  },
+  {
+   "name": "button-1",
+   "kind": "part",
+   "module": "button-1",
+   "triangles": 80
+  },
+  {
+   "name": "button-2",
+   "kind": "part",
+   "module": "button-2",
+   "triangles": 80
+  },
+  {
+   "name": "neck",
+   "kind": "part",
+   "module": "neck",
+   "triangles": 280
+  },
+  {
+   "name": "head",
+   "kind": "part",
+   "module": "head",
+   "triangles": 3360
+  },
+  {
+   "name": "eye-l",
+   "kind": "part",
+   "module": "eye-l",
+   "triangles": 816
+  },
+  {
+   "name": "eye-r",
+   "kind": "part",
+   "module": "eye-r",
+   "triangles": 816
+  },
+  {
+   "name": "nose",
+   "kind": "part",
+   "module": "nose",
+   "triangles": 108
+  },
+  {
+   "name": "mouth",
+   "kind": "part",
+   "module": "mouth",
+   "triangles": 124
+  },
+  {
+   "name": "teeth-row",
+   "kind": "part",
+   "module": "teeth-row",
+   "triangles": 68
+  },
+  {
+   "name": "ear-l",
+   "kind": "part",
+   "module": "ear-l",
+   "triangles": 352
+  },
+  {
+   "name": "ear-r",
+   "kind": "part",
+   "module": "ear-r",
+   "triangles": 352
+  },
+  {
+   "name": "beard",
+   "kind": "part",
+   "module": "beard",
+   "triangles": 1296
+  },
+  {
+   "name": "hair-back",
+   "kind": "part",
+   "module": "hair-back",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-0",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-1",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-2",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-3",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-4",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-5",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-6",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-7",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-8",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-9",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-10",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-11",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-12",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-13",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-14",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-15",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-16",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-17",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-18",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-clump-19",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-front-0",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-front-1",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-front-2",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-front-3",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-front-4",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-front-5",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-front-6",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-wisp-0",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-wisp-1",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-wisp-2",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair-wisp-3",
+   "kind": "part",
+   "module": "hair",
+   "triangles": 468
+  },
+  {
+   "name": "hair",
+   "kind": "group",
+   "module": "hair",
+   "triangles": 14508
+  },
+  {
+   "name": "root",
+   "kind": "group",
+   "module": "root",
+   "triangles": 0
+  }
+ ],
+ "unnamedMeshes": 0,
+ "sockets": 14
+}
