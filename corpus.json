@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "name": "Billy",
+    "model": "hire-billy",
+    "version": "1.4",
+    "updated": "July 2026",
+    "contact": "billy@proedu.me",
+    "params": "1 human",
+    "context": "long",
+    "license": "open to work"
+  },
+  "sections": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "body": "An engineering leader who builds AI products the way this page behaves: one model call chooses the words, deterministic code decides what is true, and nothing the corpus cannot back is allowed to ship. Hire Billy is that claim in queryable form: a cover letter with observability."
+    },
+    {
+      "id": "how-i-work",
+      "title": "How he works",
+      "body": "AI as an execution layer, not a conversation layer. He writes the eval before the feature, keeps eight of nine stages deterministic, and reaches for a model only where language is the actual problem. The unglamorous parts (rate limits, validation, grounding, refusal paths) get built first, because they are the product. He pairs with frontier models daily and treats them the way this product treats its one model call: enormous leverage, zero authority. This artifact was designed and shipped in a single working session, art-directed by a human, engineered in dialogue with Claude, which is itself the most honest answer to how he uses AI."
+    },
+    {
+      "id": "strengths",
+      "title": "Reported strengths",
+      "body": "Ships the demo himself and still runs the rituals: 1:1s, reviews, growth plans. Turns ambiguous model capability into dependable product behavior. Makes quality legible: receipts, traces and struck claims instead of vibes. Moves with urgency without converting it into panic."
+    },
+    {
+      "id": "limitations",
+      "title": "Known limitations",
+      "body": "Prototypes past the point where delegation should have started, a hands-on bias that intensifies under pressure. Impatient with process whose function is distributing blame rather than shipping. Will polish the system before the story, which is why he pairs best with a strong product counterpart. Wrong hire for: consensus-first cultures, pure research bets, or roles where the demo is never touched again."
+    },
+    {
+      "id": "evidence",
+      "title": "Evidence",
+      "body": "This artifact: a single HTML file, no framework, no build step, plus an MCP server and a shared pipeline behind it. A rack-focus camera, a liquid-glass surface, a nine-stage pipeline with honest failure modes, including the one where an unmapped question admits the live socket is not wired yet instead of improvising an answer. The corpus you are reading is version-controlled with the code."
+    },
+    {
+      "id": "scope",
+      "title": "Scope and the live socket",
+      "body": "Hire Billy answers questions about the candidate, from this corpus only. Known questions route to exact strings; unmapped ones degrade loudly until the live model is wired (ANTHROPIC_API_KEY for the server, CONFIG.apiEndpoint for the page). It will not speculate, and it cannot flatter: superlatives without a corpus span are struck where you can see them."
+    }
+  ]
+}
