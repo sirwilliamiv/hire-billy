@@ -41,8 +41,8 @@ html,body{background:transparent;overflow:hidden;width:100vw;height:100vh;
 .walking #pLegF{animation:swingF .62s ease-in-out infinite alternate}
 .walking #pLegB{animation:swingB .62s ease-in-out infinite alternate}
 .walking #pBody{animation:swayB .62s ease-in-out infinite alternate;transform-origin:47px 135px}
-@keyframes swingF{from{transform:rotate(0)}to{transform:rotate(-36deg)}}
-@keyframes swingB{from{transform:rotate(0)}to{transform:rotate(36deg)}}
+@keyframes swingF{from{transform:rotate(-6deg)}to{transform:rotate(-26deg)}}
+@keyframes swingB{from{transform:rotate(6deg)}to{transform:rotate(26deg)}}
 @keyframes swayB{from{transform:rotate(1.2deg)}to{transform:rotate(-1.2deg)}}
 .seated #skStand,.seated #skWalk{display:none}
 .seated #skSit{display:block}
@@ -333,12 +333,8 @@ fig.addEventListener("transitionend", function step(ev){
   fig.classList.remove("walking");
   stopWalkCycle();
   fig.style.transitionDuration="";
-  setPose("pointFront");
-  setTimeout(function(){
-    clearPose();
-    fig.classList.add("sitfall","seated");
-    place(sit);
-  }, 1200);
+  fig.classList.add("sitfall","seated");
+  place(sit);
   closeDoor();
   setTimeout(function(){
     fig.classList.add("waving");
