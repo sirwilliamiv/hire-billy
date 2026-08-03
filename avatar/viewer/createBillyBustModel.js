@@ -77,18 +77,20 @@ function createBillyPortraitBustModel(options = {}) {
     node.add(s);
     sockets[id] = s;
   }
-  const shirtNode = pivot("shirt", root, [0, -0.85, 0]);
+  const shirtNode = pivot("shirt", root, [0, -0.76, 0]);
   const shirtProfile = [
-    [-1, -0.45],
-    [-0.9, -0.1],
-    [-0.64, 0.17],
-    [-0.31, 0.38],
+    [-0.88, -0.85],
+    [-0.88, -0.35],
+    [-0.82, -0.08],
+    [-0.58, 0.19],
+    [-0.28, 0.38],
     [-0.11, 0.43],
     [0.11, 0.43],
-    [0.31, 0.38],
-    [0.6, 0.15],
-    [0.86, -0.13],
-    [0.95, -0.45]
+    [0.28, 0.38],
+    [0.56, 0.17],
+    [0.8, -0.1],
+    [0.85, -0.38],
+    [0.85, -0.85]
   ];
   const shirtGeo = new THREE.ExtrudeGeometry(extrudeShape(shirtProfile), {
     depth: 0.55,
@@ -103,8 +105,8 @@ function createBillyPortraitBustModel(options = {}) {
   socket("socket-neck", shirtNode, [0, 0.42, 0.02]);
   socket("socket-collar", shirtNode, [0, 0.38, 0.1]);
   socket("socket-placket", shirtNode, [0, -0.05, 0.29]);
-  const collarNode = pivot("collar", shirtNode, [0, 0.38, 0.06]);
-  const collarGeo = new THREE.TorusGeometry(0.24, 0.055, 10, 24, Math.PI * 1.55);
+  const collarNode = pivot("collar", shirtNode, [0, 0.44, 0.08]);
+  const collarGeo = new THREE.TorusGeometry(0.17, 0.06, 10, 24, Math.PI * 1.5);
   collarGeo.rotateX(Math.PI / 2);
   collarGeo.rotateY(-Math.PI * 0.78 + Math.PI);
   addMesh("collar", collarNode, collarGeo, "shirt", [1, 1.6, 1]);
@@ -116,11 +118,11 @@ function createBillyPortraitBustModel(options = {}) {
     bGeo.rotateX(Math.PI / 2);
     addMesh(`button-${i}`, bNode, bGeo, "shirt");
   }
-  const neckNode = pivot("neck", shirtNode, [0, 0.46, 0.02]);
-  const neckGeo = new THREE.CylinderGeometry(0.15, 0.19, 0.42, 28, 4);
+  const neckNode = pivot("neck", shirtNode, [0, 0.4, 0.02]);
+  const neckGeo = new THREE.CylinderGeometry(0.12, 0.16, 0.3, 28, 4);
   addMesh("neck", neckNode, neckGeo, "skin");
   socket("socket-head", neckNode, [0, 0.14, 0]);
-  const headNode = pivot("head", neckNode, [0, 0.55, 0.02]);
+  const headNode = pivot("head", neckNode, [0, 0.52, 0.02]);
   const headGeo = new THREE.SphereGeometry(0.5, 48, 36);
   {
     const pos = headGeo.attributes.position;
@@ -137,7 +139,7 @@ function createBillyPortraitBustModel(options = {}) {
     }
     headGeo.computeVertexNormals();
   }
-  addMesh("head", headNode, headGeo, "skin", [0.72, 0.94, 0.8].map((x) => x / 1));
+  addMesh("head", headNode, headGeo, "skin", [0.76, 0.94, 0.8]);
   socket("socket-eye-l", headNode, [0.115, 0.04, 0.31]);
   socket("socket-eye-r", headNode, [-0.115, 0.04, 0.31]);
   socket("socket-nose", headNode, [0, -0.06, 0.38]);
@@ -151,7 +153,7 @@ function createBillyPortraitBustModel(options = {}) {
     const eNode = pivot(`eye-${side}`, headNode, [x, 0.04, 0.325]);
     addMesh(`eye-${side}`, eNode, new THREE.SphereGeometry(0.04, 24, 18), "eye");
   }
-  const noseNode = pivot("nose", headNode, [0, -0.045, 0.345]);
+  const noseNode = pivot("nose", headNode, [0, -0.045, 0.33]);
   const noseProfile = [
     [0, 0.16],
     [0.028, 0.1],
@@ -182,7 +184,7 @@ function createBillyPortraitBustModel(options = {}) {
     }
     noseGeo.computeVertexNormals();
   }
-  addMesh("nose", noseNode, noseGeo, "skin");
+  addMesh("nose", noseNode, noseGeo, "skin", [1, 1, 0.65]);
   const mouthNode = pivot("mouth", headNode, [0, -0.3, 0.27]);
   const mouthProfile = [
     [-0.17, 0],
@@ -247,7 +249,7 @@ function createBillyPortraitBustModel(options = {}) {
     }
     beardGeo.computeVertexNormals();
   }
-  addMesh("beard", beardNode, beardGeo, "beard", [0.96, 1.06, 0.97]);
+  addMesh("beard", beardNode, beardGeo, "beard", [0.945, 1.04, 0.94]);
   const hairNode = pivot("hair", headNode, [0, 0.1, -0.02]);
   const rand = mulberry32(45329);
   const clumpGeoBase = new THREE.SphereGeometry(1, 18, 14);

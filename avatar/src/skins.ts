@@ -31,11 +31,13 @@ export function applyLikenessUVs(root: THREE.Object3D): void {
   const bbox = new THREE.Box3().setFromObject(root);
   const tEye = (ROWS.eye / 512 - REF.v0) / (REF.v1 - REF.v0);
   const tChin = (ROWS.chin / 512 - REF.v0) / (REF.v1 - REF.v0);
+  // bottom anchor is FIXED at the reference-frame bottom (not the model bbox) so a
+  // torso that extends below the photo crop keeps real cloth texture instead of streaks
   const anchors = [
     { t: 0, y: bbox.max.y },
     { t: tEye, y: ANCHOR_Y.eye },
     { t: tChin, y: ANCHOR_Y.chin },
-    { t: 1, y: bbox.min.y },
+    { t: 1, y: -0.82 },  // photo bottom row at TRUE scale (139px below chin); below = clamp
   ];
   const v = new THREE.Vector3();
   const skinTargets: Record<string, string> =
@@ -62,13 +64,24 @@ export function applyLikenessUVs(root: THREE.Object3D): void {
       }
       if (v.y > anchors[0].y) tFromTop = 0;
       let photoV = REF.v0 + tFromTop * (REF.v1 - REF.v0); // y-down in photo
-      const photoU = REF.u0 + nx * (REF.u1 - REF.u0);
+      let photoU = REF.u0 + nx * (REF.u1 - REF.u0);
       if (isShirt) {
         // the model's shoulders sit higher/wider than the photo's sloped shoulder
         // line — clamp samples below the photo's shoulder boundary so background
         // white never lands on cloth. Boundary ~row 398 center, rising ~row 470 at edges.
         const boundary = (400 + 78 * Math.pow((photoU - 0.5) / 0.41, 2)) / 512;
         if (photoV < boundary) photoV = Math.min(boundary + 0.015, REF.v1);
+      }
+      // the reference is a circular crop — samples outside the circle are blank
+      // background. Pull them radially back inside so cloth stays cloth.
+      {
+        const dx = photoU - 0.5, dy = photoV - 0.5;
+        const r = Math.hypot(dx, dy), rMax = 0.47;
+        if (r > rMax) {
+          const s = rMax / r;
+          photoU = 0.5 + dx * s;
+          photoV = 0.5 + dy * s;
+        }
       }
       uv[i * 2] = photoU;
       uv[i * 2 + 1] = 1 - photoV; // -> uv y-up

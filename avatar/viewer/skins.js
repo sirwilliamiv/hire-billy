@@ -11,7 +11,8 @@ function applyLikenessUVs(root) {
     { t: 0, y: bbox.max.y },
     { t: tEye, y: ANCHOR_Y.eye },
     { t: tChin, y: ANCHOR_Y.chin },
-    { t: 1, y: bbox.min.y }
+    { t: 1, y: -0.82 }
+    // photo bottom row at TRUE scale (139px below chin); below = clamp
   ];
   const v = new THREE.Vector3();
   const skinTargets = root.userData?.sculptRuntime?.skinTargets ?? {};
@@ -37,10 +38,19 @@ function applyLikenessUVs(root) {
       }
       if (v.y > anchors[0].y) tFromTop = 0;
       let photoV = REF.v0 + tFromTop * (REF.v1 - REF.v0);
-      const photoU = REF.u0 + nx * (REF.u1 - REF.u0);
+      let photoU = REF.u0 + nx * (REF.u1 - REF.u0);
       if (isShirt) {
         const boundary = (400 + 78 * Math.pow((photoU - 0.5) / 0.41, 2)) / 512;
         if (photoV < boundary) photoV = Math.min(boundary + 0.015, REF.v1);
+      }
+      {
+        const dx = photoU - 0.5, dy = photoV - 0.5;
+        const r = Math.hypot(dx, dy), rMax = 0.47;
+        if (r > rMax) {
+          const s = rMax / r;
+          photoU = 0.5 + dx * s;
+          photoV = 0.5 + dy * s;
+        }
       }
       uv[i * 2] = photoU;
       uv[i * 2 + 1] = 1 - photoV;
