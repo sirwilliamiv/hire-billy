@@ -24,11 +24,13 @@ body{
 }
 .scene{ position:relative; height:250px; overflow:visible; background:transparent; }
 #door{position:absolute; top:12px; right:40px; width:66px; height:116px;
-  perspective:420px; opacity:0; transition:opacity .45s; pointer-events:none}
+  perspective:420px; opacity:0; transition:opacity 3s ease; pointer-events:none}
 #door.show{opacity:1}
+#door.bye{transition-duration:.7s}
 #door .framebox{position:absolute; inset:-5px; border:5px solid var(--stick);
   border-radius:8px 8px 0 0; border-bottom:none}
-#door .opening{position:absolute; inset:0; background:linear-gradient(#07090f,#141726)}
+#door .opening{position:absolute; inset:0; background:#000; overflow:hidden}
+#door .opening canvas{width:100%; height:100%; display:block}
 #door .panel{position:absolute; inset:0; background:var(--card); border:2px solid var(--line);
   transform-origin:left center; transition:transform .8s cubic-bezier(.6,.05,.3,1)}
 #door.open .panel{transform:rotateY(-78deg)}
@@ -119,7 +121,7 @@ details summary{font-size:10px;letter-spacing:.08em;text-transform:uppercase;col
   
   <div class="brand"><span class="dot"><i></i></span> HIRE BILLY</div>
   <div id="door">
-    <div class="opening"></div>
+    <div class="opening"><canvas id="rain"></canvas></div>
     <div class="panel"><i class="knob"></i></div>
     <div class="framebox"></div>
   </div>
@@ -173,6 +175,34 @@ var CHIPS=[
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function fmt(s){return esc(s).replace(/~~(.+?)~~/g,"<del>$1</del>")}
 
+/* ---------- the rain behind the door: monochrome, no green ---------- */
+var rainTimer = null;
+function startRain(){
+  var cv = document.getElementById("rain");
+  if(!cv || rainTimer) return;
+  var dpr = window.devicePixelRatio || 1;
+  var W = cv.offsetWidth || 66, H = cv.offsetHeight || 116;
+  cv.width = W * dpr; cv.height = H * dpr;
+  var ctx = cv.getContext("2d");
+  ctx.scale(dpr, dpr);
+  ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H);
+  var fs = 8, cols = Math.ceil(W / fs), drops = [];
+  for(var i = 0; i < cols; i++) drops[i] = Math.floor(Math.random() * -H / fs);
+  var CH = "01アイウエオカキクケコサシスセソタチツ<>/{}=+*";
+  rainTimer = setInterval(function(){
+    ctx.fillStyle = "rgba(0,0,0,.16)"; ctx.fillRect(0, 0, W, H);
+    ctx.font = fs + "px 'Martian Mono',monospace";
+    for(var i = 0; i < cols; i++){
+      var b = Math.random();
+      ctx.fillStyle = b > .88 ? "#fff" : "rgba(255,255,255," + (0.18 + b * 0.4).toFixed(2) + ")";
+      ctx.fillText(CH[Math.floor(Math.random() * CH.length)], i * fs, drops[i] * fs);
+      if(drops[i] * fs > H && Math.random() > 0.92) drops[i] = 0;
+      drops[i]++;
+    }
+  }, 70);
+}
+function stopRain(){ if(rainTimer){ clearInterval(rainTimer); rainTimer = null; } }
+
 /* ---------- choreography ---------- */
 var fig=$("fig"), scene=$("scene"), panel=$("panel");
 var hostDims=null; /* containerDimensions from ui/initialize, when the host shares them */
@@ -215,8 +245,9 @@ function enter(){
   fig.style.opacity = 0;
   fig.getBoundingClientRect(); /* flush */
   door.classList.add("show");
-  setTimeout(function(){ door.classList.add("open"); }, 500);
-  setTimeout(function(){ fig.style.transition = "opacity .3s"; fig.style.opacity = 1; }, 950);
+  startRain();
+  setTimeout(function(){ door.classList.add("open"); }, 3100);
+  setTimeout(function(){ fig.style.transition = "opacity .3s"; fig.style.opacity = 1; }, 3650);
   setTimeout(function(){
     fig.style.transition = ""; fig.classList.remove("instant");
     fig.classList.add("walking");
@@ -224,8 +255,9 @@ function enter(){
     fig.getBoundingClientRect(); /* commit start state */
     setTimeout(function(){ place(L.mid); }, 30);
     setTimeout(function(){ door.classList.remove("open"); }, 900);
-    setTimeout(function(){ door.classList.remove("show"); }, 1900);
-  }, 1400);
+    setTimeout(function(){ door.classList.add("bye"); door.classList.remove("show"); }, 1900);
+    setTimeout(stopRain, 2800);
+  }, 4100);
   fig.addEventListener("transitionend", function step(ev){
     if(ev.propertyName !== "transform") return;
     fig.removeEventListener("transitionend", step);
@@ -390,11 +422,14 @@ rpc("ui/initialize",{appInfo:{name:"hire-billy-widget",version:"2.0"}},1800)
   .finally?function(){}:null;
 function boot(){ setTimeout(enter, 250); setTimeout(sizeChanged, 400); }
 var FORCE_START = /(^|[?&])autostart=1/.test(location.search);
+var booted = false;
+function bootOnce(){ if(!booted){ booted = true; boot(); } }
 if(document.hidden && !FORCE_START){
   document.addEventListener("visibilitychange", function once(){
-    if(!document.hidden){ document.removeEventListener("visibilitychange", once); boot(); }
+    if(!document.hidden){ document.removeEventListener("visibilitychange", once); bootOnce(); }
   });
-}else boot();
+  setTimeout(bootOnce, 2000); /* hosts whose iframes never report visible still get the show */
+}else bootOnce();
 })();
 </script>
 </body>

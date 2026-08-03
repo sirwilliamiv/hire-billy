@@ -8,7 +8,11 @@ const http = require('node:http');
 const fs = require('node:fs');
 const os = require('node:os');
 
-const PORT_FILE = path.join(os.tmpdir(), 'hire-billy-overlay.port');
+const STATE_DIR = path.join(os.homedir(), '.hire-billy');
+try { fs.mkdirSync(STATE_DIR, { recursive: true }); } catch (e) {}
+const PORT_FILE = path.join(STATE_DIR, 'overlay.port');
+const PID_FILE = path.join(STATE_DIR, 'overlay.pid');
+const CMD_FILE = path.join(STATE_DIR, 'overlay.cmd');
 
 function claudeBounds(cb) {
   execFile('osascript', ['-e',
@@ -50,6 +54,16 @@ app.whenReady().then(() => {
 
   ipcMain.on('quit', () => app.quit());
 
+  fs.writeFileSync(PID_FILE, String(process.pid));
+  setInterval(() => {
+    try {
+      if (fs.existsSync(CMD_FILE) && fs.readFileSync(CMD_FILE, 'utf8').includes('retire')) {
+        fs.unlinkSync(CMD_FILE);
+        win.webContents.executeJavaScript('window.__retire && window.__retire()');
+      }
+    } catch (e) {}
+  }, 500);
+
   /* companion channel: the MCP server pushes each chat Q&A here so the
      figure on screen speaks the same answers the chat shows */
   const feed = http.createServer((req, res) => {
@@ -69,7 +83,7 @@ app.whenReady().then(() => {
   feed.listen(0, '127.0.0.1', () => {
     fs.writeFileSync(PORT_FILE, String(feed.address().port));
   });
-  app.on('will-quit', () => { try { fs.unlinkSync(PORT_FILE); } catch (e) {} });
+  app.on('will-quit', () => { try { fs.unlinkSync(PORT_FILE); } catch (e) {} try { fs.unlinkSync(PID_FILE); } catch (e) {} });
 
   /* answers come from the shared pipeline, in this very process */
   ipcMain.handle('ask', async (e, q) => {

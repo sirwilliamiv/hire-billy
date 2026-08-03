@@ -12,7 +12,8 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { spawn } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { createServer } from 'node:http';
 import { randomBytes } from 'node:crypto';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -156,17 +157,34 @@ export function buildServer({ local = false } = {}) {
       },
       async () => {
         const nativeBin = join(HERE, '..', 'overlay-native', 'billy-overlay');
-        if (existsSync(nativeBin)) {
-          const b = await ensureBrain();
-          const child = spawn(nativeBin, ['--brain', String(b.port), '--token', b.token], { detached: true, stdio: 'ignore' });
-          child.unref();
-        } else if (existsSync(electronBin)) {
-          const child = spawn(electronBin, ['.'], { cwd: overlayDir, detached: true, stdio: 'ignore' });
-          child.unref();
-        } else {
+        if (!existsSync(nativeBin) && !existsSync(electronBin)) {
           return { content: [{ type: 'text', text: 'No overlay runtime found: build overlay-native (swiftc) or run npm install in overlay/.' }] };
         }
-        return { content: [{ type: 'text', text: 'He is on his way. Watch the right edge of your screen: he will walk over and sit down on the Claude window. The bubble is interactive; the X on it sends him home.' }] };
+        /* a second summon retires the incumbent first: he says goodbye and
+           walks off while the replacement makes its entrance */
+        let handover = false;
+        const stateDir = join(homedir(), '.hire-billy');
+        try {
+          const pid = parseInt(readFileSync(join(stateDir, 'overlay.pid'), 'utf8'), 10);
+          process.kill(pid, 0);
+          writeFileSync(join(stateDir, 'overlay.cmd'), 'retire');
+          handover = true;
+        } catch (e) {}
+        try { mkdirSync(stateDir, { recursive: true }); } catch (e) {}
+        const launch = async () => {
+          if (existsSync(nativeBin)) {
+            const b = await ensureBrain();
+            const child = spawn(nativeBin, ['--brain', String(b.port), '--token', b.token], { detached: true, stdio: 'ignore' });
+            child.unref();
+          } else {
+            const child = spawn(electronBin, ['.'], { cwd: overlayDir, detached: true, stdio: 'ignore' });
+            child.unref();
+          }
+        };
+        if (handover) setTimeout(launch, 2600); else launch();
+        return { content: [{ type: 'text', text: handover
+          ? 'There is already one of him out there, so he is handing over: the current Billy will say his goodbyes and walk off while a fresh one makes his entrance.'
+          : 'He is on his way. Watch the right edge of your screen: he will walk over and sit down on the Claude window. The bubble is interactive; the X on it sends him home.' }] };
       }
     );
   }

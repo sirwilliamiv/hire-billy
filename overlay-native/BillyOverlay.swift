@@ -32,7 +32,13 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
   var hotRects: [CGRect] = []   /* CSS top-left coords */
   var timer: Timer?
 
+  let stateDir = NSHomeDirectory() + "/.hire-billy"
+  var pidFile: String { stateDir + "/overlay.pid" }
+  var cmdFile: String { stateDir + "/overlay.cmd" }
+
   func applicationDidFinishLaunching(_ n: Notification) {
+    try? FileManager.default.createDirectory(atPath: stateDir, withIntermediateDirectories: true)
+    try? String(ProcessInfo.processInfo.processIdentifier).write(toFile: pidFile, atomically: true, encoding: .utf8)
     let screen = NSScreen.main!.frame
     window = NSWindow(contentRect: screen, styleMask: [.borderless], backing: .buffered, defer: false)
     window.isOpaque = false
@@ -68,7 +74,16 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
       let css = CGPoint(x: m.x, y: screenH - m.y)   /* top-left origin */
       let hit = self.hotRects.contains { $0.contains(css) }
       if self.window.ignoresMouseEvents == hit { self.window.ignoresMouseEvents = !hit }
+      if FileManager.default.fileExists(atPath: self.cmdFile),
+         let cmd = try? String(contentsOfFile: self.cmdFile, encoding: .utf8), cmd.contains("retire") {
+        try? FileManager.default.removeItem(atPath: self.cmdFile)
+        self.web.evaluateJavaScript("window.__retire && window.__retire()")
+      }
     }
+  }
+
+  func applicationWillTerminate(_ n: Notification) {
+    try? FileManager.default.removeItem(atPath: pidFile)
   }
 
   func htmlURL() -> URL {

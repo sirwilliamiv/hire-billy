@@ -186,6 +186,23 @@ fig.addEventListener("transitionend", function step(){
 });
 window.addEventListener("resize", positionBubble);
 
+/* a second summon retires this instance with dignity */
+window.__retire = function(){
+  if(window.__retiring) return; window.__retiring = true;
+  fig.classList.remove("seated","sitfall");
+  bubble.classList.add("show"); positionBubble();
+  speak("A fresh me is incoming.",
+        "Two of me is a governance problem, so I will show myself out. He has the same corpus and better posture. Good luck in there.", null);
+  setTimeout(function(){
+    bubble.classList.remove("show");
+    fig.classList.add("walking");
+    fig.style.transitionDuration = "2200ms";
+    fig.getBoundingClientRect();
+    setTimeout(function(){ place({x: SW + 160, y: mid.y, s: 1}); }, 30);
+  }, 2800);
+  setTimeout(function(){ bridgeQuit(); }, 5400);
+};
+
 /* answers pushed from the chat: spoken as soon as he is seated */
 var seatedReady = false, speakQueue = [];
 function handlePush(pl){
