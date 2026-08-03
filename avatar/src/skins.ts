@@ -1,13 +1,82 @@
 /**
  * Billy bust SKINS — material sets that swap onto the geometry shell via applyBillySkin.
- * The shell (createBillyBustModel) owns geometry/UVs; skins own appearance only.
+ * The shell (createBillyBustModel) owns geometry; skins own appearance only.
  *
- * - createMatrixSkin(): streaming green glyph columns (canvas emissive texture, animated)
- * - createLikenessSkin(): the de-lit reference photo front-projected onto the bust
- * - createClaySkin(): neutral zone-colored clay (review/blockout look)
+ * Both non-clay skins share ONE mapping: the reference photo is projected onto the
+ * bust with landmark-anchored vertical mapping (applyLikenessUVs), so photo pixels
+ * land on the matching body regions.
+ *
+ * - createLikenessSkin(): the photo itself, unlit — the model looks like the photo
+ * - createMatrixSkin(): streaming glyph rain whose brightness is masked by the photo,
+ *   so the face emerges FROM the code (the "face in the matrix" effect)
+ * - createClaySkin(): neutral review look
  */
 import * as THREE from 'three';
 import type { BillySkin } from './createBillyBustModel.js';
+
+// subject bbox inside reference-clean.png (measured: x 51..471, y 43..508 of 512)
+const REF = { u0: 51 / 512, u1: 471 / 512, v0: 43 / 512, v1: 508 / 512 };
+// piecewise vertical anchors (photo row of 512 -> model world y)
+const ROWS = { eye: 190, chin: 369 };
+const ANCHOR_Y = { eye: 0.20, chin: -0.365 };
+
+/**
+ * Orthographic front projection with landmark-anchored vertical mapping:
+ * eyes land on eyes, chin on chin, collar on the chest. Writes the projected
+ * coordinates into each mesh's `uv` attribute (whole-photo 0..1 space).
+ * Single-view limitation: back-facing regions receive smeared edge pixels.
+ */
+export function applyLikenessUVs(root: THREE.Object3D): void {
+  root.updateWorldMatrix(true, true);
+  const bbox = new THREE.Box3().setFromObject(root);
+  const tEye = (ROWS.eye / 512 - REF.v0) / (REF.v1 - REF.v0);
+  const tChin = (ROWS.chin / 512 - REF.v0) / (REF.v1 - REF.v0);
+  const anchors = [
+    { t: 0, y: bbox.max.y },
+    { t: tEye, y: ANCHOR_Y.eye },
+    { t: tChin, y: ANCHOR_Y.chin },
+    { t: 1, y: bbox.min.y },
+  ];
+  const v = new THREE.Vector3();
+  const skinTargets: Record<string, string> =
+    (root as THREE.Group).userData?.sculptRuntime?.skinTargets ?? {};
+  root.traverse((o) => {
+    const mesh = o as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    const isShirt = skinTargets[mesh.name] === 'shirt';
+    const geo = mesh.geometry as THREE.BufferGeometry;
+    const pos = geo.attributes.position;
+    const uv = new Float32Array(pos.count * 2);
+    for (let i = 0; i < pos.count; i += 1) {
+      v.fromBufferAttribute(pos, i);
+      mesh.localToWorld(v);
+      const nx = (v.x - bbox.min.x) / (bbox.max.x - bbox.min.x);
+      let tFromTop = 1;
+      for (let s = 0; s < anchors.length - 1; s += 1) {
+        const y0 = anchors[s].y, y1 = anchors[s + 1].y;
+        if (v.y <= y0 && v.y >= y1) {
+          const seg = (y0 - v.y) / Math.max(1e-6, y0 - y1);
+          tFromTop = anchors[s].t + seg * (anchors[s + 1].t - anchors[s].t);
+          break;
+        }
+      }
+      if (v.y > anchors[0].y) tFromTop = 0;
+      let photoV = REF.v0 + tFromTop * (REF.v1 - REF.v0); // y-down in photo
+      const photoU = REF.u0 + nx * (REF.u1 - REF.u0);
+      if (isShirt) {
+        // the model's shoulders sit higher/wider than the photo's sloped shoulder
+        // line — clamp samples below the photo's shoulder boundary so background
+        // white never lands on cloth. Boundary ~row 398 center, rising ~row 470 at edges.
+        const boundary = (400 + 78 * Math.pow((photoU - 0.5) / 0.41, 2)) / 512;
+        if (photoV < boundary) photoV = Math.min(boundary + 0.015, REF.v1);
+      }
+      uv[i * 2] = photoU;
+      uv[i * 2 + 1] = 1 - photoV; // -> uv y-up
+    }
+    geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    geo.attributes.uv.needsUpdate = true;
+  });
+}
 
 // ---------------------------------------------------------------------------
 // clay
@@ -29,162 +98,118 @@ export function createClaySkin(): BillySkin {
 }
 
 // ---------------------------------------------------------------------------
-// matrix rain
+// likeness — the photo itself, unlit
+// ---------------------------------------------------------------------------
+export function createLikenessSkin(albedoUrl: string, onReady?: () => void): BillySkin {
+  const tex = new THREE.TextureLoader().load(albedoUrl, () => onReady?.());
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+  // UNLIT photo color: the projected pixels ARE the look. Scene lights and tone
+  // mapping would repaint the photo and push it back toward CG.
+  const shared = () => new THREE.MeshBasicMaterial({ map: tex, toneMapped: false });
+  return {
+    name: 'likeness',
+    materials: { skin: shared(), hair: shared(), beard: shared(), teeth: shared(), shirt: shared(), eye: shared() },
+    onAttach: (root) => applyLikenessUVs(root),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// matrix — glyph rain masked by the photo (the face emerges from the code)
 // ---------------------------------------------------------------------------
 const GLYPHS = 'アイウエオカキクケコサシスセソタチツテト0123456789ZXCVBNMASDFGH';
 
-function makeRainCanvas(cols: number, rows: number, cell: number, seed: number): {
-  canvas: HTMLCanvasElement; redraw: (t: number) => void;
-} {
-  const canvas = document.createElement('canvas');
-  canvas.width = cols * cell;
-  canvas.height = rows * cell;
-  const ctx = canvas.getContext('2d')!;
-  // deterministic per-column speeds/phases
-  let a = seed >>> 0;
+export function createMatrixSkin(albedoUrl: string, onReady?: () => void): BillySkin {
+  const SIZE = 1024;
+  const CELL = 12;
+  const COLS = Math.floor(SIZE / CELL);
+  const ROWS_N = Math.floor(SIZE / CELL);
+
+  // luminance mask of the subject (photo bg is uniform #f5f5f5 -> masked out)
+  const mask = document.createElement('canvas');
+  mask.width = mask.height = SIZE;
+  const maskCtx = mask.getContext('2d')!;
+  let maskReady = false;
+  const img = new Image();
+  img.onload = () => {
+    maskCtx.drawImage(img, 0, 0, SIZE, SIZE);
+    const d = maskCtx.getImageData(0, 0, SIZE, SIZE);
+    const px = d.data;
+    for (let i = 0; i < px.length; i += 4) {
+      const r = px[i], g = px[i + 1], b = px[i + 2];
+      const isBg = r > 233 && g > 233 && b > 233 && Math.max(r, g, b) - Math.min(r, g, b) < 12;
+      // dark-region lift: hair/beard are dark in the photo but must still glow
+      let lum = isBg ? 0 : Math.pow((0.299 * r + 0.587 * g + 0.114 * b) / 255, 0.65);
+      if (!isBg) lum = 0.35 + lum * 0.65;
+      const q = Math.round(lum * 255);
+      px[i] = q; px[i + 1] = q; px[i + 2] = q; px[i + 3] = 255;
+    }
+    maskCtx.putImageData(d, 0, 0);
+    maskReady = true;
+    onReady?.();
+  };
+  img.src = albedoUrl;
+
+  // rain state (deterministic)
+  let a = 0xb111;
   const rnd = () => {
     a |= 0; a = (a + 0x6d2b79f5) | 0;
     let t = Math.imul(a ^ (a >>> 15), 1 | a);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
-  const speeds = Array.from({ length: cols }, () => 4 + rnd() * 14);
-  const phases = Array.from({ length: cols }, () => rnd() * rows);
-  const chars = Array.from({ length: cols * rows }, () => GLYPHS[(rnd() * GLYPHS.length) | 0]);
+  const speeds = Array.from({ length: COLS }, () => 5 + rnd() * 16);
+  const phases = Array.from({ length: COLS }, () => rnd() * ROWS_N);
+  const chars = Array.from({ length: COLS * ROWS_N }, () => GLYPHS[(rnd() * GLYPHS.length) | 0]);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = SIZE;
+  const ctx = canvas.getContext('2d')!;
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
 
   function redraw(t: number) {
-    ctx.fillStyle = '#020703';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.font = `${cell * 0.82}px monospace`;
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = '#010502';
+    ctx.fillRect(0, 0, SIZE, SIZE);
+    if (maskReady) {
+      // the face ghosts faintly in the code even between glyph trails
+      ctx.globalAlpha = 0.5;
+      ctx.drawImage(mask, 0, 0);
+      ctx.globalAlpha = 1;
+      // tint the ghost green
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.fillStyle = '#2fd06c';
+      ctx.fillRect(0, 0, SIZE, SIZE);
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    ctx.font = `${CELL * 0.9}px monospace`;
     ctx.textBaseline = 'top';
-    for (let c = 0; c < cols; c += 1) {
-      const head = (phases[c] + t * speeds[c]) % (rows * 1.5);
-      for (let r = 0; r < rows; r += 1) {
+    for (let c = 0; c < COLS; c += 1) {
+      const head = (phases[c] + t * speeds[c]) % (ROWS_N * 1.4);
+      for (let r = 0; r < ROWS_N; r += 1) {
         const dist = head - r;
-        if (dist < 0 || dist > 16) continue;
-        const ch = chars[(c * rows + ((r + ((t * speeds[c]) | 0)) % rows))];
+        if (dist < 0 || dist > 18) continue;
+        const ch = chars[c * ROWS_N + ((r + ((t * speeds[c]) | 0)) % ROWS_N)];
         if (dist < 1) ctx.fillStyle = '#eaffee';
-        else ctx.fillStyle = `rgba(70, ${Math.max(110, 255 - dist * 12) | 0}, 110, ${Math.max(0.3, 1 - dist * 0.055)})`;
-        ctx.fillText(ch, c * cell, r * cell);
+        else ctx.fillStyle = `rgba(80, ${Math.max(120, 255 - dist * 10) | 0}, 120, ${Math.max(0.35, 1 - dist * 0.05)})`;
+        ctx.fillText(ch, c * CELL, r * CELL);
       }
+    }
+    if (maskReady) {
+      // glyph brightness carries the photo: bright where the face is bright
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.drawImage(mask, 0, 0);
+      ctx.globalCompositeOperation = 'source-over';
     }
   }
   redraw(0);
-  return { canvas, redraw };
-}
 
-export function createMatrixSkin(): BillySkin {
-  const zones: { key: string; cols: number; rows: number; seed: number; emissive: number; intensity: number }[] = [
-    { key: 'skin', cols: 48, rows: 48, seed: 0x51a1, emissive: 0x2bd96a, intensity: 1.0 },
-    { key: 'hair', cols: 40, rows: 40, seed: 0x77b2, emissive: 0x1e9c4c, intensity: 0.85 },
-    { key: 'beard', cols: 36, rows: 36, seed: 0x99c3, emissive: 0x27b85b, intensity: 0.9 },
-    { key: 'eye', cols: 8, rows: 8, seed: 0xabc4, emissive: 0xb7ffcf, intensity: 1.6 },
-    { key: 'teeth', cols: 10, rows: 6, seed: 0xcdd5, emissive: 0x8affb3, intensity: 1.2 },
-    { key: 'shirt', cols: 64, rows: 64, seed: 0xeff6, emissive: 0x1c8843, intensity: 0.7 },
-  ];
-  const materials: Record<string, THREE.Material> = {};
-  const animators: ((t: number) => void)[] = [];
-  for (const z of zones) {
-    const { canvas, redraw } = makeRainCanvas(z.cols, z.rows, 16, z.seed);
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    const mat = new THREE.MeshStandardMaterial({
-      color: 0x020a06,
-      roughness: 0.55,
-      metalness: 0.1,
-      emissive: z.emissive,
-      emissiveIntensity: z.intensity * 2.2,
-      emissiveMap: tex,
-      envMapIntensity: 0.15,
-    });
-    materials[z.key] = mat;
-    animators.push((t) => { redraw(t); tex.needsUpdate = true; });
-  }
+  const shared = () => new THREE.MeshBasicMaterial({ map: tex, toneMapped: false });
   return {
     name: 'matrix',
-    materials,
-    update: (t) => { for (const a of animators) a(t); },
-  };
-}
-
-// ---------------------------------------------------------------------------
-// likeness (front-projected de-lit photo)
-// ---------------------------------------------------------------------------
-/**
- * Orthographic front projection of the de-lit reference photo onto the shell.
- * The subject's bbox in the photo maps onto the bust's world bbox, so photo
- * pixels land on the matching body regions. Back-facing regions receive
- * smeared edge pixels (single-view limitation — mirrored/inferred, low
- * confidence); the avatar is intended to be viewed frontally.
- */
-export function createLikenessSkin(albedoUrl: string, onReady?: () => void): BillySkin {
-  const tex = new THREE.TextureLoader().load(albedoUrl, () => onReady?.());
-  tex.colorSpace = THREE.SRGBColorSpace;
-  tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
-
-  const shared = () => new THREE.MeshStandardMaterial({
-    map: tex,
-    color: 0xc4c4c4, // tame ACES + key-light blowout on the bright de-lit albedo
-    roughness: 0.62,
-    metalness: 0,
-  });
-  const materials: Record<string, THREE.Material> = {
-    skin: shared(), hair: shared(), beard: shared(), teeth: shared(), shirt: shared(),
-    eye: shared(),
-  };
-  (materials.eye as THREE.MeshStandardMaterial).roughness = 0.15;
-
-  // subject bbox inside reference-clean.png (measured: x 51..471, y 43..508 of 512)
-  const REF = { u0: 51 / 512, u1: 471 / 512, v0: 43 / 512, v1: 508 / 512 };
-  // piecewise vertical anchors (photo row -> model world y):
-  // eye line 190/512 -> 0.20, chin (beard bottom) 369/512 -> -0.365
-  const ANCHORS: { t: number; y: number }[] = [
-    { t: 0, y: Number.NaN },                                       // bbox top (filled at attach)
-    { t: (190 / 512 - REF.v0) / (REF.v1 - REF.v0), y: 0.20 },      // eye line
-    { t: (369 / 512 - REF.v0) / (REF.v1 - REF.v0), y: -0.365 },    // chin
-    { t: 1, y: Number.NaN },                                       // bbox bottom (filled at attach)
-  ];
-
-  return {
-    name: 'likeness',
-    materials,
-    onAttach: (root) => {
-      root.updateWorldMatrix(true, true);
-      const bbox = new THREE.Box3().setFromObject(root);
-      const v = new THREE.Vector3();
-      root.traverse((o) => {
-        const mesh = o as THREE.Mesh;
-        if (!mesh.isMesh) return;
-        const geo = mesh.geometry as THREE.BufferGeometry;
-        const pos = geo.attributes.position;
-        const uv = new Float32Array(pos.count * 2);
-        for (let i = 0; i < pos.count; i += 1) {
-          v.fromBufferAttribute(pos, i);
-          mesh.localToWorld(v);
-          const nx = (v.x - bbox.min.x) / (bbox.max.x - bbox.min.x);
-          // piecewise vertical map through landmark anchors, so eyes land on eyes,
-          // the chin on the chin, and the collar stays on the chest
-          const A = ANCHORS;
-          A[0].y = bbox.max.y;
-          A[A.length - 1].y = bbox.min.y;
-          let tFromTop = 1;
-          for (let s = 0; s < A.length - 1; s += 1) {
-            const y0 = A[s].y, y1 = A[s + 1].y;
-            if (v.y <= y0 && v.y >= y1) {
-              const seg = (y0 - v.y) / Math.max(1e-6, y0 - y1);
-              tFromTop = A[s].t + seg * (A[s + 1].t - A[s].t);
-              break;
-            }
-          }
-          if (v.y > A[0].y) tFromTop = 0;
-          const photoV = REF.v0 + tFromTop * (REF.v1 - REF.v0); // y-down in photo
-          uv[i * 2] = REF.u0 + nx * (REF.u1 - REF.u0);
-          uv[i * 2 + 1] = 1 - photoV; // photo y-down -> uv y-up
-        }
-        geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
-        geo.attributes.uv.needsUpdate = true;
-      });
-    },
+    materials: { skin: shared(), hair: shared(), beard: shared(), teeth: shared(), shirt: shared(), eye: shared() },
+    onAttach: (root) => applyLikenessUVs(root),
+    update: (t) => { redraw(t); tex.needsUpdate = true; },
   };
 }

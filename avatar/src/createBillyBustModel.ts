@@ -132,7 +132,7 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
 
   // --- torso / shirt -------------------------------------------------------
   // Front-silhouette profile (world units), extruded and tapered front-to-back.
-  const shirtNode = pivot('shirt', root, [0, -0.9, 0]);
+  const shirtNode = pivot('shirt', root, [0, -0.85, 0]);
   // slightly wider on -x: the reference subject sits a touch left-of-center
   const shirtProfile: [number, number][] = [
     [-1.0, -0.45], [-0.9, -0.1], [-0.64, 0.17], [-0.31, 0.38], [-0.11, 0.43],
@@ -166,14 +166,14 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
   }
 
   // --- neck ----------------------------------------------------------------
-  const neckNode = pivot('neck', shirtNode, [0, 0.5, 0.02]);
+  const neckNode = pivot('neck', shirtNode, [0, 0.46, 0.02]);
   const neckGeo = new THREE.CylinderGeometry(0.15, 0.19, 0.42, 28, 4);
   addMesh('neck', neckNode, neckGeo, 'skin');
   socket('socket-head', neckNode, [0, 0.14, 0]);
 
   // --- head ----------------------------------------------------------------
   // Ellipsoid base with jaw taper via vertex deformation (continuous-sculpt).
-  const headNode = pivot('head', neckNode, [0, 0.56, 0.02], [0, 0, -4]); // reference head roll ~4deg
+  const headNode = pivot('head', neckNode, [0, 0.55, 0.02]); // roll comes from the projected photo, not geometry
   const headGeo = new THREE.SphereGeometry(0.5, 48, 36);
   {
     const pos = headGeo.attributes.position;
@@ -205,8 +205,8 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
 
   // --- eyes ----------------------------------------------------------------
   for (const [side, x] of [['l', 0.115], ['r', -0.115]] as const) {
-    const eNode = pivot(`eye-${side}`, headNode, [x, 0.04, 0.345]);
-    addMesh(`eye-${side}`, eNode, new THREE.SphereGeometry(0.048, 24, 18), 'eye');
+    const eNode = pivot(`eye-${side}`, headNode, [x, 0.04, 0.325]);
+    addMesh(`eye-${side}`, eNode, new THREE.SphereGeometry(0.04, 24, 18), 'eye');
   }
 
   // --- nose ----------------------------------------------------------------
@@ -217,10 +217,10 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
     [0.065, -0.14], [0.0, -0.14],
   ];
   const noseGeo = new THREE.ExtrudeGeometry(extrudeShape(noseProfile), {
-    depth: 0.15, bevelEnabled: true, bevelSize: 0.025, bevelThickness: 0.02, bevelSegments: 3, steps: 1,
+    depth: 0.12, bevelEnabled: true, bevelSize: 0.035, bevelThickness: 0.03, bevelSegments: 4, steps: 1,
   });
   noseGeo.rotateY(-Math.PI / 2);     // profile x (forward projection) -> +z, extrude across face
-  noseGeo.translate(0.075, 0, 0);    // center the lateral extrusion
+  noseGeo.translate(0.06, 0, 0);    // center the lateral extrusion
   {
     // taper the bridge narrower than the alae
     const pos = noseGeo.attributes.position;
@@ -228,7 +228,7 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
     for (let i = 0; i < pos.count; i += 1) {
       v.fromBufferAttribute(pos, i);
       const t = THREE.MathUtils.clamp((v.y + 0.14) / 0.3, 0, 1); // 0 at tip-bottom, 1 at bridge-top
-      v.x *= 0.45 + 0.25 * (1 - t);
+      v.x *= 0.38 + 0.2 * (1 - t);
       pos.setXYZ(i, v.x, v.y, v.z);
     }
     noseGeo.computeVertexNormals();
@@ -242,7 +242,7 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
     [0.12, -0.06], [0.0, -0.08], [-0.12, -0.06],
   ];
   const mouthGeo = new THREE.ExtrudeGeometry(extrudeShape(mouthProfile), {
-    depth: 0.07, bevelEnabled: true, bevelSize: 0.02, bevelThickness: 0.025, bevelSegments: 3, steps: 1,
+    depth: 0.04, bevelEnabled: true, bevelSize: 0.015, bevelThickness: 0.015, bevelSegments: 2, steps: 1,
   });
   // curve the lip band around the face: push corners back
   {
@@ -275,7 +275,7 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
   for (const [side, x] of [['l', 0.36], ['r', -0.36]] as const) {
     const eNode = pivot(`ear-${side}`, headNode, [x, 0.0, 0.0], [0, side === 'l' ? 12 : -12, 0]);
     const earGeo = new THREE.SphereGeometry(0.085, 16, 12);
-    addMesh(`ear-${side}`, eNode, earGeo, 'skin', [0.35, 1.1, 0.7]);
+    addMesh(`ear-${side}`, eNode, earGeo, 'skin', [0.22, 0.9, 0.55]);
   }
 
   // --- beard shell ---------------------------------------------------------
@@ -297,7 +297,7 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
     }
     beardGeo.computeVertexNormals();
   }
-  addMesh('beard', beardNode, beardGeo, 'beard', [0.98, 1.1, 1.0]);
+  addMesh('beard', beardNode, beardGeo, 'beard', [0.96, 1.06, 0.97]);
 
   // --- hair: 12 curl clumps (repetition system hair-curl-clumps) ----------
   // Deterministic distribution over the scalp; fuller on anatomical left (+x).

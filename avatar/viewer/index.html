@@ -59,7 +59,10 @@ if (params.get('flat') === '1') {
 let activeSkin = null;
 const skinName = params.get('skin');
 if (skinName === 'matrix') {
-  activeSkin = createMatrixSkin();
+  activeSkin = createMatrixSkin('./likeness-albedo.png', () => {
+    renderer.render(scene, camera);
+    window.__SKIN_READY = true;
+  });
   applyBillySkin(model, activeSkin);
   scene.background = new THREE.Color(0x04080a);
 } else if (skinName === 'likeness') {
