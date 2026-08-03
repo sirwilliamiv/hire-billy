@@ -77,18 +77,18 @@ function createBillyPortraitBustModel(options = {}) {
     node.add(s);
     sockets[id] = s;
   }
-  const shirtNode = pivot("shirt", root, [0, -0.95, 0]);
+  const shirtNode = pivot("shirt", root, [0, -0.9, 0]);
   const shirtProfile = [
-    [-0.95, -0.45],
-    [-0.93, 0.05],
-    [-0.72, 0.28],
-    [-0.35, 0.42],
-    [-0.12, 0.45],
-    [0.12, 0.45],
-    [0.35, 0.42],
-    [0.72, 0.28],
-    [0.93, 0.05],
-    [0.95, -0.45]
+    [-0.88, -0.45],
+    [-0.86, 0.05],
+    [-0.67, 0.28],
+    [-0.33, 0.42],
+    [-0.11, 0.45],
+    [0.11, 0.45],
+    [0.33, 0.42],
+    [0.67, 0.28],
+    [0.86, 0.05],
+    [0.88, -0.45]
   ];
   const shirtGeo = new THREE.ExtrudeGeometry(extrudeShape(shirtProfile), {
     depth: 0.55,
@@ -116,11 +116,11 @@ function createBillyPortraitBustModel(options = {}) {
     bGeo.rotateX(Math.PI / 2);
     addMesh(`button-${i}`, bNode, bGeo, "shirt");
   }
-  const neckNode = pivot("neck", shirtNode, [0, 0.52, 0.02]);
-  const neckGeo = new THREE.CylinderGeometry(0.15, 0.19, 0.5, 28, 4);
+  const neckNode = pivot("neck", shirtNode, [0, 0.5, 0.02]);
+  const neckGeo = new THREE.CylinderGeometry(0.15, 0.19, 0.42, 28, 4);
   addMesh("neck", neckNode, neckGeo, "skin");
-  socket("socket-head", neckNode, [0, 0.16, 0]);
-  const headNode = pivot("head", neckNode, [0, 0.64, 0.02], [0, 0, -4]);
+  socket("socket-head", neckNode, [0, 0.14, 0]);
+  const headNode = pivot("head", neckNode, [0, 0.56, 0.02], [0, 0, -4]);
   const headGeo = new THREE.SphereGeometry(0.5, 48, 36);
   {
     const pos = headGeo.attributes.position;
@@ -299,23 +299,26 @@ function createBillyPortraitBustModel(options = {}) {
       0.17 * s * (1 + jitter())
     ]);
   });
-  for (let i = 0; i < 5; i += 1) {
-    const x = -0.26 + i * 0.13 + (rand() - 0.5) * 0.03;
-    const fNode = pivot(`hair-front-${i}`, hairNode, [x, 0.22 + (rand() - 0.5) * 0.04, 0.27], [
+  for (let i = 0; i < 7; i += 1) {
+    const x = -0.2 + i * (0.4 / 6) + (rand() - 0.5) * 0.02;
+    const yHead = 0.37 + (rand() - 0.5) * 0.02;
+    const r = Math.sqrt(Math.max(0.05, 1 - (yHead / 0.47) ** 2 - (x / 0.36) ** 2 * 0.35));
+    const zHead = 0.4 * r + 0.03;
+    const fNode = pivot(`hair-front-${i}`, hairNode, [x, yHead - 0.1, zHead + 0.02], [
       (rand() - 0.5) * 30,
       0,
       (rand() - 0.5) * 40
     ]);
-    addMesh(`hair-front-${i}`, fNode, clumpGeoBase.clone(), "hair", [0.13, 0.1, 0.12]);
+    addMesh(`hair-front-${i}`, fNode, clumpGeoBase.clone(), "hair", [0.11, 0.1, 0.1]);
   }
   for (let i = 0; i < 4; i += 1) {
-    const x = -0.2 + i * 0.13 + (rand() - 0.5) * 0.04;
-    const wNode = pivot(`hair-wisp-${i}`, hairNode, [x, 0.16 + (rand() - 0.5) * 0.03, 0.3], [
+    const x = -0.18 + i * 0.12 + (rand() - 0.5) * 0.04;
+    const wNode = pivot(`hair-wisp-${i}`, hairNode, [x, 0.16 + (rand() - 0.5) * 0.02, 0.28], [
       (rand() - 0.5) * 40,
       0,
       (rand() - 0.5) * 50
     ]);
-    addMesh(`hair-wisp-${i}`, wNode, clumpGeoBase.clone(), "hair", [0.07, 0.05, 0.06]);
+    addMesh(`hair-wisp-${i}`, wNode, clumpGeoBase.clone(), "hair", [0.045, 0.035, 0.04]);
   }
   const hairBackNode = pivot("hair-back", headNode, [0, 0.14, -0.28]);
   addMesh("hair-back", hairBackNode, clumpGeoBase.clone(), "hair", [0.36, 0.34, 0.22]);

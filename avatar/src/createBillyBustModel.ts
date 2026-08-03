@@ -132,10 +132,10 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
 
   // --- torso / shirt -------------------------------------------------------
   // Front-silhouette profile (world units), extruded and tapered front-to-back.
-  const shirtNode = pivot('shirt', root, [0, -0.95, 0]);
+  const shirtNode = pivot('shirt', root, [0, -0.9, 0]);
   const shirtProfile: [number, number][] = [
-    [-0.95, -0.45], [-0.93, 0.05], [-0.72, 0.28], [-0.35, 0.42], [-0.12, 0.45],
-    [0.12, 0.45], [0.35, 0.42], [0.72, 0.28], [0.93, 0.05], [0.95, -0.45],
+    [-0.88, -0.45], [-0.86, 0.05], [-0.67, 0.28], [-0.33, 0.42], [-0.11, 0.45],
+    [0.11, 0.45], [0.33, 0.42], [0.67, 0.28], [0.86, 0.05], [0.88, -0.45],
   ];
   const shirtGeo = new THREE.ExtrudeGeometry(extrudeShape(shirtProfile), {
     depth: 0.55, bevelEnabled: true, bevelSize: 0.1, bevelThickness: 0.12, bevelSegments: 5, steps: 1,
@@ -165,14 +165,14 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
   }
 
   // --- neck ----------------------------------------------------------------
-  const neckNode = pivot('neck', shirtNode, [0, 0.52, 0.02]);
-  const neckGeo = new THREE.CylinderGeometry(0.15, 0.19, 0.5, 28, 4);
+  const neckNode = pivot('neck', shirtNode, [0, 0.5, 0.02]);
+  const neckGeo = new THREE.CylinderGeometry(0.15, 0.19, 0.42, 28, 4);
   addMesh('neck', neckNode, neckGeo, 'skin');
-  socket('socket-head', neckNode, [0, 0.16, 0]);
+  socket('socket-head', neckNode, [0, 0.14, 0]);
 
   // --- head ----------------------------------------------------------------
   // Ellipsoid base with jaw taper via vertex deformation (continuous-sculpt).
-  const headNode = pivot('head', neckNode, [0, 0.64, 0.02], [0, 0, -4]); // reference head roll ~4deg
+  const headNode = pivot('head', neckNode, [0, 0.56, 0.02], [0, 0, -4]); // reference head roll ~4deg
   const headGeo = new THREE.SphereGeometry(0.5, 48, 36);
   {
     const pos = headGeo.attributes.position;
@@ -339,19 +339,28 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
   });
   // front hairline row: brings the hairline down to ~0.34 of head height
   // (head local y ~0.2 at the forehead) and feathers it with wisps
-  for (let i = 0; i < 5; i += 1) {
-    const x = -0.26 + i * 0.13 + (rand() - 0.5) * 0.03;
-    const fNode = pivot(`hair-front-${i}`, hairNode, [x, 0.22 + (rand() - 0.5) * 0.04, 0.27], [
+  // fringe arc: 7 overlapping clumps across the forehead. Bottom edge lands at
+  // head-local y~0.33 = the measured reference hairline (0.233 of head height incl hair).
+  // hairNode sits at y 0.10, so local fringe y = 0.32 -> world 0.42.
+  // clump centers computed against the head ellipsoid (radii 0.36/0.47/0.40 in headNode
+  // space) so the fringe rides ON the forehead surface instead of inside it
+  for (let i = 0; i < 7; i += 1) {
+    const x = -0.2 + i * (0.4 / 6) + (rand() - 0.5) * 0.02;
+    const yHead = 0.37 + (rand() - 0.5) * 0.02;               // hairline bottom edge ~0.27 local
+    const r = Math.sqrt(Math.max(0.05, 1 - (yHead / 0.47) ** 2 - (x / 0.36) ** 2 * 0.35));
+    const zHead = 0.40 * r + 0.03;                             // proud of the surface
+    const fNode = pivot(`hair-front-${i}`, hairNode, [x, yHead - 0.10, zHead + 0.02], [
       (rand() - 0.5) * 30, 0, (rand() - 0.5) * 40,
     ]);
-    addMesh(`hair-front-${i}`, fNode, clumpGeoBase.clone(), 'hair', [0.13, 0.1, 0.12]);
+    addMesh(`hair-front-${i}`, fNode, clumpGeoBase.clone(), 'hair', [0.11, 0.1, 0.1]);
   }
+  // small wisps feather the hairline edge
   for (let i = 0; i < 4; i += 1) {
-    const x = -0.2 + i * 0.13 + (rand() - 0.5) * 0.04;
-    const wNode = pivot(`hair-wisp-${i}`, hairNode, [x, 0.16 + (rand() - 0.5) * 0.03, 0.3], [
+    const x = -0.18 + i * 0.12 + (rand() - 0.5) * 0.04;
+    const wNode = pivot(`hair-wisp-${i}`, hairNode, [x, 0.16 + (rand() - 0.5) * 0.02, 0.28], [
       (rand() - 0.5) * 40, 0, (rand() - 0.5) * 50,
     ]);
-    addMesh(`hair-wisp-${i}`, wNode, clumpGeoBase.clone(), 'hair', [0.07, 0.05, 0.06]);
+    addMesh(`hair-wisp-${i}`, wNode, clumpGeoBase.clone(), 'hair', [0.045, 0.035, 0.04]);
   }
   // hair-back inferred nape mass (speculative — hidden in reference)
   const hairBackNode = pivot('hair-back', headNode, [0, 0.14, -0.28]);

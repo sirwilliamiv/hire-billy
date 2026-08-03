@@ -20,18 +20,24 @@ body{
   font:14px/1.55 ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
   color:var(--ink); background:transparent; overflow:hidden; position:relative;
 }
-.scene{
-  position:relative; height:250px; overflow:hidden; border-radius:14px;
-  background:linear-gradient(var(--sky1) 0%, var(--sky2) 60%, var(--floor) 60.5%, var(--floor) 100%);
-}
-.hlines{position:absolute;inset:0;pointer-events:none;opacity:.5}
+.scene{ position:relative; height:250px; overflow:visible; background:transparent; }
+#door{position:absolute; top:12px; right:40px; width:66px; height:116px;
+  perspective:420px; opacity:0; transition:opacity .45s; pointer-events:none}
+#door.show{opacity:1}
+#door .framebox{position:absolute; inset:-5px; border:5px solid var(--stick);
+  border-radius:8px 8px 0 0; border-bottom:none}
+#door .opening{position:absolute; inset:0; background:linear-gradient(#07090f,#141726)}
+#door .panel{position:absolute; inset:0; background:var(--card); border:2px solid var(--line);
+  transform-origin:left center; transition:transform .8s cubic-bezier(.6,.05,.3,1)}
+#door.open .panel{transform:rotateY(-78deg)}
+#door .knob{position:absolute; right:7px; top:54px; width:6px; height:6px; border-radius:50%; background:var(--soft)}
 .brand{
   position:absolute; top:10px; left:12px; display:flex; gap:7px; align-items:center;
   font-size:11px; letter-spacing:.14em; font-weight:700; color:var(--soft)
 }
 .brand .dot{width:16px;height:16px;border-radius:5px;background:var(--blue);display:grid;place-items:center}
 .brand .dot i{width:6px;height:6px;border-radius:50%;background:var(--lime);display:block}
-.kind{position:absolute;top:8px;right:10px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);border:1px solid var(--line);border-radius:999px;padding:2px 8px;background:var(--card)}
+.kind{position:absolute;top:9px;left:118px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);border:1px solid var(--line);border-radius:999px;padding:2px 8px;background:var(--card)}
 
 /* the person */
 #fig{position:absolute;top:0;left:0;width:120px;height:245px;pointer-events:none;z-index:6;
@@ -42,9 +48,6 @@ body{
 #fig line,#fig circle{stroke:var(--stick);stroke-width:5;stroke-linecap:round;fill:none}
 #fig .face circle{stroke:none;fill:var(--stick)}
 #fig .face path{stroke-width:2.4}
-#shadow{fill:rgba(0,0,0,.14);stroke:none;transition:opacity .4s}
-.seated #shadow{opacity:0}
-[data-theme="dark"] #shadow{fill:rgba(0,0,0,.45)}
 .limb{transform-box:view-box;transition:transform .4s}
 /* walk cycle */
 .walking .legL{animation:legA .62s ease-in-out infinite}
@@ -111,19 +114,18 @@ details summary{font-size:10px;letter-spacing:.08em;text-transform:uppercase;col
 </head>
 <body>
 <div class="scene" id="scene">
-  <svg class="hlines" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 100 100">
-    <line x1="0" y1="60" x2="100" y2="60" stroke="var(--line)" stroke-width=".35"/>
-    <line x1="50" y1="60" x2="8" y2="100" stroke="var(--line)" stroke-width=".25"/>
-    <line x1="50" y1="60" x2="50" y2="100" stroke="var(--line)" stroke-width=".25"/>
-    <line x1="50" y1="60" x2="92" y2="100" stroke="var(--line)" stroke-width=".25"/>
-  </svg>
+  
   <div class="brand"><span class="dot"><i></i></span> HIRE BILLY</div>
+  <div id="door">
+    <div class="opening"></div>
+    <div class="panel"><i class="knob"></i></div>
+    <div class="framebox"></div>
+  </div>
   <span class="kind" id="kind">live demo</span>
   <div id="bubble"><div class="blede" id="blede"></div><div class="btext" id="btext"></div></div>
 </div>
 <div id="fig" class="instant">
   <svg viewBox="0 0 120 245" width="120" height="245">
-    <ellipse id="shadow" cx="60" cy="236" rx="34" ry="6"/>
     <g class="body">
       <g class="armL limb" style="transform-origin:60px 72px"><line x1="60" y1="72" x2="60" y2="116"/></g>
       <g class="legL limb" style="transform-origin:60px 132px"><line x1="60" y1="132" x2="60" y2="182"/>
@@ -184,9 +186,12 @@ function layout(){
   var v = survey();
   var s = v.figScale, hip = 132*s, standTop = 245*s;
   document.body.style.setProperty("--figpad", Math.round(104*s+14)+"px");
+  /* door threshold: figure feet land on the door's bottom edge */
+  var ds = 0.45, doorRight = 40, doorW = 66, doorBottom = 12 + 116;
+  var doorCx = v.W - doorRight - doorW/2;
   return {
     v: v,
-    start: {x: v.W*0.72, y: v.sceneH*0.18 - 20, s: 0.22},
+    start: {x: doorCx - 60*ds, y: doorBottom - 228*ds, s: ds},
     mid:   {x: 16,       y: v.sceneH - standTop + 26*s, s: s},
     /* seated: hips (svg y=132) land on the scene's bottom edge, shins hang over the panel */
     seat:  {x: 16,       y: v.sceneH - hip, s: s}
@@ -203,13 +208,24 @@ function enter(){
     revealPanel();
     return;
   }
+  var door = $("door");
   fig.classList.add("instant"); place(L.start);
+  fig.style.opacity = 0;
   fig.getBoundingClientRect(); /* flush */
-  fig.classList.remove("instant");
-  fig.classList.add("walking");
-  fig.style.transitionDuration = L.v.walkMs+"ms";
-  requestAnimationFrame(function(){ place(L.mid); });
-  fig.addEventListener("transitionend", function step(){
+  door.classList.add("show");
+  setTimeout(function(){ door.classList.add("open"); }, 500);
+  setTimeout(function(){ fig.style.transition = "opacity .3s"; fig.style.opacity = 1; }, 950);
+  setTimeout(function(){
+    fig.style.transition = ""; fig.classList.remove("instant");
+    fig.classList.add("walking");
+    fig.style.transitionDuration = L.v.walkMs+"ms";
+    fig.getBoundingClientRect(); /* commit start state */
+    setTimeout(function(){ place(L.mid); }, 30);
+    setTimeout(function(){ door.classList.remove("open"); }, 900);
+    setTimeout(function(){ door.classList.remove("show"); }, 1900);
+  }, 1400);
+  fig.addEventListener("transitionend", function step(ev){
+    if(ev.propertyName !== "transform") return;
     fig.removeEventListener("transitionend", step);
     fig.classList.remove("walking");
     fig.style.transitionDuration="";
@@ -370,8 +386,13 @@ rpc("ui/initialize",{appInfo:{name:"hire-billy-widget",version:"2.0"}},1800)
     post({jsonrpc:"2.0",method:"ui/notifications/initialized"}); })
   .catch(function(){ openaiSeed(); })
   .finally?function(){}:null;
-setTimeout(enter, 250);
-setTimeout(sizeChanged, 400);
+function boot(){ setTimeout(enter, 250); setTimeout(sizeChanged, 400); }
+var FORCE_START = /(^|[?&])autostart=1/.test(location.search);
+if(document.hidden && !FORCE_START){
+  document.addEventListener("visibilitychange", function once(){
+    if(!document.hidden){ document.removeEventListener("visibilitychange", once); boot(); }
+  });
+}else boot();
 })();
 </script>
 </body>

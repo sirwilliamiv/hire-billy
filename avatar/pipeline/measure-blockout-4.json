@@ -1,0 +1,53 @@
+{
+ "reference": {
+  "image": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference-clean.png",
+  "width": 512,
+  "height": 512,
+  "headTopRow": 43,
+  "chinRow": 369,
+  "shoulderRow": 399,
+  "headHeightPx": 326,
+  "headHeightFracOfImage": 0.63671875,
+  "hairlineFrac": 0.233,
+  "mouthFrac": 0.791,
+  "beardTopFrac": 0.653,
+  "chinToShoulderFracOfHead": 0.092,
+  "headWidthToHeightIncHair": 0.494,
+  "faceWidthToHeadHeight": 0.494,
+  "hairWidthToHeadHeight": 0.454,
+  "shoulderSpanToHeadHeight": 1.282
+ },
+ "render": {
+  "image": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/render-blockout-front.png",
+  "width": 1600,
+  "height": 1600,
+  "headTopRow": 0,
+  "chinRow": 848,
+  "shoulderRow": 917,
+  "headHeightPx": 848,
+  "headHeightFracOfImage": 0.53,
+  "hairlineFrac": 0.632,
+  "mouthFrac": null,
+  "beardTopFrac": 0.921,
+  "chinToShoulderFracOfHead": 0.081,
+  "headWidthToHeightIncHair": 0.554,
+  "faceWidthToHeadHeight": 0.546,
+  "hairWidthToHeadHeight": 0.554,
+  "shoulderSpanToHeadHeight": 1.712
+ },
+ "deltas": {
+  "headHeightFracOfImage": -0.107,
+  "hairlineFrac": 0.399,
+  "beardTopFrac": 0.268,
+  "chinToShoulderFracOfHead": -0.011,
+  "headWidthToHeightIncHair": 0.06,
+  "faceWidthToHeadHeight": 0.052,
+  "hairWidthToHeadHeight": 0.1,
+  "shoulderSpanToHeadHeight": 0.43
+ },
+ "hints": [
+  "framing: render head is smaller in frame than reference by 11% of image height -> adjust camera dist/ty",
+  "hairline: render hairline sits lower (+0.399 of head height) -> move front hair clumps up",
+  "shoulder span off by +0.430 head heights -> scale shirt profile"
+ ]
+}

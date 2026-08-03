@@ -25,14 +25,14 @@
 <div class="chat" id="chat">
   <div class="msg user">use hire-billy to tell me about this candidate</div>
   <div class="msg">Calling ask_billy…</div>
-  <iframe id="f" src="/widget" allowtransparency="true"></iframe>
+  <iframe id="f" src="/widget?autostart=1" allowtransparency="true"></iframe>
   <div class="input">Reply to Claude…</div>
 </div>
 <script>
 var theme = 'dark';
 function setTheme(t){ theme = t; post({jsonrpc:'2.0',method:'ui/notifications/host-context-changed',params:{theme:t}}); }
 function setW(w){ document.getElementById('chat').style.width = w + 'px'; }
-function reload(){ document.getElementById('f').src = '/widget?' + Math.random(); }
+function reload(){ document.getElementById('f').src = '/widget?autostart=1&r=' + Math.random(); }
 function post(m){ document.getElementById('f').contentWindow.postMessage(m, '*'); }
 window.addEventListener('message', async function(e){
   var m = e.data; if(!m || m.jsonrpc !== '2.0') return;
