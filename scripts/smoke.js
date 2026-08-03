@@ -73,5 +73,40 @@ const ok = (name, cond) => { console.log((cond ? 'PASS' : 'FAIL') + '  ' + name)
   srv.kill();
 }
 
+/* 5: remote MCP over Streamable HTTP: tools, widget resource, structured output */
+{
+  const srv = spawn('node', [join(ROOT, 'serve.js')], { env: { ...process.env, ANTHROPIC_API_KEY: '', PORT: '4203' } });
+  await new Promise(r => { srv.stdout.on('data', d => { if (String(d).includes('hire billy ui')) r(); }); setTimeout(r, 4000); });
+  const rpc = (method, params, id = 1) => fetch('http://localhost:4203/mcp', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', accept: 'application/json, text/event-stream' },
+    body: JSON.stringify({ jsonrpc: '2.0', id, method, params }),
+  }).then(r => r.json());
+
+  const init = await rpc('initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'smoke', version: '0' } });
+  ok('http mcp initializes', init.result?.serverInfo?.name === 'hire-billy');
+
+  const tools = await rpc('tools/list', {});
+  const askTool = (tools.result?.tools || []).find(t => t.name === 'ask_billy');
+  ok('http mcp lists tools', (tools.result?.tools || []).length === 2);
+  ok('ask_billy declares widget (_meta.ui)', askTool?._meta?.ui?.resourceUri === 'ui://hire-billy/panel');
+  ok('ask_billy declares openai alias', askTool?._meta?.['openai/outputTemplate'] === 'ui://hire-billy/panel');
+
+  const res = await rpc('resources/read', { uri: 'ui://hire-billy/panel' });
+  const widget = res.result?.contents?.[0];
+  ok('widget resource served as mcp-app html', widget?.mimeType === 'text/html;profile=mcp-app' && widget?.text?.includes('HIRE BILLY'));
+
+  const ans = await rpc('tools/call', { name: 'ask_billy', arguments: { question: 'What are his weaknesses?' } });
+  const sc = ans.result?.structuredContent;
+  ok('http ask_billy structuredContent', !!sc && sc.lede.includes('load-bearing') && sc.trace.length === 9);
+  ok('http ask_billy text fallback intact', ans.result?.content?.[0]?.text?.includes('trace (measured)'));
+
+  const preflight = await fetch('http://localhost:4203/mcp', { method: 'OPTIONS' });
+  ok('mcp preflight allows connector origins', preflight.status === 204 && !!preflight.headers.get('access-control-allow-origin'));
+  const get = await fetch('http://localhost:4203/mcp');
+  ok('mcp GET declined in stateless mode (405)', get.status === 405);
+  srv.kill();
+}
+
 console.log(failed ? `\n${failed} FAILURE(S)` : '\nALL SMOKE TESTS PASS');
 process.exit(failed ? 1 : 0);

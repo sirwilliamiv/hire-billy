@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hire Billy</title>
+<style>
+:root{
+  --blue:#2B47FF; --lime:#CBFF4D; --ink:#101322; --paper:#FBFAF6;
+  --soft:#5b6072; --line:#e4e2d9; --card:#ffffff; --del:#b3392f;
+}
+[data-theme="dark"]{
+  --ink:#ECEDF4; --paper:#12141d; --soft:#9aa0b4; --line:#2a2d3c; --card:#1a1d2b; --del:#ff8a7a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font:14px/1.55 ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color:var(--ink); background:var(--paper); padding:14px 16px 12px;
+}
+.head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.dot{width:22px;height:22px;border-radius:6px;background:var(--blue);display:grid;place-items:center;flex:none}
+.dot i{width:8px;height:8px;border-radius:50%;background:var(--lime);display:block}
+.head b{font-size:12px;letter-spacing:.14em}
+.kind{margin-left:auto;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);border:1px solid var(--line);border-radius:999px;padding:2px 8px}
+.lede{font-family:Georgia,"Times New Roman",serif;font-size:19px;line-height:1.3;margin-bottom:8px}
+.rest{color:var(--ink);margin-bottom:10px;white-space:pre-wrap}
+.rest del{color:var(--del);text-decoration-thickness:2px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.src{font-size:11px;font-family:ui-monospace,Menlo,monospace;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--soft)}
+.receipt{font-size:11px;font-family:ui-monospace,Menlo,monospace;color:var(--soft);margin-bottom:10px}
+details{margin-bottom:12px}
+summary{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);cursor:pointer;user-select:none}
+.trace{font:11px/1.7 ui-monospace,Menlo,monospace;color:var(--soft);margin-top:6px;overflow-x:auto}
+.trace b{color:var(--ink);font-weight:600}
+.askrow{display:flex;gap:8px}
+.askrow input{
+  flex:1;font:inherit;color:var(--ink);background:var(--card);
+  border:1px solid var(--line);border-radius:10px;padding:9px 12px;outline:none
+}
+.askrow input:focus{border-color:var(--blue)}
+.askrow button{
+  font:600 13px/1 ui-sans-serif,-apple-system,sans-serif;color:#fff;background:var(--blue);
+  border:0;border-radius:10px;padding:0 16px;cursor:pointer
+}
+.askrow button:disabled{opacity:.5;cursor:default}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{
+  font-size:12px;color:var(--ink);background:var(--card);border:1px solid var(--line);
+  border-radius:999px;padding:4px 11px;cursor:pointer
+}
+.chip:hover{border-color:var(--blue)}
+.note{font-size:12px;color:var(--soft);margin-bottom:10px}
+.spin{display:inline-block;width:10px;height:10px;border:2px solid var(--line);border-top-color:var(--blue);border-radius:50%;animation:r .7s linear infinite;vertical-align:-1px;margin-right:6px}
+@keyframes r{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="head">
+  <span class="dot"><i></i></span>
+  <b>HIRE BILLY</b>
+  <span class="kind" id="kind">corpus-grounded</span>
+</div>
+<div id="out">
+  <p class="note">An interrogable candidate. Ask about the weaknesses first; it is the good part.</p>
+</div>
+<div class="askrow">
+  <input id="q" placeholder="Interrogate the candidate…" maxlength="2000">
+  <button id="go">Ask</button>
+</div>
+<div class="chips" id="chips"></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var pending={}, seq=0, bridged=false;
+
+var CHIPS=[
+  "What are his weaknesses?",
+  "Why should we not hire him?",
+  "What did he actually build?",
+  "How does he keep AI honest with money?"
+];
+
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function fmt(s){return esc(s).replace(/~~(.+?)~~/g,"<del>$1</del>")}
+
+function render(r){
+  if(!r) return;
+  $("kind").textContent = r.kind || "answer";
+  var h = '<div class="lede">'+fmt(r.lede||"")+'</div>';
+  h += '<div class="rest">'+fmt(r.rest||"")+'</div>';
+  var srcs=(r.sources||[]).map(function(s){return '<span class="src">§'+esc(s)+'</span>'}).join("");
+  var flags=(r.flags||[]).map(function(f){return '<span class="src">⚑ '+esc(f)+'</span>'}).join("");
+  if(srcs||flags) h += '<div class="meta">'+srcs+flags+'</div>';
+  if(r.receipt) h += '<div class="receipt">'+esc(r.receipt)+'</div>';
+  if(r.trace && r.trace.length){
+    h += '<details><summary>trace · '+r.trace.length+' stages, measured</summary><div class="trace">';
+    h += r.trace.map(function(t,i){
+      return String(i+1).padStart(2,"0")+" <b>"+esc(t.stage)+"</b> "+esc(String(t.ms))+" ms · "+esc(t.note);
+    }).join("<br>");
+    h += '</div></details>';
+  }
+  $("out").innerHTML = h;
+  sizeChanged();
+}
+function renderBusy(q){
+  $("out").innerHTML='<p class="note"><span class="spin"></span>Interrogating: '+esc(q)+'</p>';
+  sizeChanged();
+}
+function renderErr(m){
+  $("out").innerHTML='<p class="note">'+esc(m)+' Degrading loudly, never silently.</p>';
+  sizeChanged();
+}
+
+/* result normalisation: structuredContent when present, else raw text */
+function normalize(out){
+  if(!out) return null;
+  if(out.structuredContent) return out.structuredContent;
+  if(out.result && out.result.structuredContent) return out.result.structuredContent;
+  var c=(out.content||(out.result&&out.result.content)||[])[0];
+  if(c&&c.text) return {kind:"text",lede:"",rest:c.text,sources:[],flags:[],trace:[]};
+  return null;
+}
+
+/* --- MCP Apps bridge: JSON-RPC over postMessage (SEP-1865) --- */
+function post(m){ try{ window.parent.postMessage(m,"*"); }catch(e){} }
+function rpc(method,params,timeout){
+  return new Promise(function(res,rej){
+    var id=++seq;
+    pending[id]={res:res,rej:rej};
+    post({jsonrpc:"2.0",id:id,method:method,params:params||{}});
+    if(timeout) setTimeout(function(){ if(pending[id]){delete pending[id];rej(new Error("timeout"))} },timeout);
+  });
+}
+function sizeChanged(){
+  post({jsonrpc:"2.0",method:"ui/notifications/size-changed",
+        params:{height:document.documentElement.scrollHeight+8}});
+}
+function applyCtx(ctx){
+  if(!ctx) return;
+  var t=ctx.theme||ctx.colorScheme;
+  if(t) document.documentElement.setAttribute("data-theme",/dark/i.test(String(t))?"dark":"light");
+}
+window.addEventListener("message",function(ev){
+  var m=ev.data;
+  if(!m||m.jsonrpc!=="2.0") return;
+  if(m.id!=null&&pending[m.id]&&(m.result!==undefined||m.error)){
+    var p=pending[m.id]; delete pending[m.id];
+    return m.error?p.rej(new Error(m.error.message||"host error")):p.res(m.result);
+  }
+  if(m.method==="ui/notifications/tool-input"&&m.params&&m.params.arguments){
+    var q=m.params.arguments.question; if(q){$("q").value=q;renderBusy(q);}
+    return;
+  }
+  if(m.method==="ui/notifications/tool-result"){
+    var r=normalize(m.params); if(r) render(r);
+    return;
+  }
+  if(m.method==="ui/notifications/host-context-changed"){ applyCtx(m.params); return; }
+  if(m.method==="ui/resource-teardown"&&m.id!=null){ post({jsonrpc:"2.0",id:m.id,result:{}}); return; }
+  if(m.id!=null&&m.method){ post({jsonrpc:"2.0",id:m.id,result:{}}); }
+});
+
+/* --- ChatGPT legacy runtime (window.openai) --- */
+function openaiSeed(){
+  if(window.openai&&window.openai.toolOutput){
+    var r=normalize(window.openai.toolOutput)||window.openai.toolOutput;
+    if(r&&(r.lede||r.rest)) render(r);
+  }
+}
+window.addEventListener("openai:set_globals",openaiSeed);
+
+function ask(q){
+  q=String(q||"").trim(); if(!q) return;
+  renderBusy(q); $("go").disabled=true;
+  var done=function(out){ $("go").disabled=false; var r=normalize(out); if(r) render(r); else renderErr("The host returned nothing renderable."); };
+  var fail=function(e){ $("go").disabled=false; renderErr("Could not reach the pipeline ("+e.message+")."); };
+  if(window.openai&&window.openai.callTool){
+    window.openai.callTool("ask_billy",{question:q}).then(done,fail);
+  }else if(bridged){
+    rpc("tools/call",{name:"ask_billy",arguments:{question:q}},60000).then(done,fail);
+  }else{
+    renderErr("No host bridge found. Open hirebilly in a browser instead.");
+  }
+}
+
+$("go").addEventListener("click",function(){ask($("q").value)});
+$("q").addEventListener("keydown",function(e){if(e.key==="Enter")ask($("q").value)});
+CHIPS.forEach(function(c){
+  var b=document.createElement("button");
+  b.className="chip"; b.textContent=c;
+  b.addEventListener("click",function(){$("q").value=c;ask(c)});
+  $("chips").appendChild(b);
+});
+
+/* handshake: standard bridge first, ChatGPT runtime as fallback */
+if(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches){
+  document.documentElement.setAttribute("data-theme","dark");
+}
+rpc("ui/initialize",{appInfo:{name:"hire-billy-widget",version:"1.0"}},1800)
+  .then(function(r){
+    bridged=true;
+    applyCtx(r&&r.hostContext);
+    post({jsonrpc:"2.0",method:"ui/notifications/initialized"});
+    sizeChanged();
+  })
+  .catch(function(){ openaiSeed(); sizeChanged(); });
+})();
+</script>
+</body>
+</html>

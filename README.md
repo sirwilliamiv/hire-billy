@@ -25,7 +25,17 @@ ANTHROPIC_API_KEY=sk-... npm run serve
 npm test
 ```
 
-## Add the MCP server to Claude
+## Add the MCP server to Claude or ChatGPT
+
+**Deployed (what you send an employer)**: `serve.js` exposes the same server over Streamable HTTP at `/mcp`. One URL, no install:
+
+- **claude.ai / Claude Desktop**: Settings → Connectors → Add custom connector → `https://your-host/mcp` (no auth). Paid plans render the inline interrogation panel; asking a question opens the widget with the answer, struck claims, sources, and the measured trace.
+- **ChatGPT**: Settings → Apps & Connectors → enable Developer mode → Create → paste `https://your-host/mcp`. The widget renders via the Apps SDK (the server declares both the standard `_meta.ui.resourceUri` and the legacy `openai/outputTemplate`).
+- **Claude Code**: `claude mcp add --transport http hire-billy https://your-host/mcp` — terminal has no widget surface, so answers arrive as formatted text with the same trace.
+
+The `/mcp` endpoint is deliberately keyless (connector UIs have no good place for a shared secret); cost is contained by the pipeline's rate limit and a spend-capped API key. The browser UI's `BILLY1_KEYS` gating is unchanged and separate.
+
+**Local (stdio)**:
 
 Claude Code:
 

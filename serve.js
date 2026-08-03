@@ -7,7 +7,9 @@ import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { runPipeline, CORPUS } from './core/pipeline.js';
+import { buildServer } from './mcp/factory.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 4173;
@@ -19,8 +21,48 @@ const KEYS = (process.env.BILLY1_KEYS || '').split(',').map(s => s.trim()).filte
 const GATED = KEYS.length > 0;
 const keyOf = req => String(req.headers['x-billy-key'] || new URL(req.url, 'http://x').searchParams.get('k') || '');
 
+/* Remote MCP (Streamable HTTP, stateless): employers paste this URL into
+   Claude or ChatGPT as a connector; claude.ai/Desktop and ChatGPT render the
+   inline widget, Claude Code degrades to formatted text. Left keyless on
+   purpose: connector UIs have no good place for a shared secret, so cost is
+   contained by the pipeline's rate limit and the spend-capped API key. */
+const MCP_CORS = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET, POST, DELETE, OPTIONS',
+  'access-control-allow-headers': 'content-type, authorization, mcp-session-id, mcp-protocol-version',
+  'access-control-expose-headers': 'mcp-session-id',
+};
+
 const server = createServer(async (req, res) => {
   const path = new URL(req.url, 'http://x').pathname;
+  if (path === '/mcp') {
+    if (req.method === 'OPTIONS') { res.writeHead(204, MCP_CORS); return res.end(); }
+    if (req.method !== 'POST') {
+      res.writeHead(405, { ...MCP_CORS, allow: 'POST', 'content-type': 'application/json' });
+      return res.end(JSON.stringify({ error: 'stateless transport: POST only' }));
+    }
+    let body = '';
+    req.on('data', c => { body += c; if (body.length > 262144) req.destroy(); });
+    req.on('end', async () => {
+      try {
+        const mcp = buildServer();
+        const transport = new StreamableHTTPServerTransport({
+          sessionIdGenerator: undefined,
+          enableJsonResponse: true,
+        });
+        res.on('close', () => { transport.close(); mcp.close(); });
+        for (const [k, v] of Object.entries(MCP_CORS)) res.setHeader(k, v);
+        await mcp.connect(transport);
+        await transport.handleRequest(req, res, JSON.parse(body || '{}'));
+      } catch (e) {
+        if (!res.headersSent) {
+          res.writeHead(400, { ...MCP_CORS, 'content-type': 'application/json' });
+          res.end(JSON.stringify({ jsonrpc: '2.0', error: { code: -32700, message: 'parse error' }, id: null }));
+        }
+      }
+    });
+    return;
+  }
   if (req.method === 'GET' && (path === '/' || path === '/index.html')) {
     res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
     return res.end(HTML);
@@ -70,4 +112,5 @@ server.listen(PORT, () => {
   console.log(`hire billy ui     http://localhost:${PORT}`);
   console.log(`live socket    ${LIVE ? 'wired (' + (process.env.BILLY1_MODEL || 'claude-sonnet-4-5') + ')' : 'not wired: set ANTHROPIC_API_KEY'}`);
   console.log(`access         ${GATED ? KEYS.length + ' key(s), invite links use ?k=' : 'open (set BILLY1_KEYS to gate)'}`);
+  console.log(`mcp            http://localhost:${PORT}/mcp (Streamable HTTP, add as a connector)`);
 });
