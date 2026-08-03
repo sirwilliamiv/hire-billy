@@ -41,8 +41,8 @@ html,body{background:transparent;overflow:hidden;width:100vw;height:100vh;
 .walking #pLegF{animation:swingF .62s ease-in-out infinite alternate}
 .walking #pLegB{animation:swingB .62s ease-in-out infinite alternate}
 .walking #pBody{animation:swayB .62s ease-in-out infinite alternate;transform-origin:47px 135px}
-@keyframes swingF{from{transform:rotate(-6deg)}to{transform:rotate(-26deg)}}
-@keyframes swingB{from{transform:rotate(6deg)}to{transform:rotate(26deg)}}
+@keyframes swingF{from{transform:rotate(-8deg)}to{transform:rotate(-16deg)}}
+@keyframes swingB{from{transform:rotate(8deg)}to{transform:rotate(16deg)}}
 @keyframes swayB{from{transform:rotate(1.2deg)}to{transform:rotate(-1.2deg)}}
 .seated #skStand,.seated #skWalk{display:none}
 .seated #skSit{display:block}
@@ -345,6 +345,20 @@ fig.addEventListener("transitionend", function step(ev){
   }, 550);
 });
 window.addEventListener("resize", positionBubble);
+
+/* the Claude window moved, appeared, or resized: glide to the new seat */
+window.__reseat = function(c){
+  if(!c || window.__retiring) return;
+  CLAUDE = c;
+  seat = { x: CLAUDE.x + Math.round(CLAUDE.w*0.42), hipY: CLAUDE.y + CLAUDE.h - 74 };
+  mid = { x: seat.x, y: seat.hipY - 149, s: 1 };
+  sit = { x: seat.x, y: seat.hipY - 141, s: 1 };
+  if(fig.classList.contains("seated")){
+    fig.style.transitionDuration = "600ms";
+    place(sit);
+    setTimeout(function(){ fig.style.transitionDuration = ""; positionBubble(); }, 650);
+  }
+};
 
 /* a second summon retires this instance with dignity */
 window.__retire = function(){

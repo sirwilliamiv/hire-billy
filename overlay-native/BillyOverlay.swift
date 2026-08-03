@@ -13,17 +13,23 @@ func argValue(_ name: String) -> String? {
 }
 
 func claudeWindowBounds() -> CGRect? {
+  /* match by bundle id first (robust to display-name changes), fall back to owner name.
+     CGWindowList returns front-to-back, so the first hit is the frontmost Claude window. */
+  let claudePids = Set(NSWorkspace.shared.runningApplications
+    .filter { ($0.bundleIdentifier ?? "").lowercased().contains("claude") }
+    .map { Int($0.processIdentifier) })
   guard let list = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] else { return nil }
-  var best: CGRect? = nil
   for w in list {
-    guard let owner = w[kCGWindowOwnerName as String] as? String, owner == "Claude",
+    let pid = w[kCGWindowOwnerPID as String] as? Int ?? -1
+    let owner = w[kCGWindowOwnerName as String] as? String ?? ""
+    guard claudePids.contains(pid) || owner == "Claude",
           let layer = w[kCGWindowLayer as String] as? Int, layer == 0,
           let b = w[kCGWindowBounds as String] as? [String: CGFloat] else { continue }
     let r = CGRect(x: b["X"] ?? 0, y: b["Y"] ?? 0, width: b["Width"] ?? 0, height: b["Height"] ?? 0)
     if r.width < 300 || r.height < 200 { continue }
-    if best == nil || r.width * r.height > best!.width * best!.height { best = r }
+    return r
   }
-  return best
+  return nil
 }
 
 final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
@@ -69,6 +75,16 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
     NSApp.setActivationPolicy(.accessory)
 
     let screenH = screen.height
+    lastClaude = claudeWindowBounds()
+    Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
+      guard let self = self else { return }
+      guard let r = claudeWindowBounds() else { return }
+      if let l = self.lastClaude,
+         abs(l.origin.x - r.origin.x) < 24, abs(l.origin.y - r.origin.y) < 24,
+         abs(l.width - r.width) < 24, abs(l.height - r.height) < 24 { return }
+      self.lastClaude = r
+      self.pushClaude(r)
+    }
     timer = Timer.scheduledTimer(withTimeInterval: 0.12, repeats: true) { [weak self] _ in
       guard let self = self else { return }
       let m = NSEvent.mouseLocation                 /* bottom-left origin */
@@ -85,6 +101,12 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
         self.web.evaluateJavaScript("window.__retire && window.__retire()")
       }
     }
+  }
+
+  var lastClaude: CGRect? = nil
+  func pushClaude(_ r: CGRect) {
+    let js = "window.__reseat && window.__reseat({x:\(Int(r.origin.x)),y:\(Int(r.origin.y)),w:\(Int(r.width)),h:\(Int(r.height))})"
+    web.evaluateJavaScript(js)
   }
 
   func applicationWillTerminate(_ n: Notification) {
