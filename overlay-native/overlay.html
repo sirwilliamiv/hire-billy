@@ -196,7 +196,7 @@ function startRain(){
 function stopRain(){ if(rainTimer){ clearInterval(rainTimer); rainTimer = null; } }
 /* seat: on the Claude window's bottom edge (its input bar), else screen bottom */
 var seat = CLAUDE
-  ? { x: CLAUDE.x + Math.round(CLAUDE.w*0.42), hipY: CLAUDE.y + CLAUDE.h - 74 }
+  ? { x: CLAUDE.x + Math.round(CLAUDE.w*0.42), hipY: CLAUDE.y + CLAUDE.h - 150 }
   : { x: Math.round(SW*0.22), hipY: SH - 100 };
 var doorW = 120, doorH = 212;
 var doorBottom = seat.hipY + 96;
@@ -323,10 +323,13 @@ setTimeout(function(){
   fig.style.transitionDuration = "2800ms";
   fig.getBoundingClientRect();
   setTimeout(function(){ place(mid); }, 30);
-  setTimeout(function(){ door.classList.remove("open"); }, 1000);
-  setTimeout(function(){ door.classList.add("bye"); door.classList.remove("show"); }, 2000);
   setTimeout(stopRain, 2900);
 }, 4100);
+function closeDoor(){
+  door.classList.remove("open");
+  setTimeout(function(){ door.classList.add("bye"); door.classList.remove("show"); }, 900);
+  if (typeof stopRain === "function") setTimeout(stopRain, 1800);
+}
 fig.addEventListener("transitionend", function step(ev){
   if(ev.propertyName !== "transform") return;
   fig.removeEventListener("transitionend", step);
@@ -350,7 +353,7 @@ window.addEventListener("resize", positionBubble);
 window.__reseat = function(c){
   if(!c || window.__retiring) return;
   CLAUDE = c;
-  seat = { x: CLAUDE.x + Math.round(CLAUDE.w*0.42), hipY: CLAUDE.y + CLAUDE.h - 74 };
+  seat = { x: CLAUDE.x + Math.round(CLAUDE.w*0.42), hipY: CLAUDE.y + CLAUDE.h - 150 };
   mid = { x: seat.x, y: seat.hipY - 149, s: 1 };
   sit = { x: seat.x, y: seat.hipY - 141, s: 1 };
   if(fig.classList.contains("seated")){
