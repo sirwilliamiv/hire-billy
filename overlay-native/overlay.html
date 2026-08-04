@@ -45,6 +45,7 @@ html,body{background:transparent;overflow:hidden;width:100vw;height:100vh;
 #plB .pshin{left:0;transform-origin:44px 2px}
 .pshin img{position:absolute;left:0;top:0;height:60px}
 .walking #puppet{display:block}
+.faceR #puppet{transform:translateX(-50%) scaleX(1)}
 .walking #plF{animation:thF .44s ease-in-out infinite alternate}
 .walking #plB{animation:thB .44s ease-in-out infinite alternate}
 .walking #plF .pshin{animation:shF .44s ease-in-out infinite alternate}
@@ -235,13 +236,14 @@ var doorX = CLAUDE ? Math.min(CLAUDE.x + CLAUDE.w - doorW - 90, SW - doorW - 40)
 var ds = 0.88;
 var start = { x: doorX + doorW/2 - 60*ds, y: doorBottom - 245*ds, s: ds };
 var mid   = { x: seat.x,  y: seat.hipY - 149, s: 1 };
-var sit   = { x: seat.x,  y: seat.hipY - 141, s: 1 };
-function place(p){ fig.style.transform = "translate("+p.x+"px,"+(p.y)+"px) scale("+(p.s||1)+")"; }
+var sit   = { x: seat.x,  y: seat.hipY - 113, s: 1 };
+var lastP = {x: 0, y: 0};
+function place(p){ lastP = p; fig.style.transform = "translate("+p.x+"px,"+(p.y)+"px) scale("+(p.s||1)+")"; }
 
 var ledge = document.getElementById("ledge");
 function placeLedge(){
   ledge.style.left = (sit.x + 60 - 86) + "px";
-  ledge.style.top = (sit.y + 139) + "px";
+  ledge.style.top = (sit.y + 113) + "px";
 }
 var bubble=document.getElementById("bubble");
 function positionBubble(){
@@ -322,7 +324,49 @@ CHIPS.forEach(function(c){
   b.onclick=function(){askBilly(c)};
   document.getElementById("chips").appendChild(b);
 });
-document.getElementById("bye").onclick=function(){ bridgeQuit(); };
+function goHome(){
+  if(window.__going){ bridgeQuit(); return; }
+  window.__going = true;
+  var url = "http://127.0.0.1:" + BRAIN + "/stage-page?t=" + (CFG.token || "");
+  bubble.classList.add("show"); positionBubble();
+  speak("Follow me.", "I keep my receipts on the page. Opening it now, meet me there.", null);
+  if(NATIVE && window.webkit.messageHandlers.openstage){ webkit.messageHandlers.openstage.postMessage(url); }
+  else if(NATIVE){ webkit.messageHandlers.openurl.postMessage(url); }
+  var es = new EventSource("http://127.0.0.1:" + BRAIN + "/stage-events?t=" + (CFG.token || ""));
+  var done = false;
+  es.onmessage = function(ev){
+    var m = {}; try{ m = JSON.parse(ev.data); }catch(e){ return; }
+    if(m.type === "door-ready" && !done){ done = true; es.close(); walkTo(m.x, m.y); }
+  };
+  setTimeout(function(){ if(!done){ es.close(); bridgeQuit(); } }, 10000);
+}
+function walkTo(sx, sy){
+  ledge.classList.remove("on");
+  bubble.classList.remove("show");
+  fig.classList.remove("seated","sitfall");
+  var tx = sx - 63, ty = sy - 245;
+  if(tx > lastP.x) fig.classList.add("faceR");
+  fig.classList.add("walking");
+  startWalkCycle();
+  fig.style.transitionDuration = "2600ms";
+  fig.getBoundingClientRect();
+  setTimeout(function(){ place({x: tx, y: ty, s: 1}); }, 30);
+  fig.addEventListener("transitionend", function cross(ev){
+    if(ev.propertyName !== "transform") return;
+    fig.removeEventListener("transitionend", cross);
+    fig.classList.remove("walking");
+    fetch("http://127.0.0.1:" + BRAIN + "/stage", {method:"POST",
+      headers:{"content-type":"application/json","x-billy-token": CFG.token || ""},
+      body: JSON.stringify({type:"crossing"})}).catch(function(){});
+    fig.style.transition = "opacity .5s";
+    fig.style.opacity = 0;
+    setTimeout(function(){ bridgeQuit(); }, 1000);
+  });
+}
+window.__gohome = goHome;
+document.getElementById("bye").onclick=function(){
+  if(NATIVE && BRAIN){ goHome(); } else { bridgeQuit(); }
+};
 
 /* choreography: a door materializes on the desktop, rains, opens, he steps out */
 var door = document.getElementById("door");
@@ -388,7 +432,7 @@ window.__reseat = function(c){
   CLAUDE = c;
   seat = { x: CLAUDE.x + Math.round(CLAUDE.w*0.42), hipY: CLAUDE.y + CLAUDE.h - 150 };
   mid = { x: seat.x, y: seat.hipY - 149, s: 1 };
-  sit = { x: seat.x, y: seat.hipY - 141, s: 1 };
+  sit = { x: seat.x, y: seat.hipY - 113, s: 1 };
   if(fig.classList.contains("seated")){
     fig.style.transitionDuration = "600ms";
     place(sit);

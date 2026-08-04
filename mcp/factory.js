@@ -30,11 +30,36 @@ function ensureBrain() {
     /* the only legitimate caller is the overlay WebView (file:// origin sends
        Origin: null) presenting the per-launch token injected at spawn; any
        cross-origin browser page fails both checks */
-    const CORS = { 'access-control-allow-origin': 'null', 'access-control-allow-headers': 'content-type, x-billy-token' };
+    const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type, x-billy-token' };
+    const stageClients = new Set();
     const srv = createServer((req, res) => {
+      const u = new URL(req.url, 'http://x');
       if (req.method === 'OPTIONS') { res.writeHead(204, CORS); return res.end(); }
-      if (req.headers['x-billy-token'] !== token) { res.writeHead(403, CORS); return res.end(); }
-      if (req.method === 'POST' && req.url === '/ask') {
+      const tok = req.headers['x-billy-token'] || u.searchParams.get('t');
+      if (tok !== token) { res.writeHead(403, CORS); return res.end(); }
+      if (req.method === 'GET' && u.pathname === '/stage-events') {
+        res.writeHead(200, { ...CORS, 'content-type': 'text/event-stream', 'cache-control': 'no-store' });
+        res.write('\n');
+        stageClients.add(res);
+        req.on('close', () => stageClients.delete(res));
+        return;
+      }
+      if (req.method === 'POST' && u.pathname === '/stage') {
+        let b = '';
+        req.on('data', c => { b += c; if (b.length > 8192) req.destroy(); });
+        req.on('end', () => {
+          for (const c of stageClients) { try { c.write('data: ' + b + '\n\n'); } catch (e) {} }
+          res.writeHead(204, CORS); res.end();
+        });
+        return;
+      }
+      if (req.method === 'GET' && u.pathname === '/stage-page') {
+        let html = readFileSync(join(HERE, '..', 'ui', 'stage.html'), 'utf8');
+        html = html.replace('__BRAIN__', String(brain.port)).replace('__TOKEN__', token);
+        res.writeHead(200, { ...CORS, 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+        return res.end(html);
+      }
+      if (req.method === 'POST' && u.pathname === '/ask') {
         let b = '';
         req.on('data', c => { b += c; if (b.length > 65536) req.destroy(); });
         req.on('end', async () => {

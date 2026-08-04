@@ -58,6 +58,8 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
     let conf = WKWebViewConfiguration()
     conf.userContentController.add(self, name: "rects")
     conf.userContentController.add(self, name: "quit")
+    conf.userContentController.add(self, name: "openurl")
+    conf.userContentController.add(self, name: "openstage")
     var cfg = "window.__BILLY={screenW:\(Int(screen.width)),screenH:\(Int(screen.height))"
     if let brain = argValue("--brain") { cfg += ",brain:'\(brain)'" }
     if let token = argValue("--token") { cfg += ",token:'\(token)'" }
@@ -96,9 +98,10 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
       }
       if self.window.ignoresMouseEvents == hit { self.window.ignoresMouseEvents = !hit }
       if FileManager.default.fileExists(atPath: self.cmdFile),
-         let cmd = try? String(contentsOfFile: self.cmdFile, encoding: .utf8), cmd.contains("retire") {
+         let cmd = try? String(contentsOfFile: self.cmdFile, encoding: .utf8), !cmd.isEmpty {
         try? FileManager.default.removeItem(atPath: self.cmdFile)
-        self.web.evaluateJavaScript("window.__retire && window.__retire()")
+        if cmd.contains("gohome") { self.web.evaluateJavaScript("window.__gohome && window.__gohome()") }
+        else { self.web.evaluateJavaScript("window.__retire && window.__retire()") }
       }
     }
   }
@@ -120,6 +123,33 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
 
   func userContentController(_ u: WKUserContentController, didReceive m: WKScriptMessage) {
     if m.name == "quit" { NSApp.terminate(nil); return }
+    if m.name == "openurl", let s = m.body as? String, let url = URL(string: s),
+       s.hasPrefix("http://127.0.0.1") || s.hasPrefix("http://localhost") {
+      NSWorkspace.shared.open(url); return
+    }
+    if m.name == "openstage", let s = m.body as? String,
+       s.hasPrefix("http://127.0.0.1") || s.hasPrefix("http://localhost") {
+      let scr = NSScreen.main!.frame
+      let w = Int(scr.width * 0.46), h = Int(scr.height * 0.62)
+      let x = Int(scr.width) - w - 40, y = 80
+      let esc = s.replacingOccurrences(of: "\"", with: "")
+      let script = """
+      tell application \"Google Chrome\"
+        make new window
+        set bounds of front window to {\(x), \(y), \(x + w), \(y + h)}
+        set URL of active tab of front window to \"\(esc)\"
+        activate
+      end tell
+      """
+      DispatchQueue.global().async {
+        var err: NSDictionary?
+        let ok = NSAppleScript(source: script)?.executeAndReturnError(&err)
+        if ok == nil, let url = URL(string: s) {
+          DispatchQueue.main.async { NSWorkspace.shared.open(url) }
+        }
+      }
+      return
+    }
     if m.name == "rects", let arr = m.body as? [[String: Any]] {
       hotRects = arr.map { d in
         func num(_ k: String) -> CGFloat { CGFloat((d[k] as? NSNumber)?.doubleValue ?? 0) }
