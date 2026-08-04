@@ -226,9 +226,19 @@ function bridgeAsk(q){
 
 var GREET_LEDE = CLAUDE ? "Hey. Yes, on your actual screen."
   : "Hey. I couldn't find a Claude window, so this spot is mine now.";
-var GREET = "I'm an embodied agent: summoned by consent, walking a real desktop, answering out of a signed corpus. " +
-  (CLAUDE ? "I found your Claude window and sat down on it." : "Your Claude window is hiding somewhere, so I set up here instead.") + " Ask me anything below. I point, I sit, I talk. I never click.";
-var CHIPS = ["What are your biggest weaknesses?","Why should we not hire you?","What have you actually built?","Show me something off the record"];
+var GREET = "I'm an embodied agent, directed over MCP by the model you are chatting with. " +
+  "It can point me at real windows, light them up, move them without touching their contents, sit me on their edges, " +
+  "rewrite this bubble, and speak through me. Type below and it will hear you. I never click.";
+var CHIPS = [
+  {label:"What is EAP?", lede:"An open protocol.",
+   say:"The Embodied Agent Protocol gives an agent a body on your screen: summoned by consent, walking real surfaces, pointing at real windows, never clicking. MCP gives an agent context; EAP gives it a body. The spec lives at github.com/sirwilliamiv/embodied-agent-protocol."},
+  {label:"What can you do?", lede:"Stage directions.",
+   say:"The director can survey your windows, point at one, fire a beam of light at all of them, glide a window to a new spot, sit me on a title bar, rewrite this bubble, and speak through me. Every verb is an MCP tool call you can watch it make."},
+  {label:"Why don't you click?", lede:"By construction.",
+   say:"This overlay is click-through: nothing I do can register as input to your apps, ever. That is the protocol's one normative rule — the actor indicates, the human acts. Trust by architecture, not by promise."},
+  {label:"Talk to the director", lede:"Go ahead.",
+   say:"Type anything in the field below. It goes straight to the model you are already chatting with, which can answer through me or with a stage direction. No extra API key involved."}
+];
 
 var fig = document.getElementById("fig");
 var rainTimer = null;
@@ -344,38 +354,16 @@ function heardPost(q){
 }
 function askActor(q){
   heardPost(q);
-  if(/off the record|\bdance\b/i.test(q)){
+  if(/\bdance\b|off the record/i.test(q)){
     danceMoves();
-    speak("A dance, per request.", "The corpus has no section on rhythm, so what you are watching is uncorroborated motion. The grounding stage let it through because nobody claimed it was good.", null);
+    speak("A dance, per request.", "Uncorroborated motion, straight from the easter-egg budget. Nothing was clicked in the making of this.", null);
     return;
   }
-  speak("Good question.", "Let me run that through the machinery…", null);
-  bridgeAsk(q)
-  .then(function(s){
-    if(s && s.kind === "unmapped" && NATIVE && BRAIN){
-      speak("Not in my corpus.",
-        "I do not have that one on file, and I will not invent it. I have relayed it to the director — if they answer, I will say it out loud.",
-        s.receipt || null);
-    }
-    else if(s&&s.lede) speak(s.lede, s.rest, s.receipt||null);
-    else speak("Hm.","The pipeline returned nothing I can say.",null); })
-  .catch(function(e){ speak("I've lost contact with my brain.",
-    "The pipeline that fact-checks me is not answering ("+e.message+"), which means right now I am legally just a drawing. Anything I said would be unsourced, and you know how I feel about that. Summon me again, or check that the MCP server is still alive.", null); });
+  speak("Passed along.", "I sent that up to the director - the model you are chatting with. Ask it to check the stage and it will answer through me.", null);
 }
-(function(){
-  var bq = document.getElementById("bq"), bgo = document.getElementById("bgo");
-  function go(){
-    var q = (bq.value || "").trim();
-    if(!q) return;
-    bq.value = "";
-    askActor(q);
-  }
-  bgo.onclick = go;
-  bq.addEventListener("keydown", function(ev){ if(ev.key === "Enter") go(); });
-})();
 CHIPS.forEach(function(c){
-  var b=document.createElement("button"); b.className="chip"; b.textContent=c;
-  b.onclick=function(){askActor(c)};
+  var b=document.createElement("button"); b.className="chip"; b.textContent=c.label;
+  b.onclick=function(){ heardPost("[chip] " + c.label); speak(c.lede, c.say, null); };
   document.getElementById("chips").appendChild(b);
 });
 function brainPing(cb){

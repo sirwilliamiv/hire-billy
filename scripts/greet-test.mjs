@@ -1,0 +1,10 @@
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { execSync } from 'node:child_process';
+const t = new StdioClientTransport({ command: 'node', args: [new URL('../mcp/server.js', import.meta.url).pathname] });
+const c = new Client({ name: 'greet-test', version: '0.1' });
+await c.connect(t);
+await c.callTool({ name: 'stage_summon', arguments: {} });
+await new Promise(r => setTimeout(r, 13000));
+execSync(`screencapture -x ${process.env.SP}/eap-greeting.png`);
+await c.close(); process.exit(0);
