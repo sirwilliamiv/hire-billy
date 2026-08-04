@@ -559,6 +559,38 @@ export function buildServer({ local = false } = {}) {
     );
 
     server.registerTool(
+      'stage_bubble',
+      {
+        title: 'Redress the bubble',
+        description:
+          'Rewrite the actor\'s speech-bubble UI: the headline, the body text, the chip buttons under it, ' +
+          'and the input placeholder. Each chip needs a label; give it a `say` and the actor delivers that ' +
+          'answer on click, omit `say` and the click is relayed to you via stage_listen instead. Use this ' +
+          'to build a custom menu of questions, a guided tour, or CTAs for whatever scene you are running. ' +
+          'Requires a prior stage_summon.',
+        inputSchema: {
+          lede: z.string().optional().describe('New bubble headline'),
+          text: z.string().optional().describe('New bubble body text'),
+          chips: z.array(z.object({
+            label: z.string().describe('Button label'),
+            say: z.string().optional().describe('Canned answer the actor speaks when clicked; omit to relay the click to the director'),
+            lede: z.string().optional().describe('Optional headline shown with the canned answer'),
+          })).max(6).optional().describe('Replacement chip buttons (max 6)'),
+          placeholder: z.string().optional().describe('New placeholder for the free-text field'),
+        },
+        outputSchema: { verb: z.string() },
+      },
+      async ({ lede, text, chips, placeholder }) => {
+        if (!verbReady()) return notOnStage;
+        brain.broadcast({ type: 'verb.bubble', lede: lede || null, text: text || null, chips: chips || null, placeholder: placeholder || null });
+        return {
+          content: [{ type: 'text', text: 'The bubble is redressed.' + heardNote() }],
+          structuredContent: { verb: 'bubble' },
+        };
+      }
+    );
+
+    server.registerTool(
       'stage_speak',
       {
         title: 'Speak through the actor',

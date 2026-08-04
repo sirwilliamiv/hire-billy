@@ -664,6 +664,28 @@ function verbLasers(m){
     })();
   });
 }
+function verbBubble(m){
+  bubble.classList.add("show");
+  positionBubbleAt(lastP.x, lastP.y);
+  if(m.placeholder){ var bq = document.getElementById("bq"); if(bq) bq.placeholder = m.placeholder; }
+  if(m.chips && m.chips.length){
+    var box = document.getElementById("chips");
+    box.innerHTML = "";
+    m.chips.slice(0, 6).forEach(function(c){
+      if(!c || !c.label) return;
+      var b = document.createElement("button");
+      b.className = "chip"; b.textContent = c.label;
+      b.onclick = function(){
+        heardPost("[chip] " + c.label);
+        if(c.say){ speak(c.lede || c.label, c.say, null); }
+        else { speak("Passed along.", "I sent \"" + c.label + "\" up to the director. If they answer, I will say it out loud.", null); }
+      };
+      box.appendChild(b);
+    });
+  }
+  if(m.lede || m.text) speak(m.lede || "", m.text || "", null);
+  reportRects();
+}
 function verbSpeak(m){
   if(!m.say) return;
   bubble.classList.add("show");
@@ -713,7 +735,10 @@ if(NATIVE && BRAIN){
   var verbES = new EventSource("http://127.0.0.1:" + BRAIN + "/stage-events?t=" + (CFG.token || ""));
   verbES.onmessage = function(ev){
     var m = {}; try{ m = JSON.parse(ev.data); }catch(e){ return; }
-    if(m.type === "verb.speak"){ if(!window.__retiring && !window.__going) verbSpeak(m); return; }
+    if(m.type === "verb.speak" || m.type === "verb.bubble"){
+      if(!window.__retiring && !window.__going){ if(m.type === "verb.speak") verbSpeak(m); else verbBubble(m); }
+      return;
+    }
     if(m.type !== "verb.point" && m.type !== "verb.sit" && m.type !== "verb.move" && m.type !== "verb.lasers") return;
     (function run(){
       if(window.__retiring || window.__going) return;
