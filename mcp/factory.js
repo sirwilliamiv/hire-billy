@@ -498,6 +498,45 @@ export function buildServer({ local = false } = {}) {
         };
       }
     );
+
+    server.registerTool(
+      'stage_lasers',
+      {
+        title: 'Light up the whole stage',
+        description:
+          'The summoned figure raises a finger and fires a beam of light at every open window in turn; ' +
+          'each beam lands as a pulsing spotlight on its window until the whole stage is lit. Deixis at ' +
+          'stage scale: pure light, no window receives any input of any kind. Optionally restrict to a ' +
+          'subset of apps. Requires a prior stage_summon.',
+        inputSchema: {
+          apps: z.array(z.string()).optional()
+            .describe('Optional app-name substrings to target; default is every window on stage'),
+          say: z.string().optional().describe('A line for him to deliver once everything is lit'),
+        },
+        outputSchema: { verb: z.string(), targets: z.array(windowShape) },
+      },
+      async ({ apps, say }) => {
+        if (!verbReady()) return notOnStage;
+        const { windows } = listWindows();
+        let targets = windows;
+        if (apps && apps.length) {
+          const pats = apps.map(a => a.toLowerCase());
+          targets = windows.filter(w => pats.some(a => w.app.toLowerCase().includes(a)));
+        }
+        targets = targets.slice(0, 10);
+        if (!targets.length) {
+          const cast = [...new Set(windows.map(w => w.app))].join(', ');
+          return { content: [{ type: 'text', text: `Nothing to hit. On stage right now: ${cast}.` }], isError: true };
+        }
+        brain.broadcast({ type: 'verb.lasers', targets, say: say || null });
+        return {
+          content: [{ type: 'text', text:
+            `${targets.length} beam(s) incoming: ${targets.map(w => w.app).join(', ')}. ` +
+            'Each window lights up as it is hit. Light only — no window receives any input.' }],
+          structuredContent: { verb: 'lasers', targets },
+        };
+      }
+    );
   }
 
   return server;
