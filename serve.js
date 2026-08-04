@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-/* Hosts the The Candidate UI and gives its live socket a real backend.
-   GET  /        the experience (ui/candidate.html)
+/* Hosts the browser stage UI and backs its live socket.
+   GET  /        a landing page; the real surface is the desktop overlay
    POST /ask     {question} -> {lede, rest, sources} via the shared pipeline
                  (503 until ANTHROPIC_API_KEY is set: degrade loudly, never silently) */
 import { createServer } from 'node:http';
@@ -13,7 +13,7 @@ import { buildServer } from './mcp/factory.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 4173;
-const HTML = readFileSync(join(HERE, 'ui', 'candidate.html'));
+const HTML = readFileSync(join(HERE, 'ui', 'index.html'));
 const LIVE = !!process.env.ANTHROPIC_API_KEY;
 /* access keys: STAGE_KEYS="hb-rm-x7k2,hb-friend-9m3p". Empty = open.
    Invite links carry ?k=...; the page validates once and stores it. */
@@ -121,7 +121,7 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`candidate ui     http://localhost:${PORT}`);
+  console.log(`stage ui       http://localhost:${PORT}`);
   console.log(`live socket    ${LIVE ? 'wired (' + (process.env.STAGE_MODEL || 'claude-sonnet-4-5') + ')' : 'not wired: set ANTHROPIC_API_KEY'}`);
   console.log(`access         ${GATED ? KEYS.length + ' key(s), invite links use ?k=' : 'open (set STAGE_KEYS to gate)'}`);
   console.log(`mcp            http://localhost:${PORT}/mcp (Streamable HTTP, add as a connector)`);

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>the candidate, summoned</title>
+<title>the actor, summoned</title>
 <!-- GENERATED FILE: edit ui/summon.tpl.html, then `npm run build:summon`. -->
 <style>
 {{FONTS}}
@@ -140,7 +140,7 @@ details summary{font-size:10px;letter-spacing:.08em;text-transform:uppercase;col
 </head>
 <body>
 <div class="scene" id="scene">
-  <div class="brand"><span class="dot"><i></i></span> THE CANDIDATE</div>
+  <div class="brand"><span class="dot"><i></i></span> EAP STAGE</div>
   <span class="kind" id="kind">summoned</span>
   <div id="door">
     <div class="opening"><canvas id="rain"></canvas></div>
@@ -180,8 +180,8 @@ var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: r
 
 var COPY={
   inline:{
-    lede:"Hey, I'm the candidate. No desktop here, so I came to the message.",
-    rest:"The full version of this walks across a macOS desktop and sits down on your Claude window. You're on a surface that doesn't have one, so you get the same entrance in the chat: I walk in, I sit down, and I answer out of the same signed corpus, struck claims and all. Ask me anything below."
+    lede:"Hey. No desktop here, so I came to the message.",
+    rest:"The full version of this walks across a macOS desktop and sits down on your Claude window. You're on a surface that doesn't have one, so the entrance plays in the chat instead. Same body, same rule: I never click."
   },
   /* kept verbatim in step with the same strings in mcp/factory.js, which
      overwrite these whenever a real tool result reaches the card */
@@ -191,10 +191,10 @@ var COPY={
   }
 };
 var CHIPS=[
-  "What are your biggest weaknesses?",
-  "Why should we not hire you?",
-  "What have you actually built?",
-  "How do you keep AI honest with money?"
+  "What is EAP?",
+  "Why don't you click?",
+  "What can the director make you do?",
+  "What happens on a real desktop?"
 ];
 
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
@@ -425,7 +425,7 @@ function normalize(out){
 /* A summon result decides which show to run and carries the words with it, so
    the server stays the single source of the copy (the constants above are the
    fallback for a card that boots before any result arrives). Everything else
-   is an ask_candidate answer. */
+   is a canned protocol answer. */
 function consume(r){
   if(!r) return;
   if(r.mode==="desktop"||r.mode==="inline"){
@@ -448,14 +448,20 @@ window.addEventListener("message",function(ev){
 function openaiSeed(){ if(window.openai&&window.openai.toolOutput) consume(normalize(window.openai.toolOutput)); }
 window.addEventListener("openai:set_globals",openaiSeed);
 
+var CANNED = {
+  "What is EAP?": "The Embodied Agent Protocol: an open spec for agents with bodies. Summoned by consent, walking real surfaces, pointing at real windows, never clicking. The spec lives at github.com/sirwilliamiv/embodied-agent-protocol.",
+  "Why don't you click?": "The one normative rule. On a real desktop the overlay is click-through by construction, so nothing the actor does can register as input. The actor indicates; the human acts.",
+  "What can the director make you do?": "Summon me, survey the windows, point with a wand, light every window with beams, glide a window to a new spot, sit me on a title bar, rewrite my bubble, and speak through me. Each one is an MCP tool call.",
+  "What happens on a real desktop?": "A door opens on the actual screen, rain falls inside it, and I walk out and sit on the Claude window. From there the model you are chatting with directs me live. This card is the same entrance for surfaces with no desktop."
+};
 function ask(q){
   q=String(q||"").trim(); if(!q) return;
   speakBusy(); $("go").disabled=true;
-  var done=function(out){ $("go").disabled=false; var r=normalize(out); if(r&&(r.lede||r.rest)) speakAnswer(r); else speakErr("The host returned nothing I can say."); };
-  var fail=function(e){ $("go").disabled=false; speakErr("I could not reach the pipeline ("+e.message+")."); };
-  if(window.openai&&window.openai.callTool){ window.openai.callTool("ask_candidate",{question:q}).then(done,fail); }
-  else if(bridged){ rpc("tools/call",{name:"ask_candidate",arguments:{question:q}},60000).then(done,fail); }
-  else{ speakErr("No host bridge found here."); }
+  setTimeout(function(){
+    $("go").disabled=false;
+    if(CANNED[q]){ speakAnswer({lede:q, rest:CANNED[q]}); }
+    else{ speakAnswer({lede:"This card is just the entrance.", rest:"The talking version lives on a real desktop, where the model directing the session hears you and answers through the actor. Here, the chips above are what I know."}); }
+  }, 450);
 }
 $("go").addEventListener("click",function(){ ask($("q").value) });
 $("q").addEventListener("keydown",function(e){ if(e.key==="Enter") ask($("q").value) });

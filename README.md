@@ -1,47 +1,21 @@
-# The Candidate
+# eap-stage
 
-An interrogable candidate. One corpus, one nine-stage pipeline, three surfaces:
+The reference implementation of the [Embodied Agent Protocol](https://github.com/sirwilliamiv/embodied-agent-protocol). MCP gives an agent context; EAP gives it a body — and this repo is the body: an MCP server whose tools are stage directions, and a macOS desktop overlay where the actor lives.
 
-1. **The UI**: `ui/candidate.html`, a single self-contained file (fonts inlined, no build step). Open it in a browser and query the candidate; the machinery shows its work.
-2. **The HTTP socket**: `serve.js` hosts the UI and backs its live socket with the shared pipeline.
-3. **The MCP server**: `mcp/server.js` lets any MCP client (Claude Code, Claude Desktop, Cowork) interrogate the candidate directly.
-
-The thesis, everywhere: one model call chooses the words, deterministic code decides what is true, and unsourced superlatives are struck where you can see them. Flattery is structurally impossible.
+**The one rule: the actor never clicks.** The overlay is click-through by construction. He points, sits, speaks, lights things up, and even rearranges windows — and no click, keystroke, or event of any kind ever enters the apps he visits.
 
 ## Quick start
 
 ```bash
 npm install
-
-# the UI alone (design mode: mapped answers, honest about the rest)
-open ui/candidate.html
-
-# the UI with a live socket
-ANTHROPIC_API_KEY=sk-... npm run serve
-# then open http://localhost:4173
-# without a key the socket declines with a 503 and the page degrades loudly, never silently
-
-# the tests
+bash overlay-native/build.sh   # builds the Swift overlay runtime (macOS)
 npm test
 ```
 
-## Add the MCP server to Claude or ChatGPT
-
-**Deployed (what you send an employer)**: `serve.js` exposes the same server over Streamable HTTP at `/mcp`. One URL, no install:
-
-- **claude.ai / Claude Desktop**: Settings → Connectors → Add custom connector → `https://your-host/mcp` (no auth). Paid plans render the inline interrogation panel; asking a question opens the widget with the answer, struck claims, sources, and the measured trace.
-- **ChatGPT**: Settings → Apps & Connectors → enable Developer mode → Create → paste `https://your-host/mcp`. The widget renders via the Apps SDK (the server declares both the standard `_meta.ui.resourceUri` and the legacy `openai/outputTemplate`).
-- **Claude Code**: `claude mcp add --transport http eap-stage https://your-host/mcp` — terminal has no widget surface, so answers arrive as formatted text with the same trace.
-
-Over the connector, `stage_summon` always renders the in-chat card: a remote server has no business spawning a window, and on a phone or a browser tab there is no desktop to spawn it on.
-
-The `/mcp` endpoint is deliberately keyless (connector UIs have no good place for a shared secret); cost is contained by the pipeline's rate limit and a spend-capped API key. The browser UI's `STAGE_KEYS` gating is unchanged and separate.
-
-**Local (stdio)**:
-
-Claude Code:
+Add the MCP server to a local client:
 
 ```bash
+# Claude Code
 claude mcp add eap-stage -- node /absolute/path/to/eap-stage/mcp/server.js
 ```
 
@@ -52,69 +26,43 @@ Claude Desktop (`claude_desktop_config.json`):
   "mcpServers": {
     "eap-stage": {
       "command": "node",
-      "args": ["/absolute/path/to/eap-stage/mcp/server.js"],
-      "env": { "ANTHROPIC_API_KEY": "optional, for live answers to unmapped questions" }
+      "args": ["/absolute/path/to/eap-stage/mcp/server.js"]
     }
   }
 }
 ```
 
-Then ask Claude things like "use eap-stage to find out this candidate's weaknesses" or "get his model card."
+Then, in a fresh chat: *"Summon the actor, light up every window, move Chrome to the right half, and sit on it."* Approving the summon tool call is the consent gate — the door does not open without it.
 
-### Tools
+## The verbs
 
-- `ask_candidate {question}`: a grounded answer plus sources, flags, struck claims, and a nine-stage trace with measured timings. Rate limited to five questions a minute; the sixth gets a first-class refusal with its own trace.
-- `get_model_card {section?}`: the corpus as a model card. Sections: overview, how-i-work, strengths, limitations, evidence, scope. Limitations ship in the same corpus as strengths and are retrieved by the same machinery.
-- `stage_summon {platform?}`: he walks in, sits down, and talks. The surface is detected: a **local stdio client on macOS with an overlay runtime built** gets the real thing — a transparent click-through overlay where he walks across the desktop and sits on the Claude window. Every other surface (mobile, web, Cowork, the remote connector) gets the same entrance as an inline card in the message, drawn from the same sprites, with the ask box wired back to `ask_candidate`. Pass `platform: "inline"` or `"desktop"` to override; a forced `desktop` that cannot be honoured says why and falls back to the card. The remote transport can never reach the spawn path.
+| Tool | What happens on screen |
+|---|---|
+| `stage_summon` | A door opens on the desktop, rain falls inside it, and the actor walks out and sits on the Claude window. On surfaces with no desktop (mobile, web, remote connectors) the entrance renders as an in-chat card instead; the remote transport can never reach the spawn path. |
+| `list_windows` | Surveys the ordinary windows on the primary display: app, title where available, screen bounds. Geometry only — no pixels, no content. |
+| `stage_point` | He walks to a real window, draws a wand, and points; the window lights up with a spotlight outline. |
+| `stage_lasers` | He raises a finger and fires a beam at every open window in turn; each hit lands as a persistent spotlight until the whole stage is lit. |
+| `stage_move` | Wand out, spotlight on, and the window glides to a new position (Accessibility API). Stage arrangement, not actuation — the frame moves, nothing inside it receives input. |
+| `stage_sit` | He sits on a window's top edge, feet dangling over someone else's title bar. |
+| `stage_speak` | The director's own words in his speech bubble — you are the model, so no API key is needed anywhere. |
+| `stage_bubble` | Rewrites his bubble UI live: headline, body, chip buttons (canned answers or relay-to-director), input placeholder. |
+| `stage_listen` | Returns whatever the viewer typed at the actor since you last listened. The talk-back channel. |
 
-### The Desk Tour verbs (local macOS only)
+Every verb refuses politely until he has been summoned. Stage directions without a body are just strongly worded opinions.
 
-This is the reference implementation of the [Embodied Agent Protocol](https://github.com/sirwilliamiv/embodied-agent-protocol) — see its README for the boundary diagram showing exactly where MCP ends and EAP takes over.
+## The loop
 
-Once `stage_summon` has put him on the desktop, more tools appear on local stdio servers and turn the overlay into an EAP stage:
+The viewer types into the actor's bubble → `stage_listen` delivers it to the director → the director answers through `stage_speak` or with an action. The model already driving the MCP session is the brain; there is no separate key, no separate service.
 
-- `list_windows`: surveys the ordinary windows on the primary display — owning app, title where available, screen bounds. Geometry only, no pixels, no content. Windows on other displays are off the stage and are not offered.
-- `stage_point {app, title?, say?}`: he walks across the desktop to a real window and points at it, optionally delivering a line. He indicates; the human acts.
-- `stage_sit {app, title?, say?}`: he walks to a real window and sits down on its top edge, feet dangling over someone else's title bar.
-- `stage_move {app, title?, x, y, say?}`: he draws a wand, spotlights the window, and glides it to a new position. Stage arrangement, not actuation — the frame moves, but no click or keystroke ever enters the app. Needs macOS Accessibility permission for the overlay runtime; without it the tool says exactly what to grant.
+## Architecture
 
-All of them refuse politely until he has been summoned — the summon tool's approval is the consent gate. And the one rule holds by construction: the overlay is click-through, so the actor never clicks. Nothing he does registers as input to the windows he visits.
+- `mcp/factory.js` — one server definition for both the stdio entry (`mcp/server.js`) and the Streamable HTTP endpoint (`serve.js`, `POST /mcp`). Local stdio gets the full verb set; remote transports get `stage_summon` only, which always falls back to the in-chat card.
+- `overlay-native/` — a Swift shell: transparent, always-on-top, click-through WKWebView pinned to the primary display. `--list-windows` surveys the window server; `--ax-check` reports Accessibility trust; window moves are eased AX position updates.
+- `overlay/overlay.html` — the choreography: door, rain, walk cycle, seat, wand, spotlights, beam engine, bubble. Talks to its owning server through a token-gated loopback "brain" (per-launch token, localhost only).
+- The brain also hosts the crossing: the ✕ on the bubble opens a browser stage page, and the actor walks off the desktop into it with a same-frame handoff. An actor whose summoning session has exited notices within three missed heartbeats and sees himself out.
 
-`scripts/desk-tour.mjs` drives the whole tour over stdio for filming: summon, survey, point, sit, with a screenshot after each beat (`SP=/tmp node scripts/desk-tour.mjs`).
+`scripts/desk-tour.mjs` drives a full tour over stdio for filming.
 
-### The summon card
+## Status
 
-`ui/summon.html` is generated — edit `ui/summon.tpl.html` and run `npm run build:summon`, which inlines the overlay's own sprites and fonts as data URIs so the card is self-contained (hosts render it in a sandboxed iframe with no network). Preview both states without a client:
-
-```bash
-npm run serve
-# then open http://localhost:4173/dev/host and use the summon buttons,
-# or http://localhost:4173/summon?mode=inline (or ?mode=desktop) directly
-```
-
-## Access keys
-
-Hosting this for a specific audience? Gate it:
-
-```bash
-STAGE_KEYS="hb-rm-x7k2,hb-friend-9m3p" ANTHROPIC_API_KEY=sk-... npm run serve
-```
-
-Send each reviewer an invite link with their key: `https://your-host/?k=hb-rm-x7k2`. The page validates the key once, stores it, and scrubs it from the URL, so invited people never see an auth screen. Keyless arrivals get one quiet gate ("This copy is keyed.") with a single field. The `/ask` socket enforces the same keys server-side, so your API budget is only spendable by people you invited. Leave `STAGE_KEYS` unset and everything is open.
-
-## The corpus
-
-`corpus.json` is the single source of truth for every claim about the candidate. The servers read it directly; the UI carries a generated copy. After editing it:
-
-```bash
-npm run sync   # regenerates the CORPUS block inside ui/candidate.html
-```
-
-Nothing outside the corpus can become a claim about him. That cuts both ways: no invented wins, no softened flaws.
-
-## Design notes
-
-- The pipeline (`core/pipeline.js`) is real: rate limit, validate, screen (matches recorded, never gated on), route (exact answers for known questions, zero model calls), retrieve (corpus sections by overlap), model (live via the Anthropic API when keyed, honest design mode when not), stream, ground (superlatives without a corpus span are struck in view). Timings in the trace are measured, not fabricated.
-- With no API key set, unmapped questions return "the live model is not plugged in yet" instead of an improvised answer. Degrade loudly, never silently.
-- The browser UI dramatizes the same stages: the question lifts off as a rocket, laps the room, and tows the interface into a picture-in-picture corner by its corners (bottom right, bottom left, top left, top right) while the pipeline runs behind it.
-
+Tracks EAP 0.1-draft: summon, point, speak, and the crossing are implemented; move, lasers, bubble, and listen are implementation experience feeding the 0.2 spec. macOS only for now — a second platform is exactly the kind of independent implementation the spec is waiting on.

@@ -76,7 +76,7 @@ const ok = (name, cond) => { console.log((cond ? 'PASS' : 'FAIL') + '  ' + name)
 /* 3: serve.js, no key: page served, socket declines honestly */
 {
   const srv = spawn('node', [join(ROOT, 'serve.js')], { env: { ...process.env, ANTHROPIC_API_KEY: '', PORT: '4199' } });
-  await new Promise(r => { srv.stdout.on('data', d => { if (String(d).includes('candidate ui')) r(); }); setTimeout(r, 4000); });
+  await new Promise(r => { srv.stdout.on('data', d => { if (String(d).includes('stage ui')) r(); }); setTimeout(r, 4000); });
   const page = await fetch('http://localhost:4199/');
   ok('serve returns ui', page.status === 200);
   const askR = await fetch('http://localhost:4199/ask', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ question: 'hi' }) });
@@ -87,7 +87,7 @@ const ok = (name, cond) => { console.log((cond ? 'PASS' : 'FAIL') + '  ' + name)
 /* 4: serve.js, gated: /auth and /ask enforce keys, page still served */
 {
   const srv = spawn('node', [join(ROOT, 'serve.js')], { env: { ...process.env, ANTHROPIC_API_KEY: '', STAGE_KEYS: 'hb-test-x7k2, hb-alt-1', PORT: '4201' } });
-  await new Promise(r => { srv.stdout.on('data', d => { if (String(d).includes('candidate ui')) r(); }); setTimeout(r, 4000); });
+  await new Promise(r => { srv.stdout.on('data', d => { if (String(d).includes('stage ui')) r(); }); setTimeout(r, 4000); });
   ok('auth declines keyless (401)', (await fetch('http://localhost:4201/auth')).status === 401);
   ok('auth accepts invite key (204)', (await fetch('http://localhost:4201/auth?k=hb-test-x7k2')).status === 204);
   ok('ask declines wrong key (401)', (await fetch('http://localhost:4201/ask', { method: 'POST', headers: { 'content-type': 'application/json', 'x-stage-key': 'nope' }, body: JSON.stringify({ question: 'hi' }) })).status === 401);
@@ -98,7 +98,7 @@ const ok = (name, cond) => { console.log((cond ? 'PASS' : 'FAIL') + '  ' + name)
 /* 5: remote MCP over Streamable HTTP: summon only, card resource intact */
 {
   const srv = spawn('node', [join(ROOT, 'serve.js')], { env: { ...process.env, ANTHROPIC_API_KEY: '', PORT: '4203' } });
-  await new Promise(r => { srv.stdout.on('data', d => { if (String(d).includes('candidate ui')) r(); }); setTimeout(r, 4000); });
+  await new Promise(r => { srv.stdout.on('data', d => { if (String(d).includes('stage ui')) r(); }); setTimeout(r, 4000); });
   const rpc = (method, params, id = 1) => fetch('http://localhost:4203/mcp', {
     method: 'POST',
     headers: { 'content-type': 'application/json', accept: 'application/json, text/event-stream' },
