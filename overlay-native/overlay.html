@@ -378,21 +378,44 @@ CHIPS.forEach(function(c){
   b.onclick=function(){askActor(c)};
   document.getElementById("chips").appendChild(b);
 });
+function brainPing(cb){
+  fetch("http://127.0.0.1:" + BRAIN + "/ping?t=" + (CFG.token || ""))
+    .then(function(r){ cb(r.status === 204 || r.ok); })
+    .catch(function(){ cb(false); });
+}
+function fadeOutAndQuit(delay){
+  setTimeout(function(){
+    bubble.classList.remove("show");
+    ledge.classList.remove("on");
+    fig.style.transition = "opacity .8s";
+    fig.style.opacity = 0;
+    setTimeout(bridgeQuit, 1300);
+  }, delay);
+}
 function goHome(){
   if(window.__going){ bridgeQuit(); return; }
   window.__going = true;
-  var url = "http://127.0.0.1:" + BRAIN + "/stage-page?t=" + (CFG.token || "");
-  bubble.classList.add("show"); positionBubble();
-  speak("Follow me.", "I keep my receipts on the page. Opening it now, meet me there.", null);
-  if(NATIVE && window.webkit.messageHandlers.openstage){ webkit.messageHandlers.openstage.postMessage(url); }
-  else if(NATIVE){ webkit.messageHandlers.openurl.postMessage(url); }
-  var es = new EventSource("http://127.0.0.1:" + BRAIN + "/stage-events?t=" + (CFG.token || ""));
-  var done = false;
-  es.onmessage = function(ev){
-    var m = {}; try{ m = JSON.parse(ev.data); }catch(e){ return; }
-    if(m.type === "door-ready" && !done){ done = true; es.close(); walkTo(m.x, m.y); }
-  };
-  setTimeout(function(){ if(!done){ es.close(); bridgeQuit(); } }, 10000);
+  brainPing(function(alive){
+    if(!alive){
+      bubble.classList.add("show"); positionBubbleAt(lastP.x, lastP.y);
+      speak("The door home is gone.",
+        "The server that summoned me has already hung up, so there is no page to walk into. I will just see myself out. It was a pleasure haunting your desktop.", null);
+      fadeOutAndQuit(3600);
+      return;
+    }
+    var url = "http://127.0.0.1:" + BRAIN + "/stage-page?t=" + (CFG.token || "");
+    bubble.classList.add("show"); positionBubble();
+    speak("Follow me.", "I keep my receipts on the page. Opening it now, meet me there.", null);
+    if(NATIVE && window.webkit.messageHandlers.openstage){ webkit.messageHandlers.openstage.postMessage(url); }
+    else if(NATIVE){ webkit.messageHandlers.openurl.postMessage(url); }
+    var es = new EventSource("http://127.0.0.1:" + BRAIN + "/stage-events?t=" + (CFG.token || ""));
+    var done = false;
+    es.onmessage = function(ev){
+      var m = {}; try{ m = JSON.parse(ev.data); }catch(e){ return; }
+      if(m.type === "door-ready" && !done){ done = true; es.close(); walkTo(m.x, m.y); }
+    };
+    setTimeout(function(){ if(!done){ es.close(); bridgeQuit(); } }, 10000);
+  });
 }
 function walkTo(sx, sy){
   ledge.classList.remove("on");
@@ -731,6 +754,21 @@ window.__moveDenied = function(why){
     speak("The OS says I can't touch the furniture.", "Moving a window needs Accessibility permission. System Settings, Privacy and Security, Accessibility, then add the overlay runtime. Until then I point, I sit, I talk. I still never click.", null);
   }
 };
+if(NATIVE && BRAIN){
+  var deadBeats = 0;
+  setInterval(function(){
+    brainPing(function(ok){
+      if(ok){ deadBeats = 0; return; }
+      if(++deadBeats >= 3 && !window.__retiring && !window.__going){
+        window.__retiring = true;
+        bubble.classList.add("show"); positionBubbleAt(lastP.x, lastP.y);
+        speak("My line to the director went dead.",
+          "The session that summoned me has exited, which makes me a ghost, and ghosts should not linger on other people's desktops. Summon me again any time.", null);
+        fadeOutAndQuit(4000);
+      }
+    });
+  }, 12000);
+}
 if(NATIVE && BRAIN){
   var verbES = new EventSource("http://127.0.0.1:" + BRAIN + "/stage-events?t=" + (CFG.token || ""));
   verbES.onmessage = function(ev){

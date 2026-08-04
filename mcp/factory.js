@@ -42,6 +42,7 @@ function ensureBrain() {
       if (req.method === 'OPTIONS') { res.writeHead(204, CORS); return res.end(); }
       const tok = req.headers['x-stage-token'] || u.searchParams.get('t');
       if (tok !== token) { res.writeHead(403, CORS); return res.end(); }
+      if (req.method === 'GET' && u.pathname === '/ping') { res.writeHead(204, CORS); return res.end(); }
       if (req.method === 'GET' && u.pathname === '/stage-events') {
         res.writeHead(200, { ...CORS, 'content-type': 'text/event-stream', 'cache-control': 'no-store' });
         res.write('\n');
