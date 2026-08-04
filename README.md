@@ -69,7 +69,9 @@ Then ask Claude things like "use eap-stage to find out this candidate's weakness
 
 ### The Desk Tour verbs (local macOS only)
 
-Once `stage_summon` has put him on the desktop, three more tools appear on local stdio servers and turn the overlay into an EAP stage:
+This is the reference implementation of the [Embodied Agent Protocol](https://github.com/sirwilliamiv/embodied-agent-protocol) — see its README for the boundary diagram showing exactly where MCP ends and EAP takes over.
+
+Once `stage_summon` has put him on the desktop, more tools appear on local stdio servers and turn the overlay into an EAP stage:
 
 - `list_windows`: surveys the ordinary windows on the primary display — owning app, title where available, screen bounds. Geometry only, no pixels, no content. Windows on other displays are off the stage and are not offered.
 - `stage_point {app, title?, say?}`: he walks across the desktop to a real window and points at it, optionally delivering a line. He indicates; the human acts.
