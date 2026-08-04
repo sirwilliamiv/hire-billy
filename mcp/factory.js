@@ -168,7 +168,7 @@ function overlayAlive() {
   } catch (e) { return false; }
 }
 
-const INLINE_LEDE = "Hey, I'm Billy. No desktop here, so I came to the message.";
+const INLINE_LEDE = "Hey. No desktop here, so I came to the message.";
 const INLINE_REST =
   "The full version of this walks across a macOS desktop and sits down on your Claude window. " +
   "You're on a surface that doesn't have one, so you get the same entrance in the chat: I walk in, " +
@@ -189,10 +189,10 @@ const traceShape = z.object({
 }).passthrough();
 
 export function buildServer({ local = false } = {}) {
-  const server = new McpServer({ name: 'hire-billy', version: corpus().meta.version + '.0' });
+  const server = new McpServer({ name: 'eap-stage', version: corpus().meta.version + '.0' });
 
   server.registerTool(
-    'ask_billy',
+    'ask_candidate',
     {
       title: 'Interrogate the candidate',
       description:
@@ -243,7 +243,7 @@ export function buildServer({ local = false } = {}) {
     'hire-billy-panel',
     WIDGET_URI,
     {
-      title: 'Hire Billy interrogation panel',
+      title: 'Interrogation panel',
       description: 'Inline UI for interrogating the candidate: grounded answers, struck claims, measured trace.',
       mimeType: 'text/html;profile=mcp-app',
       _meta: { ui: { prefersBorder: false } },
@@ -257,7 +257,7 @@ export function buildServer({ local = false } = {}) {
     'hire-billy-summon',
     SUMMON_URI,
     {
-      title: 'Hire Billy summon card',
+      title: 'Summon card',
       description: 'In-chat summon: the candidate walks in, sits on the edge of the card, and talks.',
       mimeType: 'text/html;profile=mcp-app',
       _meta: { ui: { prefersBorder: false } },
@@ -275,7 +275,7 @@ export function buildServer({ local = false } = {}) {
      transport can never reach the spawn path: `local` is set only by the stdio
      entry, which by definition is running on the machine being looked at. */
   server.registerTool(
-    'summon_billy',
+    'stage_summon',
     {
       title: 'Let him out',
       description:
@@ -283,7 +283,7 @@ export function buildServer({ local = false } = {}) {
         'in a speech bubble. On a local macOS client he walks onto the actual desktop as a transparent ' +
         'click-through overlay and sits on the Claude window; on every other surface (mobile, web, ' +
         'remote connector) the same entrance renders as a card inside the conversation. The surface is ' +
-        'detected automatically. Use when the user wants the full Hire Billy experience.',
+        'detected automatically. Use when the user wants the full embodied experience.',
       inputSchema: {
         platform: z.enum(['auto', 'desktop', 'inline']).optional()
           .describe('auto (default) detects the surface; desktop forces the macOS overlay; inline forces the in-chat card'),
@@ -352,7 +352,7 @@ export function buildServer({ local = false } = {}) {
 
     const notOnStage = {
       content: [{ type: 'text', text:
-        'Nobody is on stage. Summon him first (summon_billy) — the door is the consent gate, ' +
+        'Nobody is on stage. Summon him first (stage_summon) — the door is the consent gate, ' +
         'and a stage direction without a body is just a strongly worded opinion.' }],
       isError: true,
     };
@@ -386,7 +386,7 @@ export function buildServer({ local = false } = {}) {
         description:
           'The summoned figure walks across the desktop to a real window and points at it, optionally ' +
           'delivering a line in his speech bubble. He indicates; the human acts. He never clicks — ' +
-          'the overlay is click-through by construction. Requires a prior summon_billy.',
+          'the overlay is click-through by construction. Requires a prior stage_summon.',
         inputSchema: {
           app: z.string().describe('App owning the target window, matched as a case-insensitive substring (e.g. "chrome", "iterm")'),
           title: z.string().optional().describe('Optional title substring to disambiguate between windows of the same app'),
@@ -419,7 +419,7 @@ export function buildServer({ local = false } = {}) {
         description:
           'The summoned figure walks to a real window and sits down on its top edge, feet dangling over ' +
           'someone else\'s title bar, optionally saying a line. Purely presentational: the window ' +
-          'underneath keeps working and never receives a single event. Requires a prior summon_billy.',
+          'underneath keeps working and never receives a single event. Requires a prior stage_summon.',
         inputSchema: {
           app: z.string().describe('App owning the window to sit on, case-insensitive substring'),
           title: z.string().optional().describe('Optional title substring to disambiguate'),

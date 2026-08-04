@@ -33,7 +33,7 @@ npm test
 - **ChatGPT**: Settings → Apps & Connectors → enable Developer mode → Create → paste `https://your-host/mcp`. The widget renders via the Apps SDK (the server declares both the standard `_meta.ui.resourceUri` and the legacy `openai/outputTemplate`).
 - **Claude Code**: `claude mcp add --transport http hire-billy https://your-host/mcp` — terminal has no widget surface, so answers arrive as formatted text with the same trace.
 
-Over the connector, `summon_billy` always renders the in-chat card: a remote server has no business spawning a window, and on a phone or a browser tab there is no desktop to spawn it on.
+Over the connector, `stage_summon` always renders the in-chat card: a remote server has no business spawning a window, and on a phone or a browser tab there is no desktop to spawn it on.
 
 The `/mcp` endpoint is deliberately keyless (connector UIs have no good place for a shared secret); cost is contained by the pipeline's rate limit and a spend-capped API key. The browser UI's `BILLY1_KEYS` gating is unchanged and separate.
 
@@ -63,13 +63,13 @@ Then ask Claude things like "use hire-billy to find out this candidate's weaknes
 
 ### Tools
 
-- `ask_billy {question}`: a grounded answer plus sources, flags, struck claims, and a nine-stage trace with measured timings. Rate limited to five questions a minute; the sixth gets a first-class refusal with its own trace.
+- `ask_candidate {question}`: a grounded answer plus sources, flags, struck claims, and a nine-stage trace with measured timings. Rate limited to five questions a minute; the sixth gets a first-class refusal with its own trace.
 - `get_model_card {section?}`: the corpus as a model card. Sections: overview, how-i-work, strengths, limitations, evidence, scope. Limitations ship in the same corpus as strengths and are retrieved by the same machinery.
-- `summon_billy {platform?}`: he walks in, sits down, and talks. The surface is detected: a **local stdio client on macOS with an overlay runtime built** gets the real thing — a transparent click-through overlay where he walks across the desktop and sits on the Claude window. Every other surface (mobile, web, Cowork, the remote connector) gets the same entrance as an inline card in the message, drawn from the same sprites, with the ask box wired back to `ask_billy`. Pass `platform: "inline"` or `"desktop"` to override; a forced `desktop` that cannot be honoured says why and falls back to the card. The remote transport can never reach the spawn path.
+- `stage_summon {platform?}`: he walks in, sits down, and talks. The surface is detected: a **local stdio client on macOS with an overlay runtime built** gets the real thing — a transparent click-through overlay where he walks across the desktop and sits on the Claude window. Every other surface (mobile, web, Cowork, the remote connector) gets the same entrance as an inline card in the message, drawn from the same sprites, with the ask box wired back to `ask_candidate`. Pass `platform: "inline"` or `"desktop"` to override; a forced `desktop` that cannot be honoured says why and falls back to the card. The remote transport can never reach the spawn path.
 
 ### The Desk Tour verbs (local macOS only)
 
-Once `summon_billy` has put him on the desktop, three more tools appear on local stdio servers and turn the overlay into an EAP stage:
+Once `stage_summon` has put him on the desktop, three more tools appear on local stdio servers and turn the overlay into an EAP stage:
 
 - `list_windows`: surveys the ordinary windows on the primary display — owning app, title where available, screen bounds. Geometry only, no pixels, no content. Windows on other displays are off the stage and are not offered.
 - `stage_point {app, title?, say?}`: he walks across the desktop to a real window and points at it, optionally delivering a line. He indicates; the human acts.

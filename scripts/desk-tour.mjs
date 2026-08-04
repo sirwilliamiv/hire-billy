@@ -8,7 +8,7 @@ await c.connect(t);
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const shot = n => execSync(`screencapture -x ${SP}/tour-${n}.png`);
 
-const s = await c.callTool({ name: 'summon_billy', arguments: {} });
+const s = await c.callTool({ name: 'stage_summon', arguments: {} });
 console.log('summon:', s.structuredContent?.mode);
 await wait(13000); shot('1-seated');
 

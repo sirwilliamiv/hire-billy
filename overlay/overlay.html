@@ -194,10 +194,10 @@ function bridgeAsk(q){
     body:JSON.stringify({question:q})}).then(function(r){return r.json()});
 }
 
-var GREET_LEDE = CLAUDE ? "Hey, I'm Billy. Yes, on your actual screen."
-  : "Hey, I'm Billy. I couldn't find a Claude window, so this spot is mine now.";
-var GREET = "This is my application to work with you at Rocket Money. " +
-  (CLAUDE ? "I found your Claude window and sat down on it, because" : "Your Claude window is hiding somewhere, so I set up here instead, because the best cover letter for this role seemed to be a working demo of the experience you're hiring for.") + " Ask me anything below, or let's talk for real over phone or Zoom.";
+var GREET_LEDE = CLAUDE ? "Hey. Yes, on your actual screen."
+  : "Hey. I couldn't find a Claude window, so this spot is mine now.";
+var GREET = "I'm an embodied agent: summoned by consent, walking a real desktop, answering out of a signed corpus. " +
+  (CLAUDE ? "I found your Claude window and sat down on it." : "Your Claude window is hiding somewhere, so I set up here instead.") + " Ask me anything below. I point, I sit, I talk. I never click.";
 var CHIPS = ["What are your biggest weaknesses?","Why should we not hire you?","What have you actually built?","Show me something off the record"];
 
 var fig = document.getElementById("fig");
