@@ -64,6 +64,7 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
     conf.userContentController.add(self, name: "quit")
     conf.userContentController.add(self, name: "openurl")
     conf.userContentController.add(self, name: "openstage")
+    conf.userContentController.add(self, name: "movewin")
     var cfg = "window.__STAGE={screenW:\(Int(screen.width)),screenH:\(Int(screen.height))"
     if let brain = argValue("--brain") { cfg += ",brain:'\(brain)'" }
     if let token = argValue("--token") { cfg += ",token:'\(token)'" }
@@ -110,6 +111,64 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
     }
   }
 
+  /* Presentation-only window arrangement (the stagecraft exception): AX moves
+     the window frame; no click, keystroke, or event ever enters the app. */
+  var moveTimer: Timer?
+  func axWindow(pid: pid_t, near cur: CGRect) -> AXUIElement? {
+    let appEl = AXUIElementCreateApplication(pid)
+    var winsRef: CFTypeRef?
+    guard AXUIElementCopyAttributeValue(appEl, kAXWindowsAttribute as CFString, &winsRef) == .success,
+          let wins = winsRef as? [AXUIElement] else { return nil }
+    var best: AXUIElement?; var bestD = CGFloat.greatestFiniteMagnitude
+    for w in wins {
+      var posRef: CFTypeRef?; var sizeRef: CFTypeRef?
+      guard AXUIElementCopyAttributeValue(w, kAXPositionAttribute as CFString, &posRef) == .success,
+            AXUIElementCopyAttributeValue(w, kAXSizeAttribute as CFString, &sizeRef) == .success else { continue }
+      var p = CGPoint.zero; var s = CGSize.zero
+      AXValueGetValue(posRef as! AXValue, .cgPoint, &p)
+      AXValueGetValue(sizeRef as! AXValue, .cgSize, &s)
+      let d = abs(p.x - cur.origin.x) + abs(p.y - cur.origin.y) + abs(s.width - cur.width) + abs(s.height - cur.height)
+      if d < bestD { bestD = d; best = w }
+    }
+    return bestD < 80 ? best : nil
+  }
+
+  func moveWindow(_ d: [String: Any]) {
+    guard let pid = (d["pid"] as? NSNumber)?.int32Value,
+          let cur = d["cur"] as? [String: Any], let to = d["to"] as? [String: Any],
+          let cx = (cur["x"] as? NSNumber)?.doubleValue, let cy = (cur["y"] as? NSNumber)?.doubleValue,
+          let cw = (cur["w"] as? NSNumber)?.doubleValue, let ch = (cur["h"] as? NSNumber)?.doubleValue,
+          let tx = (to["x"] as? NSNumber)?.doubleValue, let ty = (to["y"] as? NSNumber)?.doubleValue else { return }
+    let opts = ["AXTrustedCheckOptionPrompt": true] as CFDictionary
+    guard AXIsProcessTrustedWithOptions(opts) else {
+      web.evaluateJavaScript("window.__moveDenied && window.__moveDenied()")
+      return
+    }
+    let curRect = CGRect(x: cx, y: cy, width: cw, height: ch)
+    guard let win = axWindow(pid: pid_t(pid), near: curRect) else {
+      web.evaluateJavaScript("window.__moveDenied && window.__moveDenied('lost')")
+      return
+    }
+    let ms = (d["ms"] as? NSNumber)?.doubleValue ?? 900
+    let steps = max(8, Int(ms / 33))
+    var i = 0
+    moveTimer?.invalidate()
+    moveTimer = Timer.scheduledTimer(withTimeInterval: 0.033, repeats: true) { [weak self] t in
+      guard let self = self else { t.invalidate(); return }
+      i += 1
+      let u = Double(i) / Double(steps)
+      let e = u < 0.5 ? 2 * u * u : 1 - pow(-2 * u + 2, 2) / 2   /* ease in-out */
+      var p = CGPoint(x: cx + (tx - cx) * e, y: cy + (ty - cy) * e)
+      let val = AXValueCreate(.cgPoint, &p)!
+      AXUIElementSetAttributeValue(win, kAXPositionAttribute as CFString, val)
+      self.web.evaluateJavaScript("window.__winstep && window.__winstep(\(Int(p.x)),\(Int(p.y)))")
+      if i >= steps {
+        t.invalidate()
+        self.web.evaluateJavaScript("window.__windone && window.__windone(\(Int(tx)),\(Int(ty)))")
+      }
+    }
+  }
+
   var lastClaude: CGRect? = nil
   func pushClaude(_ r: CGRect) {
     let js = "window.__reseat && window.__reseat({x:\(Int(r.origin.x)),y:\(Int(r.origin.y)),w:\(Int(r.width)),h:\(Int(r.height))})"
@@ -127,6 +186,7 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
 
   func userContentController(_ u: WKUserContentController, didReceive m: WKScriptMessage) {
     if m.name == "quit" { NSApp.terminate(nil); return }
+    if m.name == "movewin", let d = m.body as? [String: Any] { moveWindow(d); return }
     if m.name == "openurl", let s = m.body as? String, let url = URL(string: s),
        s.hasPrefix("http://127.0.0.1") || s.hasPrefix("http://localhost") {
       NSWorkspace.shared.open(url); return
@@ -167,6 +227,11 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
   }
 }
 
+if CommandLine.arguments.contains("--ax-check") {
+  print(AXIsProcessTrusted() ? "trusted" : "untrusted")
+  exit(0)
+}
+
 if CommandLine.arguments.contains("--list-windows") {
   var out: [[String: Any]] = []
   let stage = CGDisplayBounds(CGMainDisplayID())
@@ -181,13 +246,18 @@ if CommandLine.arguments.contains("--list-windows") {
       guard stage.intersects(rect) else { continue }
       var item: [String: Any] = [
         "app": w[kCGWindowOwnerName as String] as? String ?? "?",
+        "pid": w[kCGWindowOwnerPID as String] as? Int ?? 0,
         "x": Int(b["X"] ?? 0), "y": Int(b["Y"] ?? 0), "w": Int(bw), "h": Int(bh)
       ]
       if let name = w[kCGWindowName as String] as? String, !name.isEmpty { item["title"] = name }
       out.append(item)
     }
   }
-  let data = try! JSONSerialization.data(withJSONObject: out)
+  let wrapped: [String: Any] = [
+    "screen": ["w": Int(stage.width), "h": Int(stage.height)],
+    "windows": out,
+  ]
+  let data = try! JSONSerialization.data(withJSONObject: wrapped)
   print(String(data: data, encoding: .utf8)!)
   exit(0)
 }

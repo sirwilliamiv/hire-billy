@@ -74,8 +74,9 @@ Once `stage_summon` has put him on the desktop, three more tools appear on local
 - `list_windows`: surveys the ordinary windows on the primary display — owning app, title where available, screen bounds. Geometry only, no pixels, no content. Windows on other displays are off the stage and are not offered.
 - `stage_point {app, title?, say?}`: he walks across the desktop to a real window and points at it, optionally delivering a line. He indicates; the human acts.
 - `stage_sit {app, title?, say?}`: he walks to a real window and sits down on its top edge, feet dangling over someone else's title bar.
+- `stage_move {app, title?, x, y, say?}`: he draws a wand, spotlights the window, and glides it to a new position. Stage arrangement, not actuation — the frame moves, but no click or keystroke ever enters the app. Needs macOS Accessibility permission for the overlay runtime; without it the tool says exactly what to grant.
 
-All three refuse politely until he has been summoned — the summon tool's approval is the consent gate. And the one rule holds by construction: the overlay is click-through, so the actor never clicks. Nothing he does registers as input to the windows he visits.
+All of them refuse politely until he has been summoned — the summon tool's approval is the consent gate. And the one rule holds by construction: the overlay is click-through, so the actor never clicks. Nothing he does registers as input to the windows he visits.
 
 `scripts/desk-tour.mjs` drives the whole tour over stdio for filming: summon, survey, point, sit, with a screenshot after each beat (`SP=/tmp node scripts/desk-tour.mjs`).
 

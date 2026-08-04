@@ -150,7 +150,13 @@ export function detectSurface({ local, server, requested }) {
 function listWindows() {
   const r = spawnSync(NATIVE_BIN, ['--list-windows'], { encoding: 'utf8', timeout: 5000 });
   if (r.status !== 0) throw new Error('window survey failed: ' + (r.stderr || 'binary did not answer'));
-  return JSON.parse(r.stdout).filter(w => w.app !== 'stage-overlay');
+  const d = JSON.parse(r.stdout);
+  return { screen: d.screen, windows: d.windows.filter(w => w.app !== 'stage-overlay') };
+}
+
+function axTrusted() {
+  const r = spawnSync(NATIVE_BIN, ['--ax-check'], { encoding: 'utf8', timeout: 5000 });
+  return r.status === 0 && r.stdout.trim() === 'trusted';
 }
 
 function resolveWindow(wins, app, title) {
@@ -347,6 +353,7 @@ export function buildServer({ local = false } = {}) {
     const windowShape = z.object({
       app: z.string(),
       title: z.string().optional(),
+      pid: z.number(),
       x: z.number(), y: z.number(), w: z.number(), h: z.number(),
     });
 
@@ -366,15 +373,15 @@ export function buildServer({ local = false } = {}) {
           'List the ordinary windows on this desktop: owning app, title where available, and screen bounds. ' +
           'Geometry only — no pixels, no content. Use it to choose a target for stage_point or stage_sit.',
         inputSchema: {},
-        outputSchema: { windows: z.array(windowShape) },
+        outputSchema: { screen: z.object({ w: z.number(), h: z.number() }), windows: z.array(windowShape) },
       },
       async () => {
-        const windows = listWindows();
+        const { screen, windows } = listWindows();
         const lines = windows.map(w =>
           `${w.app}${w.title ? ' — ' + w.title : ''}  [${w.x},${w.y} ${w.w}x${w.h}]`);
         return {
-          content: [{ type: 'text', text: 'On stage, front to back:\n' + lines.join('\n') }],
-          structuredContent: { windows },
+          content: [{ type: 'text', text: `The stage is ${screen.w}x${screen.h}. On it, front to back:\n` + lines.join('\n') }],
+          structuredContent: { screen, windows },
         };
       }
     );
@@ -384,8 +391,8 @@ export function buildServer({ local = false } = {}) {
       {
         title: 'Point at a window',
         description:
-          'The summoned figure walks across the desktop to a real window and points at it, optionally ' +
-          'delivering a line in his speech bubble. He indicates; the human acts. He never clicks — ' +
+          'The summoned figure walks across the desktop to a real window, draws a wand, and points at it; ' +
+          'the window lights up with a spotlight outline. He may deliver a line. He indicates; the human acts. He never clicks — ' +
           'the overlay is click-through by construction. Requires a prior stage_summon.',
         inputSchema: {
           app: z.string().describe('App owning the target window, matched as a case-insensitive substring (e.g. "chrome", "iterm")'),
@@ -396,7 +403,7 @@ export function buildServer({ local = false } = {}) {
       },
       async ({ app, title, say }) => {
         if (!verbReady()) return notOnStage;
-        const wins = listWindows();
+        const wins = listWindows().windows;
         const target = resolveWindow(wins, app, title);
         if (!target) {
           const cast = [...new Set(wins.map(w => w.app))].join(', ');
@@ -429,7 +436,7 @@ export function buildServer({ local = false } = {}) {
       },
       async ({ app, title, say }) => {
         if (!verbReady()) return notOnStage;
-        const wins = listWindows();
+        const wins = listWindows().windows;
         const target = resolveWindow(wins, app, title);
         if (!target) {
           const cast = [...new Set(wins.map(w => w.app))].join(', ');
@@ -441,6 +448,53 @@ export function buildServer({ local = false } = {}) {
             `He is heading for the top edge of ${target.app}${target.title ? ' (' + target.title + ')' : ''} to sit down on it. ` +
             'The window will not notice. Nothing he does registers as input.' }],
           structuredContent: { verb: 'sit', target },
+        };
+      }
+    );
+
+    server.registerTool(
+      'stage_move',
+      {
+        title: 'Rearrange a window (presentation only)',
+        description:
+          'The summoned figure walks to a real window, draws a wand, spotlights the window, and glides it ' +
+          'to a new position on screen. This is stage arrangement, not actuation: the window frame moves, ' +
+          'but no click, keystroke, or event of any kind enters the app — the sanctioned presentation ' +
+          'exception, like scroll-into-view. Needs macOS Accessibility permission for the overlay; the ' +
+          'tool says exactly what to grant if it is missing. Requires a prior stage_summon.',
+        inputSchema: {
+          app: z.string().describe('App owning the window to move, case-insensitive substring'),
+          title: z.string().optional().describe('Optional title substring to disambiguate'),
+          x: z.number().describe('New top-left x of the window, in screen coordinates'),
+          y: z.number().describe('New top-left y of the window, in screen coordinates'),
+          say: z.string().optional().describe('A line for him to deliver as the window settles'),
+        },
+        outputSchema: { verb: z.string(), target: windowShape, to: z.object({ x: z.number(), y: z.number() }) },
+      },
+      async ({ app, title, x, y, say }) => {
+        if (!verbReady()) return notOnStage;
+        if (!axTrusted()) {
+          return { content: [{ type: 'text', text:
+            'The OS will not let him touch the furniture yet. Grant Accessibility permission to the overlay: ' +
+            'System Settings > Privacy & Security > Accessibility > add ' + NATIVE_BIN + ' (or the app hosting ' +
+            'this MCP server). Until then he can point at windows but not move them.' }], isError: true };
+        }
+        const { screen, windows } = listWindows();
+        const target = resolveWindow(windows, app, title);
+        if (!target) {
+          const cast = [...new Set(windows.map(w => w.app))].join(', ');
+          return { content: [{ type: 'text', text: `No window matches "${app}${title ? ' / ' + title : ''}". On stage right now: ${cast}.` }], isError: true };
+        }
+        const to = {
+          x: Math.max(0, Math.min(Math.round(x), screen.w - 80)),
+          y: Math.max(0, Math.min(Math.round(y), screen.h - 80)),
+        };
+        brain.broadcast({ type: 'verb.move', target, to, say: say || null });
+        return {
+          content: [{ type: 'text', text:
+            `He is walking over to ${target.app}${target.title ? ' (' + target.title + ')' : ''} with the wand out. ` +
+            `The window glides to ${to.x},${to.y}. Its contents never feel a thing.` }],
+          structuredContent: { verb: 'move', target, to },
         };
       }
     );

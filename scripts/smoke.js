@@ -61,13 +61,15 @@ const ok = (name, cond) => { console.log((cond ? 'PASS' : 'FAIL') + '  ' + name)
   await client.connect(transport);
   const tools = await client.listTools();
   const expected = process.platform === 'darwin'
-    ? 'ask_candidate,get_model_card,list_windows,stage_point,stage_sit,stage_summon'
+    ? 'ask_candidate,get_model_card,list_windows,stage_move,stage_point,stage_sit,stage_summon'
     : 'ask_candidate,get_model_card,stage_summon';
   ok('local mcp exposes the full toolset incl verbs', tools.tools.map(t => t.name).sort().join(',') === expected);
   if (process.platform === 'darwin') {
     /* stage directions without a summoned body must refuse, not half-perform */
     const pt = await client.callTool({ name: 'stage_point', arguments: { app: 'finder' } });
     ok('stage_point refuses when nobody is on stage', pt.isError === true && pt.content[0].text.includes('Summon him first'));
+    const mv = await client.callTool({ name: 'stage_move', arguments: { app: 'finder', x: 100, y: 100 } });
+    ok('stage_move refuses when nobody is on stage', mv.isError === true && mv.content[0].text.includes('Summon him first'));
   }
   const a = await client.callTool({ name: 'ask_candidate', arguments: { question: 'What are his weaknesses?' } });
   const at = a.content[0].text;
