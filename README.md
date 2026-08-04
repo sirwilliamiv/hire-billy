@@ -67,6 +67,18 @@ Then ask Claude things like "use hire-billy to find out this candidate's weaknes
 - `get_model_card {section?}`: the corpus as a model card. Sections: overview, how-i-work, strengths, limitations, evidence, scope. Limitations ship in the same corpus as strengths and are retrieved by the same machinery.
 - `summon_billy {platform?}`: he walks in, sits down, and talks. The surface is detected: a **local stdio client on macOS with an overlay runtime built** gets the real thing — a transparent click-through overlay where he walks across the desktop and sits on the Claude window. Every other surface (mobile, web, Cowork, the remote connector) gets the same entrance as an inline card in the message, drawn from the same sprites, with the ask box wired back to `ask_billy`. Pass `platform: "inline"` or `"desktop"` to override; a forced `desktop` that cannot be honoured says why and falls back to the card. The remote transport can never reach the spawn path.
 
+### The Desk Tour verbs (local macOS only)
+
+Once `summon_billy` has put him on the desktop, three more tools appear on local stdio servers and turn the overlay into an EAP stage:
+
+- `list_windows`: surveys the ordinary windows on the primary display — owning app, title where available, screen bounds. Geometry only, no pixels, no content. Windows on other displays are off the stage and are not offered.
+- `stage_point {app, title?, say?}`: he walks across the desktop to a real window and points at it, optionally delivering a line. He indicates; the human acts.
+- `stage_sit {app, title?, say?}`: he walks to a real window and sits down on its top edge, feet dangling over someone else's title bar.
+
+All three refuse politely until he has been summoned — the summon tool's approval is the consent gate. And the one rule holds by construction: the overlay is click-through, so the actor never clicks. Nothing he does registers as input to the windows he visits.
+
+`scripts/desk-tour.mjs` drives the whole tour over stdio for filming: summon, survey, point, sit, with a screenshot after each beat (`SP=/tmp node scripts/desk-tour.mjs`).
+
 ### The summon card
 
 `ui/summon.html` is generated — edit `ui/summon.tpl.html` and run `npm run build:summon`, which inlines the overlay's own sprites and fonts as data URIs so the card is self-contained (hosts render it in a sandboxed iframe with no network). Preview both states without a client:

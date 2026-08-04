@@ -11,7 +11,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { createServer } from 'node:http';
@@ -32,6 +32,10 @@ function ensureBrain() {
        cross-origin browser page fails both checks */
     const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type, x-billy-token' };
     const stageClients = new Set();
+    const broadcast = obj => {
+      const b = typeof obj === 'string' ? obj : JSON.stringify(obj);
+      for (const c of stageClients) { try { c.write('data: ' + b + '\n\n'); } catch (e) {} }
+    };
     const srv = createServer((req, res) => {
       const u = new URL(req.url, 'http://x');
       if (req.method === 'OPTIONS') { res.writeHead(204, CORS); return res.end(); }
@@ -48,7 +52,7 @@ function ensureBrain() {
         let b = '';
         req.on('data', c => { b += c; if (b.length > 8192) req.destroy(); });
         req.on('end', () => {
-          for (const c of stageClients) { try { c.write('data: ' + b + '\n\n'); } catch (e) {} }
+          broadcast(b);
           res.writeHead(204, CORS); res.end();
         });
         return;
@@ -76,7 +80,7 @@ function ensureBrain() {
       res.writeHead(404, CORS); res.end();
     });
     srv.unref();
-    srv.listen(0, '127.0.0.1', () => { brain = { port: srv.address().port, token }; resolve(brain); });
+    srv.listen(0, '127.0.0.1', () => { brain = { port: srv.address().port, token, broadcast }; resolve(brain); });
   });
 }
 
@@ -138,6 +142,30 @@ export function detectSurface({ local, server, requested }) {
     return { mode: 'inline', reason: `the client identifies as ${clientName}, which has no desktop of its own`, facts };
   }
   return { mode: 'desktop', reason: 'local macOS client with an overlay runtime built', facts };
+}
+
+/* The stage, surveyed: every ordinary window on this desktop, front to back,
+   read from the window server (bounds and owners only; no pixels, no content).
+   The overlay itself lives above the ordinary layer so it never lists itself. */
+function listWindows() {
+  const r = spawnSync(NATIVE_BIN, ['--list-windows'], { encoding: 'utf8', timeout: 5000 });
+  if (r.status !== 0) throw new Error('window survey failed: ' + (r.stderr || 'binary did not answer'));
+  return JSON.parse(r.stdout).filter(w => w.app !== 'billy-overlay');
+}
+
+function resolveWindow(wins, app, title) {
+  const a = (app || '').toLowerCase(), t = (title || '').toLowerCase();
+  return wins.find(w =>
+    (!a || w.app.toLowerCase().includes(a)) &&
+    (!t || (w.title || '').toLowerCase().includes(t))) || null;
+}
+
+function overlayAlive() {
+  try {
+    const pid = parseInt(readFileSync(join(homedir(), '.hire-billy', 'overlay.pid'), 'utf8'), 10);
+    process.kill(pid, 0);
+    return true;
+  } catch (e) { return false; }
 }
 
 const INLINE_LEDE = "Hey, I'm Billy. No desktop here, so I came to the message.";
@@ -309,6 +337,114 @@ export function buildServer({ local = false } = {}) {
       return handover ? reply(HANDOVER_LEDE, HANDOVER_REST) : reply(DESKTOP_LEDE, DESKTOP_REST);
     }
   );
+
+  /* The Desk Tour verbs (EAP: point and a window-edge sit). Local stdio only:
+     these direct a body on the machine in front of the viewer, and the summon
+     tool's approval is the consent gate they all sit behind. The one rule is
+     normative and enforced by construction: the overlay is click-through, so
+     the actor cannot actuate anything even by accident. He points; you click. */
+  if (local && process.platform === 'darwin') {
+    const windowShape = z.object({
+      app: z.string(),
+      title: z.string().optional(),
+      x: z.number(), y: z.number(), w: z.number(), h: z.number(),
+    });
+
+    const notOnStage = {
+      content: [{ type: 'text', text:
+        'Nobody is on stage. Summon him first (summon_billy) — the door is the consent gate, ' +
+        'and a stage direction without a body is just a strongly worded opinion.' }],
+      isError: true,
+    };
+    const verbReady = () => existsSync(NATIVE_BIN) && brain && overlayAlive();
+
+    server.registerTool(
+      'list_windows',
+      {
+        title: 'Survey the stage',
+        description:
+          'List the ordinary windows on this desktop: owning app, title where available, and screen bounds. ' +
+          'Geometry only — no pixels, no content. Use it to choose a target for stage_point or stage_sit.',
+        inputSchema: {},
+        outputSchema: { windows: z.array(windowShape) },
+      },
+      async () => {
+        const windows = listWindows();
+        const lines = windows.map(w =>
+          `${w.app}${w.title ? ' — ' + w.title : ''}  [${w.x},${w.y} ${w.w}x${w.h}]`);
+        return {
+          content: [{ type: 'text', text: 'On stage, front to back:\n' + lines.join('\n') }],
+          structuredContent: { windows },
+        };
+      }
+    );
+
+    server.registerTool(
+      'stage_point',
+      {
+        title: 'Point at a window',
+        description:
+          'The summoned figure walks across the desktop to a real window and points at it, optionally ' +
+          'delivering a line in his speech bubble. He indicates; the human acts. He never clicks — ' +
+          'the overlay is click-through by construction. Requires a prior summon_billy.',
+        inputSchema: {
+          app: z.string().describe('App owning the target window, matched as a case-insensitive substring (e.g. "chrome", "iterm")'),
+          title: z.string().optional().describe('Optional title substring to disambiguate between windows of the same app'),
+          say: z.string().optional().describe('A line for him to deliver while pointing'),
+        },
+        outputSchema: { verb: z.string(), target: windowShape },
+      },
+      async ({ app, title, say }) => {
+        if (!verbReady()) return notOnStage;
+        const wins = listWindows();
+        const target = resolveWindow(wins, app, title);
+        if (!target) {
+          const cast = [...new Set(wins.map(w => w.app))].join(', ');
+          return { content: [{ type: 'text', text: `No window matches "${app}${title ? ' / ' + title : ''}". On stage right now: ${cast}.` }], isError: true };
+        }
+        brain.broadcast({ type: 'verb.point', target, say: say || null });
+        return {
+          content: [{ type: 'text', text:
+            `He is walking over to ${target.app}${target.title ? ' (' + target.title + ')' : ''} to point at it` +
+            `${say ? ' and deliver the line' : ''}. He will not click it. He never clicks.` }],
+          structuredContent: { verb: 'point', target },
+        };
+      }
+    );
+
+    server.registerTool(
+      'stage_sit',
+      {
+        title: 'Sit on a window edge',
+        description:
+          'The summoned figure walks to a real window and sits down on its top edge, feet dangling over ' +
+          'someone else\'s title bar, optionally saying a line. Purely presentational: the window ' +
+          'underneath keeps working and never receives a single event. Requires a prior summon_billy.',
+        inputSchema: {
+          app: z.string().describe('App owning the window to sit on, case-insensitive substring'),
+          title: z.string().optional().describe('Optional title substring to disambiguate'),
+          say: z.string().optional().describe('A line for him to deliver once seated'),
+        },
+        outputSchema: { verb: z.string(), target: windowShape },
+      },
+      async ({ app, title, say }) => {
+        if (!verbReady()) return notOnStage;
+        const wins = listWindows();
+        const target = resolveWindow(wins, app, title);
+        if (!target) {
+          const cast = [...new Set(wins.map(w => w.app))].join(', ');
+          return { content: [{ type: 'text', text: `No window matches "${app}${title ? ' / ' + title : ''}". On stage right now: ${cast}.` }], isError: true };
+        }
+        brain.broadcast({ type: 'verb.sit', target, say: say || null });
+        return {
+          content: [{ type: 'text', text:
+            `He is heading for the top edge of ${target.app}${target.title ? ' (' + target.title + ')' : ''} to sit down on it. ` +
+            'The window will not notice. Nothing he does registers as input.' }],
+          structuredContent: { verb: 'sit', target },
+        };
+      }
+    );
+  }
 
   return server;
 }

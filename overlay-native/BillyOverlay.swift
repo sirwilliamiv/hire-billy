@@ -27,6 +27,8 @@ func claudeWindowBounds() -> CGRect? {
           let b = w[kCGWindowBounds as String] as? [String: CGFloat] else { continue }
     let r = CGRect(x: b["X"] ?? 0, y: b["Y"] ?? 0, width: b["Width"] ?? 0, height: b["Height"] ?? 0)
     if r.width < 300 || r.height < 200 { continue }
+    /* a Claude window on another display is off the stage; keep looking */
+    if !CGDisplayBounds(CGMainDisplayID()).intersects(r) { continue }
     return r
   }
   return nil
@@ -45,7 +47,9 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
   func applicationDidFinishLaunching(_ n: Notification) {
     try? FileManager.default.createDirectory(atPath: stateDir, withIntermediateDirectories: true)
     try? String(ProcessInfo.processInfo.processIdentifier).write(toFile: pidFile, atomically: true, encoding: .utf8)
-    let screen = NSScreen.main!.frame
+    /* the stage is the primary display: window-server coordinates are anchored
+       there, and NSScreen.main (the focused screen) may be a different monitor */
+    let screen = (NSScreen.screens.first ?? NSScreen.main!).frame
     window = NSWindow(contentRect: screen, styleMask: [.borderless], backing: .buffered, defer: false)
     window.isOpaque = false
     window.backgroundColor = .clear
@@ -76,7 +80,7 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
     window.makeKeyAndOrderFront(nil)
     NSApp.setActivationPolicy(.accessory)
 
-    let screenH = screen.height
+    _ = screen.height
     lastClaude = claudeWindowBounds()
     Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
       guard let self = self else { return }
@@ -161,6 +165,31 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
       }
     }
   }
+}
+
+if CommandLine.arguments.contains("--list-windows") {
+  var out: [[String: Any]] = []
+  let stage = CGDisplayBounds(CGMainDisplayID())
+  if let list = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] {
+    for w in list {
+      guard let layer = w[kCGWindowLayer as String] as? Int, layer == 0,
+            let b = w[kCGWindowBounds as String] as? [String: CGFloat],
+            let bw = b["Width"], let bh = b["Height"], bw >= 200, bh >= 150 else { continue }
+      /* the overlay is a stage on the main display only: a window on another
+         screen is a target the actor cannot reach, so it is not offered */
+      let rect = CGRect(x: b["X"] ?? 0, y: b["Y"] ?? 0, width: bw, height: bh)
+      guard stage.intersects(rect) else { continue }
+      var item: [String: Any] = [
+        "app": w[kCGWindowOwnerName as String] as? String ?? "?",
+        "x": Int(b["X"] ?? 0), "y": Int(b["Y"] ?? 0), "w": Int(bw), "h": Int(bh)
+      ]
+      if let name = w[kCGWindowName as String] as? String, !name.isEmpty { item["title"] = name }
+      out.append(item)
+    }
+  }
+  let data = try! JSONSerialization.data(withJSONObject: out)
+  print(String(data: data, encoding: .utf8)!)
+  exit(0)
 }
 
 let app = NSApplication.shared

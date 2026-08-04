@@ -59,6 +59,7 @@ html,body{background:transparent;overflow:hidden;width:100vw;height:100vh;
 .seated #skStand,.seated #skWalk{display:none}
 .seated #skSit{display:block}
 #pose{left:60px;top:0;height:245px;transform:translateX(-50%);display:none}
+.mirrorL #pose{transform:translateX(-50%) scaleX(-1)}
 .posing #skStand,.posing #skWalk,.posing #skSit{display:none!important}
 .posing #pose{display:block}
 .walking #skin{animation:pWalk .78s ease-in-out infinite}
@@ -428,7 +429,7 @@ window.addEventListener("resize", positionBubble);
 
 /* the Claude window moved, appeared, or resized: glide to the new seat */
 window.__reseat = function(c){
-  if(!c || window.__retiring) return;
+  if(!c || window.__retiring || window.__verbMode) return;
   CLAUDE = c;
   seat = { x: CLAUDE.x + Math.round(CLAUDE.w*0.42), hipY: CLAUDE.y + CLAUDE.h - 150 };
   mid = { x: seat.x, y: seat.hipY - 149, s: 1 };
@@ -459,6 +460,78 @@ window.__retire = function(){
   }, 2800);
   setTimeout(function(){ bridgeQuit(); }, 5400);
 };
+
+/* ---- Desk Tour verbs: stage directions pushed from the MCP server.
+   The actor walks and points and sits; he never clicks. ---- */
+function positionBubbleAt(x, y){
+  var bx = x + 130, by = y - 40;
+  if(bx + bubble.offsetWidth > SW - 20) bx = Math.max(20, x - bubble.offsetWidth - 24);
+  bubble.style.left = bx + "px"; bubble.style.top = Math.max(20, by) + "px";
+  reportRects();
+}
+function walkFig(tx, ty, cb){
+  window.__verbMode = true;
+  ledge.classList.remove("on");
+  bubble.classList.remove("show");
+  clearPose();
+  fig.classList.remove("seated","sitfall","mirrorL");
+  if(tx > lastP.x) fig.classList.add("faceR"); else fig.classList.remove("faceR");
+  var dist = Math.hypot(tx - lastP.x, ty - lastP.y);
+  var ms = Math.max(800, Math.min(3400, Math.round(dist * 2.2)));
+  fig.classList.add("walking");
+  fig.style.transitionDuration = ms + "ms";
+  fig.getBoundingClientRect();
+  setTimeout(function(){ place({x: tx, y: ty, s: 1}); }, 30);
+  fig.addEventListener("transitionend", function done(ev){
+    if(ev.propertyName !== "transform") return;
+    fig.removeEventListener("transitionend", done);
+    fig.classList.remove("walking");
+    fig.style.transitionDuration = "";
+    if(cb) cb();
+  });
+}
+function verbSay(m, defLede, x, y){
+  if(!m.say) return;
+  bubble.classList.add("show");
+  positionBubbleAt(x, y);
+  speak(m.lede || defLede, m.say, m.receipt || null);
+}
+function verbPoint(m){
+  var t = m.target; if(!t) return;
+  var footY = Math.max(t.y, 300);
+  var leftX = t.x - 150;
+  var standX = leftX > 10 ? leftX : Math.min(t.x + t.w + 24, SW - 150);
+  var ty = footY - 245;
+  walkFig(standX, ty, function(){
+    var toward = (t.x + t.w/2) > (standX + 63);
+    if(!toward) fig.classList.add("mirrorL");
+    setPose("pointSide");
+    verbSay(m, "That one. Right there.", standX, ty);
+  });
+}
+function verbSit(m){
+  var t = m.target; if(!t) return;
+  var edgeY = Math.max(t.y, 160);
+  var sx = t.x + Math.round(t.w * 0.5) - 63;
+  sx = Math.max(10, Math.min(sx, SW - 150));
+  walkFig(sx, edgeY - 245, function(){
+    fig.classList.add("sitfall","seated");
+    place({x: sx, y: edgeY - 113, s: 1});
+    setTimeout(function(){ verbSay(m, "Good ledge. Sturdy title bar.", sx, edgeY - 113); }, 500);
+  });
+}
+if(NATIVE && BRAIN){
+  var verbES = new EventSource("http://127.0.0.1:" + BRAIN + "/stage-events?t=" + (CFG.token || ""));
+  verbES.onmessage = function(ev){
+    var m = {}; try{ m = JSON.parse(ev.data); }catch(e){ return; }
+    if(m.type !== "verb.point" && m.type !== "verb.sit") return;
+    (function run(){
+      if(window.__retiring || window.__going) return;
+      if(!seatedReady && !window.__verbMode){ setTimeout(run, 400); return; }
+      if(m.type === "verb.point") verbPoint(m); else verbSit(m);
+    })();
+  };
+}
 
 /* answers pushed from the chat: spoken as soon as he is seated */
 var seatedReady = false, speakQueue = [];

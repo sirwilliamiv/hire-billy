@@ -60,8 +60,15 @@ const ok = (name, cond) => { console.log((cond ? 'PASS' : 'FAIL') + '  ' + name)
   const client = new Client({ name: 'smoke', version: '0.0.1' });
   await client.connect(transport);
   const tools = await client.listTools();
-  ok('local mcp exposes 3 tools incl summon', tools.tools.length === 3 &&
-      tools.tools.map(t => t.name).sort().join(',') === 'ask_billy,get_model_card,summon_billy');
+  const expected = process.platform === 'darwin'
+    ? 'ask_billy,get_model_card,list_windows,stage_point,stage_sit,summon_billy'
+    : 'ask_billy,get_model_card,summon_billy';
+  ok('local mcp exposes the full toolset incl verbs', tools.tools.map(t => t.name).sort().join(',') === expected);
+  if (process.platform === 'darwin') {
+    /* stage directions without a summoned body must refuse, not half-perform */
+    const pt = await client.callTool({ name: 'stage_point', arguments: { app: 'finder' } });
+    ok('stage_point refuses when nobody is on stage', pt.isError === true && pt.content[0].text.includes('Summon him first'));
+  }
   const a = await client.callTool({ name: 'ask_billy', arguments: { question: 'What are his weaknesses?' } });
   const at = a.content[0].text;
   ok('mcp ask_billy grounded', at.includes('load-bearing') && at.includes('§limitations') && at.includes('trace (measured)'));
