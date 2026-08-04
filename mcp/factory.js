@@ -18,7 +18,7 @@ import { createServer } from 'node:http';
 import { randomBytes } from 'node:crypto';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { runPipeline, formatAnswer, formatCard, corpus } from '../core/pipeline.js';
+import { runPipeline, corpus } from '../core/pipeline.js';
 
 /* loopback brain for the native overlay: the window is a dumb shell, the
    answers stay in this process (pipeline + hot-reloading corpus) */
@@ -102,17 +102,8 @@ function ensureBrain() {
 }
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const WIDGET_URI = 'ui://eap-stage/panel';
-const WIDGET_HTML = readFileSync(join(HERE, '..', 'ui', 'widget.html'), 'utf8');
 const SUMMON_URI = 'ui://eap-stage/summon';
 const SUMMON_HTML = readFileSync(join(HERE, '..', 'ui', 'summon.html'), 'utf8');
-
-const UI_META = {
-  ui: { resourceUri: WIDGET_URI },
-  'openai/outputTemplate': WIDGET_URI,
-  'openai/toolInvocation/invoking': 'Interrogating the candidate…',
-  'openai/toolInvocation/invoked': 'Answer grounded against the corpus',
-};
 
 const SUMMON_META = {
   ui: { resourceUri: SUMMON_URI },
@@ -193,88 +184,21 @@ function overlayAlive() {
 
 const INLINE_LEDE = "Hey. No desktop here, so I came to the message.";
 const INLINE_REST =
-  "The full version of this walks across a macOS desktop and sits down on your Claude window. " +
-  "You're on a surface that doesn't have one, so you get the same entrance in the chat: I walk in, " +
-  "I sit down, and I answer out of the same signed corpus, struck claims and all. Ask me anything below.";
+  "The full version of this walks across a macOS desktop: pointed at real windows, sitting on real " +
+  "title bars, moving them without touching their contents. This surface has no desktop, so the " +
+  "entrance plays inside the chat instead. Same body, same rule: I never click.";
 const DESKTOP_LEDE = "I'm out there, on your actual screen.";
 const DESKTOP_REST =
-  "Watch the right edge of your desktop: a door, then me, walking over to sit down on your Claude window. " +
-  "That bubble is the one to talk to. The X on it sends me home.";
+  "Watch the desktop: a door, rain, then me, walking over to sit down on your Claude window. " +
+  "Direct me with the stage verbs; the viewer can type at me and stage_listen brings you their words. " +
+  "The X on the bubble sends me home.";
 const HANDOVER_LEDE = "There is already one of me out there, so he is handing over.";
 const HANDOVER_REST =
   "Two of me is a governance problem. The incumbent will say his goodbyes and walk off " +
-  "while a fresh one makes his entrance. Same corpus, better posture.";
-
-const traceShape = z.object({
-  stage: z.string(),
-  ms: z.number(),
-  note: z.string(),
-}).passthrough();
+  "while a fresh one makes his entrance. Same protocol, better posture.";
 
 export function buildServer({ local = false } = {}) {
   const server = new McpServer({ name: 'eap-stage', version: corpus().meta.version + '.0' });
-
-  server.registerTool(
-    'ask_candidate',
-    {
-      title: 'Interrogate the candidate',
-      description:
-        'Interrogate the candidate. Ask anything: strengths, weaknesses, how he works, why not to hire him. ' +
-        'Every answer is grounded in a signed corpus and returns a measured nine-stage trace. ' +
-        'Unsourced superlatives are struck in view; flattery is structurally impossible.',
-      inputSchema: { question: z.string().describe('The question to put to the candidate') },
-      outputSchema: {
-        kind: z.string(),
-        question: z.string(),
-        lede: z.string(),
-        rest: z.string().describe('Body text; struck claims wrapped in ~~tildes~~'),
-        sources: z.array(z.string()),
-        flags: z.array(z.string()),
-        struck: z.array(z.string()),
-        receipt: z.string(),
-        trace: z.array(traceShape),
-      },
-      _meta: UI_META,
-    },
-    async ({ question }) => {
-      const r = await runPipeline(question);
-      const { kind, question: q, lede, rest, sources, flags, struck, receipt, trace } = r;
-      return {
-        content: [{ type: 'text', text: formatAnswer(r) }],
-        structuredContent: { kind, question: q, lede, rest, sources, flags, struck, receipt, trace },
-      };
-    }
-  );
-
-  server.registerTool(
-    'get_model_card',
-    {
-      title: 'Pull his permanent record',
-      description:
-        'Read the candidate\'s model card: overview, how he works, reported strengths, known limitations, ' +
-        'evidence, scope. Limitations ship in the same corpus as strengths, retrieved by the same machinery.',
-      inputSchema: {
-        section: z.string().optional().describe('Optional section id: overview, how-i-work, strengths, limitations, evidence, scope'),
-      },
-    },
-    async ({ section }) => {
-      return { content: [{ type: 'text', text: formatCard(section) }] };
-    }
-  );
-
-  server.registerResource(
-    'eap-stage-panel',
-    WIDGET_URI,
-    {
-      title: 'Interrogation panel',
-      description: 'Inline UI for interrogating the candidate: grounded answers, struck claims, measured trace.',
-      mimeType: 'text/html;profile=mcp-app',
-      _meta: { ui: { prefersBorder: false } },
-    },
-    async () => ({
-      contents: [{ uri: WIDGET_URI, mimeType: 'text/html;profile=mcp-app', text: WIDGET_HTML }],
-    })
-  );
 
   server.registerResource(
     'eap-stage-summon',
@@ -302,11 +226,12 @@ export function buildServer({ local = false } = {}) {
     {
       title: 'Let him out',
       description:
-        'Summons an animated figure of the candidate: he walks in, sits down, and answers questions ' +
-        'in a speech bubble. On a local macOS client he walks onto the actual desktop as a transparent ' +
-        'click-through overlay and sits on the Claude window; on every other surface (mobile, web, ' +
-        'remote connector) the same entrance renders as a card inside the conversation. The surface is ' +
-        'detected automatically. Use when the user wants the full embodied experience.',
+        'Summons the embodied agent: a door opens on the desktop and a figure walks out, sits on the ' +
+        'Claude window, and takes stage directions from you. On a local macOS client he lives on the ' +
+        'actual desktop as a transparent click-through overlay; on any other surface (mobile, web, ' +
+        'remote connector) the entrance renders as a card inside the conversation. He is a body, not a ' +
+        'chatbot: direct him with the stage_* verbs, hear the viewer with stage_listen, answer through ' +
+        'him with stage_speak. He never clicks anything.',
       inputSchema: {
         platform: z.enum(['auto', 'desktop', 'inline']).optional()
           .describe('auto (default) detects the surface; desktop forces the macOS overlay; inline forces the in-chat card'),
@@ -327,11 +252,14 @@ export function buildServer({ local = false } = {}) {
     },
     async ({ platform }) => {
       const surface = detectSurface({ local, server, requested: platform && platform !== 'auto' ? platform : null });
-      const reply = (lede, rest) => ({
-        content: [{ type: 'text', text: `${lede}\n\n${rest}\n\n(${surface.mode} · ${surface.reason})` }],
-        structuredContent: { mode: surface.mode, reason: surface.reason, lede, rest, facts: surface.facts },
-        _meta: SUMMON_META,
-      });
+      const reply = (lede, rest) => {
+        const r = {
+          content: [{ type: 'text', text: `${lede}\n\n${rest}\n\n(${surface.mode} · ${surface.reason})` }],
+          structuredContent: { mode: surface.mode, reason: surface.reason, lede, rest, facts: surface.facts },
+        };
+        if (surface.mode === 'inline') r._meta = SUMMON_META;
+        return r;
+      };
 
       if (surface.mode === 'inline') return reply(INLINE_LEDE, INLINE_REST);
 
