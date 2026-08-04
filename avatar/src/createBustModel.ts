@@ -1,5 +1,5 @@
 /**
- * Billy Portrait Bust — procedural Three.js SHELL.
+ * Portrait Bust — procedural Three.js SHELL.
  *
  * Hand-refined from the img2threejs generated factory (spec: avatar/pipeline/spec.json).
  * Contract:
@@ -7,7 +7,7 @@
  *  - Pivot nodes carry position/rotation ONLY (scale 1,1,1); size lives in geometry.
  *    This prevents non-uniform parent scales from squashing nested parts (eyes under head).
  *  - root.userData.sculptRuntime = { nodes, meshes, sockets, colliders, destructionGroups }
- *  - applyBillySkin(root, skin) swaps materials on named meshes without touching geometry.
+ *  - applySkin(root, skin) swaps materials on named meshes without touching geometry.
  *
  * Units: 1.0 = one head height (chin -> crown incl. hair). Model faces +z.
  * Subject's anatomical left = +x (faces camera at +z).
@@ -30,7 +30,7 @@ export type ProceduralModelRuntime = {
   skinTargets: Record<string, string>; // meshId -> material slot name
 };
 
-export type BillySkin = {
+export type BustSkin = {
   name: string;
   materials: Record<string, THREE.Material>; // slot -> material (slots: skin, hair, beard, eye, teeth, shirt)
   onAttach?: (root: THREE.Group) => void;
@@ -50,7 +50,7 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-// Blockout clay materials per slot — replaced wholesale by applyBillySkin.
+// Blockout clay materials per slot — replaced wholesale by applySkin.
 function clayMaterials(): Record<string, THREE.Material> {
   const mk = (color: number, roughness = 0.8) =>
     new THREE.MeshStandardMaterial({ color, roughness, metalness: 0 });
@@ -74,7 +74,7 @@ function extrudeShape(points: [number, number][]): THREE.Shape {
 // ---------------------------------------------------------------------------
 // factory
 // ---------------------------------------------------------------------------
-export function createBillyPortraitBustModel(options: ProceduralModelOptions = {}): THREE.Group {
+export function createPortraitBustModel(options: ProceduralModelOptions = {}): THREE.Group {
   const castShadow = options.castShadow ?? true;
   const receiveShadow = options.receiveShadow ?? true;
 
@@ -88,7 +88,7 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
   const mats = clayMaterials();
 
   const root = new THREE.Group();
-  root.name = 'billy-bust';
+  root.name = 'portrait-bust';
   nodes.root = root;
 
   function pivot(id: string, parent: THREE.Object3D, pos: [number, number, number], rotDeg: [number, number, number] = [0, 0, 0]): THREE.Group {
@@ -391,16 +391,16 @@ export function createBillyPortraitBustModel(options: ProceduralModelOptions = {
   // --- runtime -------------------------------------------------------------
   const runtime: ProceduralModelRuntime = { nodes, meshes, sockets, colliders, destructionGroups, skinTargets };
   root.userData.sculptRuntime = runtime;
-  root.userData.applySkin = (skin: BillySkin) => applyBillySkin(root, skin);
+  root.userData.applySkin = (skin: BustSkin) => applySkin(root, skin);
   return root;
 }
 
 // ---------------------------------------------------------------------------
 // skin swap API — the whole point of the shell
 // ---------------------------------------------------------------------------
-export function applyBillySkin(root: THREE.Group, skin: BillySkin): void {
+export function applySkin(root: THREE.Group, skin: BustSkin): void {
   const runtime = root.userData.sculptRuntime as ProceduralModelRuntime | undefined;
-  if (!runtime) throw new Error('applyBillySkin: root has no sculptRuntime');
+  if (!runtime) throw new Error('applySkin: root has no sculptRuntime');
   for (const [meshId, slot] of Object.entries(runtime.skinTargets)) {
     const mesh = runtime.meshes[meshId];
     const material = skin.materials[slot];
@@ -413,9 +413,9 @@ export function applyBillySkin(root: THREE.Group, skin: BillySkin): void {
 // ---------------------------------------------------------------------------
 // look-dev helpers (match lightingFromPhoto spec block)
 // ---------------------------------------------------------------------------
-export function createBillyPortraitBustLookDevLights(): THREE.Group {
+export function createPortraitBustLookDevLights(): THREE.Group {
   const g = new THREE.Group();
-  g.name = 'billy-lookdev-lights';
+  g.name = 'lookdev-lights';
   // key: large soft area-ish light front-upper-left of the SUBJECT'S photo (viewer-left = -x... photo key is image-left = +x subject side flipped; use viewer-left)
   const key = new THREE.DirectionalLight(0xfff4ea, 2.6);
   key.position.set(-1.6, 2.2, 2.6);
@@ -429,7 +429,7 @@ export function createBillyPortraitBustLookDevLights(): THREE.Group {
   return g;
 }
 
-export function createBillyPortraitBustEnvironment(renderer: THREE.WebGLRenderer): THREE.Texture {
+export function createPortraitBustEnvironment(renderer: THREE.WebGLRenderer): THREE.Texture {
   const pmrem = new THREE.PMREMGenerator(renderer);
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xf5f5f5);
@@ -443,7 +443,7 @@ export function createBillyPortraitBustEnvironment(renderer: THREE.WebGLRenderer
   return tex;
 }
 
-export function configureBillyPortraitBustRenderer(renderer: THREE.WebGLRenderer): void {
+export function configurePortraitBustRenderer(renderer: THREE.WebGLRenderer): void {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
   renderer.outputColorSpace = THREE.SRGBColorSpace;

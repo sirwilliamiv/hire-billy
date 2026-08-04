@@ -2,7 +2,7 @@
 /* Builds ui/summon.html (the in-chat summon card) from ui/summon.tpl.html by
    inlining the artwork that already ships in the desktop overlay. The overlay
    is the single source of truth for the sprites and the embedded fonts, so a
-   redrawn Billy only has to be pasted there; run `npm run build:summon` after.
+   redrawn, the new art only has to be pasted there; run `npm run build:summon` after.
 
    The card must be self-contained (hosts render it in a sandboxed iframe with
    no network), which is why everything arrives as a data: URI. Only the parts

@@ -1,18 +1,18 @@
-# Billy Avatar — procedural Three.js bust with swappable skins
+# the candidate Avatar — procedural Three.js bust with swappable skins
 
-A code-only 3D bust of Billy built from `pipeline/reference.png` via the
+A code-only 3D bust of the candidate built from `pipeline/reference.png` via the
 [img2threejs](https://github.com/img2threejs/img2threejs) staged sculpting pipeline
 (character profile: landmark measurement, quality-gated spec, measured render↔reference
 correction loop).
 
 ## The contract: shell + skins
 
-The **shell** (`src/createBillyBustModel.ts`) is geometry only — 50 named parts
+The **shell** (`src/createBustModel.ts`) is geometry only — 50 named parts
 (head, 31 hair curl clumps, beard band, open-smile mouth + teeth, eyes, nose, ears,
 neck, shirt/collar/placket/buttons) under pivot groups with sockets, box colliders,
 and destruction groups exposed at `root.userData.sculptRuntime`. No skin is baked in.
 
-**Skins** (`src/skins.ts`) are material sets applied via `applyBillySkin(root, skin)`:
+**Skins** (`src/skins.ts`) are material sets applied via `applythe candidateSkin(root, skin)`:
 
 - `createMatrixSkin()` — streaming green glyph rain (animated canvas emissive textures,
   per-zone density/tint; call `skin.update(t)` per frame)
@@ -21,13 +21,13 @@ and destruction groups exposed at `root.userData.sculptRuntime`. No skin is bake
 - `createClaySkin()` — neutral zone-colored review look
 
 ```js
-import { createBillyPortraitBustModel, applyBillySkin } from './createBillyBustModel.js';
+import { createthe candidatePortraitBustModel, applythe candidateSkin } from './createBustModel.js';
 import { createMatrixSkin } from './skins.js';
 
-const bust = createBillyPortraitBustModel();
+const bust = createthe candidatePortraitBustModel();
 scene.add(bust);
 const skin = createMatrixSkin();
-applyBillySkin(bust, skin);          // swap any time; geometry untouched
+applythe candidateSkin(bust, skin);          // swap any time; geometry untouched
 // per frame: skin.update?.(elapsedSeconds)
 ```
 

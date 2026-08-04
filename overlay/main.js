@@ -1,4 +1,4 @@
-/* hire-billy overlay: a transparent, click-through, always-on-top window.
+/* eap-stage overlay: a transparent, click-through, always-on-top window.
    The figure walks across the actual desktop, finds the Claude window via
    System Events (graceful fallback: bottom of screen), and sits on it. */
 const { app, BrowserWindow, screen, ipcMain } = require('electron');
@@ -8,7 +8,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const os = require('node:os');
 
-const STATE_DIR = path.join(os.homedir(), '.hire-billy');
+const STATE_DIR = path.join(os.homedir(), '.eap-stage');
 try { fs.mkdirSync(STATE_DIR, { recursive: true }); } catch (e) {}
 const PORT_FILE = path.join(STATE_DIR, 'overlay.port');
 const PID_FILE = path.join(STATE_DIR, 'overlay.pid');

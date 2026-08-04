@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-/* Hire Billy MCP server, stdio entry: interrogate the candidate from any
-   local MCP client (claude mcp add hire-billy -- node mcp/server.js).
+/* The Candidate MCP server, stdio entry: interrogate the candidate from any
+   local MCP client (claude mcp add eap-stage -- node mcp/server.js).
    The deployed Streamable HTTP endpoint lives in serve.js (POST /mcp);
    both build the same server from mcp/factory.js. */
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';

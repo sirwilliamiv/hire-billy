@@ -1,7 +1,7 @@
 {
   "referenceCamera": {
     "version": "1.0",
-    "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference-clean.png",
+    "sourceImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/reference-clean.png",
     "solver": "stage1_intake/solve_camera_pose.py",
     "method": "heuristic default-guess camera, not solved from image content; image dimensions give an exact aspect ratio, everything else is a starting point for agent refinement",
     "imageWidth": 512,

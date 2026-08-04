@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Billy Bust — sculpt viewer</title>
+<title>the candidate Bust — sculpt viewer</title>
 <style>
   html, body { margin: 0; height: 100%; background: #f5f5f5; overflow: hidden; }
   canvas { display: block; }
@@ -20,12 +20,12 @@
 <script type="module">
 import * as THREE from 'three';
 import {
-  createBillyPortraitBustModel,
-  applyBillySkin,
-  createBillyPortraitBustLookDevLights,
-  createBillyPortraitBustEnvironment,
-  configureBillyPortraitBustRenderer,
-} from './createBillyBustModel.js';
+  createPortraitBustModel,
+  applySkin,
+  createPortraitBustLookDevLights,
+  createPortraitBustEnvironment,
+  configurePortraitBustRenderer,
+} from './createBustModel.js';
 import { createMatrixSkin, createLikenessSkin, createClaySkin } from './skins.js';
 
 const params = new URLSearchParams(location.search);
@@ -39,15 +39,15 @@ const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffe
 renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(1);
 document.body.appendChild(renderer.domElement);
-configureBillyPortraitBustRenderer(renderer);
+configurePortraitBustRenderer(renderer);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xf5f5f5);
-scene.environment = createBillyPortraitBustEnvironment(renderer);
+scene.environment = createPortraitBustEnvironment(renderer);
 
-const model = createBillyPortraitBustModel();
+const model = createPortraitBustModel();
 scene.add(model);
-scene.add(createBillyPortraitBustLookDevLights());
+scene.add(createPortraitBustLookDevLights());
 
 if (params.get('flat') === '1') {
   // map-stripped evidence mode: unlit flat colors, geometry only
@@ -63,16 +63,16 @@ if (skinName === 'matrix') {
     renderer.render(scene, camera);
     window.__SKIN_READY = true;
   });
-  applyBillySkin(model, activeSkin);
+  applySkin(model, activeSkin);
   scene.background = new THREE.Color(0x04080a);
 } else if (skinName === 'likeness') {
   activeSkin = createLikenessSkin('./likeness-albedo.png', () => {
     renderer.render(scene, camera);
     window.__SKIN_READY = true;
   });
-  applyBillySkin(model, activeSkin);
+  applySkin(model, activeSkin);
 } else if (skinName === 'clay') {
-  applyBillySkin(model, createClaySkin());
+  applySkin(model, createClaySkin());
 }
 
 const camera = new THREE.PerspectiveCamera(fov, innerWidth / innerHeight, 0.01, 100);

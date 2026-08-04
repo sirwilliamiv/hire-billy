@@ -30,7 +30,7 @@ function ensureBrain() {
     /* the only legitimate caller is the overlay WebView (file:// origin sends
        Origin: null) presenting the per-launch token injected at spawn; any
        cross-origin browser page fails both checks */
-    const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type, x-billy-token' };
+    const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type, x-stage-token' };
     const stageClients = new Set();
     const broadcast = obj => {
       const b = typeof obj === 'string' ? obj : JSON.stringify(obj);
@@ -39,7 +39,7 @@ function ensureBrain() {
     const srv = createServer((req, res) => {
       const u = new URL(req.url, 'http://x');
       if (req.method === 'OPTIONS') { res.writeHead(204, CORS); return res.end(); }
-      const tok = req.headers['x-billy-token'] || u.searchParams.get('t');
+      const tok = req.headers['x-stage-token'] || u.searchParams.get('t');
       if (tok !== token) { res.writeHead(403, CORS); return res.end(); }
       if (req.method === 'GET' && u.pathname === '/stage-events') {
         res.writeHead(200, { ...CORS, 'content-type': 'text/event-stream', 'cache-control': 'no-store' });
@@ -85,9 +85,9 @@ function ensureBrain() {
 }
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const WIDGET_URI = 'ui://hire-billy/panel';
+const WIDGET_URI = 'ui://eap-stage/panel';
 const WIDGET_HTML = readFileSync(join(HERE, '..', 'ui', 'widget.html'), 'utf8');
-const SUMMON_URI = 'ui://hire-billy/summon';
+const SUMMON_URI = 'ui://eap-stage/summon';
 const SUMMON_HTML = readFileSync(join(HERE, '..', 'ui', 'summon.html'), 'utf8');
 
 const UI_META = {
@@ -106,7 +106,7 @@ const SUMMON_META = {
 
 const OVERLAY_DIR = join(HERE, '..', 'overlay');
 const ELECTRON_BIN = join(OVERLAY_DIR, 'node_modules', '.bin', 'electron');
-const NATIVE_BIN = join(HERE, '..', 'overlay-native', 'billy-overlay');
+const NATIVE_BIN = join(HERE, '..', 'overlay-native', 'stage-overlay');
 
 /* Client names that cannot possibly be the screen in front of the viewer even
    when the transport is local: a phone, a browser tab, a hosted workspace. */
@@ -150,7 +150,7 @@ export function detectSurface({ local, server, requested }) {
 function listWindows() {
   const r = spawnSync(NATIVE_BIN, ['--list-windows'], { encoding: 'utf8', timeout: 5000 });
   if (r.status !== 0) throw new Error('window survey failed: ' + (r.stderr || 'binary did not answer'));
-  return JSON.parse(r.stdout).filter(w => w.app !== 'billy-overlay');
+  return JSON.parse(r.stdout).filter(w => w.app !== 'stage-overlay');
 }
 
 function resolveWindow(wins, app, title) {
@@ -162,7 +162,7 @@ function resolveWindow(wins, app, title) {
 
 function overlayAlive() {
   try {
-    const pid = parseInt(readFileSync(join(homedir(), '.hire-billy', 'overlay.pid'), 'utf8'), 10);
+    const pid = parseInt(readFileSync(join(homedir(), '.eap-stage', 'overlay.pid'), 'utf8'), 10);
     process.kill(pid, 0);
     return true;
   } catch (e) { return false; }
@@ -240,7 +240,7 @@ export function buildServer({ local = false } = {}) {
   );
 
   server.registerResource(
-    'hire-billy-panel',
+    'eap-stage-panel',
     WIDGET_URI,
     {
       title: 'Interrogation panel',
@@ -254,7 +254,7 @@ export function buildServer({ local = false } = {}) {
   );
 
   server.registerResource(
-    'hire-billy-summon',
+    'eap-stage-summon',
     SUMMON_URI,
     {
       title: 'Summon card',
@@ -315,7 +315,7 @@ export function buildServer({ local = false } = {}) {
       /* a second summon retires the incumbent first: he says goodbye and
          walks off while the replacement makes its entrance */
       let handover = false;
-      const stateDir = join(homedir(), '.hire-billy');
+      const stateDir = join(homedir(), '.eap-stage');
       try {
         const pid = parseInt(readFileSync(join(stateDir, 'overlay.pid'), 'utf8'), 10);
         process.kill(pid, 0);

@@ -1,8 +1,8 @@
-# Hire Billy
+# The Candidate
 
 An interrogable candidate. One corpus, one nine-stage pipeline, three surfaces:
 
-1. **The UI**: `ui/hire-billy.html`, a single self-contained file (fonts inlined, no build step). Open it in a browser and query the candidate; the machinery shows its work.
+1. **The UI**: `ui/candidate.html`, a single self-contained file (fonts inlined, no build step). Open it in a browser and query the candidate; the machinery shows its work.
 2. **The HTTP socket**: `serve.js` hosts the UI and backs its live socket with the shared pipeline.
 3. **The MCP server**: `mcp/server.js` lets any MCP client (Claude Code, Claude Desktop, Cowork) interrogate the candidate directly.
 
@@ -14,7 +14,7 @@ The thesis, everywhere: one model call chooses the words, deterministic code dec
 npm install
 
 # the UI alone (design mode: mapped answers, honest about the rest)
-open ui/hire-billy.html
+open ui/candidate.html
 
 # the UI with a live socket
 ANTHROPIC_API_KEY=sk-... npm run serve
@@ -31,18 +31,18 @@ npm test
 
 - **claude.ai / Claude Desktop**: Settings → Connectors → Add custom connector → `https://your-host/mcp` (no auth). Paid plans render the inline interrogation panel; asking a question opens the widget with the answer, struck claims, sources, and the measured trace.
 - **ChatGPT**: Settings → Apps & Connectors → enable Developer mode → Create → paste `https://your-host/mcp`. The widget renders via the Apps SDK (the server declares both the standard `_meta.ui.resourceUri` and the legacy `openai/outputTemplate`).
-- **Claude Code**: `claude mcp add --transport http hire-billy https://your-host/mcp` — terminal has no widget surface, so answers arrive as formatted text with the same trace.
+- **Claude Code**: `claude mcp add --transport http eap-stage https://your-host/mcp` — terminal has no widget surface, so answers arrive as formatted text with the same trace.
 
 Over the connector, `stage_summon` always renders the in-chat card: a remote server has no business spawning a window, and on a phone or a browser tab there is no desktop to spawn it on.
 
-The `/mcp` endpoint is deliberately keyless (connector UIs have no good place for a shared secret); cost is contained by the pipeline's rate limit and a spend-capped API key. The browser UI's `BILLY1_KEYS` gating is unchanged and separate.
+The `/mcp` endpoint is deliberately keyless (connector UIs have no good place for a shared secret); cost is contained by the pipeline's rate limit and a spend-capped API key. The browser UI's `STAGE_KEYS` gating is unchanged and separate.
 
 **Local (stdio)**:
 
 Claude Code:
 
 ```bash
-claude mcp add hire-billy -- node /absolute/path/to/hire-billy/mcp/server.js
+claude mcp add eap-stage -- node /absolute/path/to/eap-stage/mcp/server.js
 ```
 
 Claude Desktop (`claude_desktop_config.json`):
@@ -50,16 +50,16 @@ Claude Desktop (`claude_desktop_config.json`):
 ```json
 {
   "mcpServers": {
-    "hire-billy": {
+    "eap-stage": {
       "command": "node",
-      "args": ["/absolute/path/to/hire-billy/mcp/server.js"],
+      "args": ["/absolute/path/to/eap-stage/mcp/server.js"],
       "env": { "ANTHROPIC_API_KEY": "optional, for live answers to unmapped questions" }
     }
   }
 }
 ```
 
-Then ask Claude things like "use hire-billy to find out this candidate's weaknesses" or "get his model card."
+Then ask Claude things like "use eap-stage to find out this candidate's weaknesses" or "get his model card."
 
 ### Tools
 
@@ -94,17 +94,17 @@ npm run serve
 Hosting this for a specific audience? Gate it:
 
 ```bash
-BILLY1_KEYS="hb-rm-x7k2,hb-friend-9m3p" ANTHROPIC_API_KEY=sk-... npm run serve
+STAGE_KEYS="hb-rm-x7k2,hb-friend-9m3p" ANTHROPIC_API_KEY=sk-... npm run serve
 ```
 
-Send each reviewer an invite link with their key: `https://your-host/?k=hb-rm-x7k2`. The page validates the key once, stores it, and scrubs it from the URL, so invited people never see an auth screen. Keyless arrivals get one quiet gate ("This copy is keyed.") with a single field. The `/ask` socket enforces the same keys server-side, so your API budget is only spendable by people you invited. Leave `BILLY1_KEYS` unset and everything is open.
+Send each reviewer an invite link with their key: `https://your-host/?k=hb-rm-x7k2`. The page validates the key once, stores it, and scrubs it from the URL, so invited people never see an auth screen. Keyless arrivals get one quiet gate ("This copy is keyed.") with a single field. The `/ask` socket enforces the same keys server-side, so your API budget is only spendable by people you invited. Leave `STAGE_KEYS` unset and everything is open.
 
 ## The corpus
 
 `corpus.json` is the single source of truth for every claim about the candidate. The servers read it directly; the UI carries a generated copy. After editing it:
 
 ```bash
-npm run sync   # regenerates the CORPUS block inside ui/hire-billy.html
+npm run sync   # regenerates the CORPUS block inside ui/candidate.html
 ```
 
 Nothing outside the corpus can become a claim about him. That cuts both ways: no invented wins, no softened flaws.
@@ -115,4 +115,3 @@ Nothing outside the corpus can become a claim about him. That cuts both ways: no
 - With no API key set, unmapped questions return "the live model is not plugged in yet" instead of an improvised answer. Degrade loudly, never silently.
 - The browser UI dramatizes the same stages: the question lifts off as a rocket, laps the room, and tows the interface into a picture-in-picture corner by its corners (bottom right, bottom left, top left, top right) while the pipeline runs behind it.
 
-Billy · billy@proedu.me

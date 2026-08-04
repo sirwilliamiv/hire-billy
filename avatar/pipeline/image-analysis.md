@@ -1,4 +1,4 @@
-# Image Analysis — Billy headshot reference
+# Image Analysis — the candidate headshot reference
 
 Reference: `/Users/b/Desktop/Screenshot 2026-08-03 at 1.10.57 PM.png`
 Protocol: grimoire/intake/image_analysis.md (layers 1–8, observation before inference)

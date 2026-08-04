@@ -1,8 +1,8 @@
-/* billy-overlay: transparent, click-through, always-on-top shell around
+/* stage-overlay: transparent, click-through, always-on-top shell around
    WKWebView. Reuses ui-side overlay.html; answers come from the node MCP
    server's loopback "brain" port. Claude window found via CGWindowList
    (bounds + owner name need no permissions). Build:
-     swiftc -O -framework Cocoa -framework WebKit -o billy-overlay BillyOverlay.swift */
+     swiftc -O -framework Cocoa -framework WebKit -o stage-overlay StageOverlay.swift */
 import Cocoa
 import WebKit
 
@@ -40,7 +40,7 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
   var hotRects: [CGRect] = []   /* CSS top-left coords */
   var timer: Timer?
 
-  let stateDir = NSHomeDirectory() + "/.hire-billy"
+  let stateDir = NSHomeDirectory() + "/.eap-stage"
   var pidFile: String { stateDir + "/overlay.pid" }
   var cmdFile: String { stateDir + "/overlay.cmd" }
 
@@ -64,7 +64,7 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
     conf.userContentController.add(self, name: "quit")
     conf.userContentController.add(self, name: "openurl")
     conf.userContentController.add(self, name: "openstage")
-    var cfg = "window.__BILLY={screenW:\(Int(screen.width)),screenH:\(Int(screen.height))"
+    var cfg = "window.__STAGE={screenW:\(Int(screen.width)),screenH:\(Int(screen.height))"
     if let brain = argValue("--brain") { cfg += ",brain:'\(brain)'" }
     if let token = argValue("--token") { cfg += ",token:'\(token)'" }
     if let c = claudeWindowBounds() {

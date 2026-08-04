@@ -8,7 +8,7 @@ Usage: align_render.py <reference.png> <render.png> <out.png>
 import sys
 from pathlib import Path
 
-FORGE = Path('/private/tmp/claude-501/-Users-b-Desktop-code-hire-billy/caeb0fd5-c664-4197-83aa-7207997a8d34/scratchpad/img2threejs/forge')
+FORGE = Path('/private/tmp/claude-501/-Users-b-Desktop-code-eap-stage/caeb0fd5-c664-4197-83aa-7207997a8d34/scratchpad/img2threejs/forge')
 sys.path.insert(0, str(FORGE / 'stage4_review'))
 sys.path.insert(0, str(FORGE / 'stage1_intake'))
 from diagnose_render import load_image, build_foreground_mask  # noqa: E402

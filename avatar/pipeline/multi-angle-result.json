@@ -2,13 +2,13 @@
  "referenceAreaFraction": 0.498585546875,
  "angles": [
   {
-   "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/render-blockout-orbit35.png",
+   "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/render-blockout-orbit35.png",
    "areaFraction": 0.477137890625,
    "ratio": 0.9569829964297438,
    "degenerate": false
   },
   {
-   "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/render-blockout-orbit-40.png",
+   "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/render-blockout-orbit-40.png",
    "areaFraction": 0.47411640625,
    "ratio": 0.9509228841903541,
    "degenerate": false

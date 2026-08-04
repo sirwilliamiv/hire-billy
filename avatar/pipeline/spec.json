@@ -1,6 +1,6 @@
 {
-  "targetName": "Billy Portrait Bust",
-  "targetId": "billy-portrait-bust",
+  "targetName": "the candidate Portrait Bust",
+  "targetId": "portrait-bust",
   "schemaVersion": "2.1",
   "terminologyProfile": {
     "domain": "real-time procedural Three.js asset",
@@ -38,7 +38,7 @@
     ],
     "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
   },
-  "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference-clean.png",
+  "sourceImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/reference-clean.png",
   "referenceCamera": {
     "solved": false,
     "fovDegrees": 40.0,
@@ -156,7 +156,7 @@
             "type": "component.localFeatures",
             "ref": "hair/curlClumps"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r0c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r0c1.png",
           "confidence": 0.9,
           "realization": "unreported"
         },
@@ -177,7 +177,7 @@
             "type": "material.localOverrides",
             "ref": "mat-hair/crestAnisotropy"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r0c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r0c1.png",
           "confidence": 0.75,
           "realization": "unreported"
         },
@@ -198,7 +198,7 @@
             "type": "component.localFeatures",
             "ref": "hair/frontWisps"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r0c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r0c1.png",
           "confidence": 0.85,
           "realization": "unreported"
         },
@@ -219,7 +219,7 @@
             "type": "material.localOverrides",
             "ref": "mat-skin/browDecal"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r1c1.png",
           "confidence": 0.85,
           "realization": "unreported"
         },
@@ -240,7 +240,7 @@
             "type": "material.localOverrides",
             "ref": "mat-eye/catchlight"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r1c1.png",
           "confidence": 0.85,
           "realization": "unreported"
         },
@@ -261,7 +261,7 @@
             "type": "material.localOverrides",
             "ref": "mat-skin/crowsFeet"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c0.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r1c0.png",
           "confidence": 0.7,
           "realization": "unreported"
         },
@@ -282,7 +282,7 @@
             "type": "component.localFeatures",
             "ref": "head/nasolabialFolds"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r1c1.png",
           "confidence": 0.9,
           "realization": "unreported"
         },
@@ -303,7 +303,7 @@
             "type": "component.localFeatures",
             "ref": "mouth/teethRow"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r1c1.png",
           "confidence": 0.9,
           "realization": "unreported"
         },
@@ -324,7 +324,7 @@
             "type": "material.localOverrides",
             "ref": "mat-beard/coverageMask"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r1c1.png",
           "confidence": 0.85,
           "realization": "unreported"
         },
@@ -345,7 +345,7 @@
             "type": "material.localOverrides",
             "ref": "mat-skin/tZoneRoughness"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r1c1.png",
           "confidence": 0.7,
           "realization": "unreported"
         },
@@ -366,7 +366,7 @@
             "type": "material.localOverrides",
             "ref": "mat-shirt/weave"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r2c1.png",
           "confidence": 0.85,
           "realization": "unreported"
         },
@@ -387,7 +387,7 @@
             "type": "component.localFeatures",
             "ref": "shirt/collarPlacket"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r2c1.png",
           "confidence": 0.9,
           "realization": "unreported"
         },
@@ -408,7 +408,7 @@
             "type": "component.localFeatures",
             "ref": "shirt/buttonRow"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r2c1.png",
           "confidence": 0.8,
           "realization": "unreported"
         },
@@ -429,7 +429,7 @@
             "type": "component.localFeatures",
             "ref": "shirt/foldRidges"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c0.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r2c0.png",
           "confidence": 0.8,
           "realization": "unreported"
         }
@@ -569,7 +569,7 @@
       "confidence": 0.75,
       "note": "Filled from extract_landmarks.py overlay measurement; see anatomy.json + landmarks.png."
     },
-    "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference-clean.png"
+    "sourceImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/reference-clean.png"
   },
   "qualityContract": {
     "qualityBar": "complex",
@@ -1120,7 +1120,7 @@
   "componentTree": [
     {
       "id": "root",
-      "name": "Billy Bust (root)",
+      "name": "the candidate Bust (root)",
       "level": "macro",
       "role": "body",
       "importance": 1.0,
@@ -4110,7 +4110,7 @@
         ],
         "samplingNotes": "Reference-derived from foreground pixels; de-lit to reduce baked shadows/highlights.",
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_albedo.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_albedo.png",
           "url": "mat-skin_albedo.png",
           "channel": "albedo",
           "source": "reference-pixel-extraction"
@@ -4161,7 +4161,7 @@
       "roughness": {
         "base": 0.684,
         "variation": 0.05,
-        "map": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_roughness.png",
+        "map": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_roughness.png",
         "localResponse": "reference-derived roughness estimate; cavities and textured zones trend rougher, bright highlights trend smoother"
       },
       "metalness": {
@@ -4172,13 +4172,13 @@
         "pattern": "reference-derived height-gradient normal map",
         "strength": 0.164,
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_normal.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_normal.png",
           "url": "mat-skin_normal.png",
           "channel": "normal",
           "source": "reference-pixel-extraction"
         },
         "heightSource": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_height.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_height.png",
           "url": "mat-skin_height.png",
           "channel": "height",
           "source": "reference-pixel-extraction"
@@ -4189,7 +4189,7 @@
         "pattern": "reference-derived height field",
         "amplitude": 0.01,
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_height.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_height.png",
           "url": "mat-skin_height.png",
           "channel": "height",
           "source": "reference-pixel-extraction"
@@ -4205,7 +4205,7 @@
         "cavityStrength": 0.38,
         "contactShadowBias": 0.35,
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_ao.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_ao.png",
           "url": "mat-skin_ao.png",
           "channel": "ao",
           "source": "reference-pixel-extraction"
@@ -4290,7 +4290,7 @@
       "sheenColor": "#ff9a7a",
       "referencePbr": {
         "version": "1.0",
-        "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/crop-skin.png",
+        "sourceImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/crop-skin.png",
         "extractor": "stage1_intake/extract_pbr_evidence.py",
         "method": "single-image pixel evidence with de-lighting estimate; not photogrammetry",
         "usable": true,
@@ -4301,31 +4301,31 @@
         "hardLimit": "A single image cannot uniquely recover true albedo/roughness/normal/AO; maps are reference-derived estimates.",
         "maps": {
           "albedo": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_albedo.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_albedo.png",
             "url": "mat-skin_albedo.png",
             "channel": "albedo",
             "source": "reference-pixel-extraction"
           },
           "roughness": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_roughness.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_roughness.png",
             "url": "mat-skin_roughness.png",
             "channel": "roughness",
             "source": "reference-pixel-extraction"
           },
           "height": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_height.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_height.png",
             "url": "mat-skin_height.png",
             "channel": "height",
             "source": "reference-pixel-extraction"
           },
           "normal": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_normal.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_normal.png",
             "url": "mat-skin_normal.png",
             "channel": "normal",
             "source": "reference-pixel-extraction"
           },
           "ao": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_ao.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_ao.png",
             "url": "mat-skin_ao.png",
             "channel": "ao",
             "source": "reference-pixel-extraction"
@@ -4387,7 +4387,7 @@
         ],
         "samplingNotes": "Reference-derived from foreground pixels; de-lit to reduce baked shadows/highlights.",
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_albedo.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_albedo.png",
           "url": "mat-hair_albedo.png",
           "channel": "albedo",
           "source": "reference-pixel-extraction"
@@ -4438,7 +4438,7 @@
       "roughness": {
         "base": 0.698,
         "variation": 0.054,
-        "map": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_roughness.png",
+        "map": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_roughness.png",
         "localResponse": "reference-derived roughness estimate; cavities and textured zones trend rougher, bright highlights trend smoother"
       },
       "metalness": {
@@ -4449,13 +4449,13 @@
         "pattern": "reference-derived height-gradient normal map",
         "strength": 0.187,
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_normal.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_normal.png",
           "url": "mat-hair_normal.png",
           "channel": "normal",
           "source": "reference-pixel-extraction"
         },
         "heightSource": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_height.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_height.png",
           "url": "mat-hair_height.png",
           "channel": "height",
           "source": "reference-pixel-extraction"
@@ -4466,7 +4466,7 @@
         "pattern": "reference-derived height field",
         "amplitude": 0.012,
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_height.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_height.png",
           "url": "mat-hair_height.png",
           "channel": "height",
           "source": "reference-pixel-extraction"
@@ -4482,7 +4482,7 @@
         "cavityStrength": 0.38,
         "contactShadowBias": 0.35,
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_ao.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_ao.png",
           "url": "mat-hair_ao.png",
           "channel": "ao",
           "source": "reference-pixel-extraction"
@@ -4541,7 +4541,7 @@
       "notes": "Anisotropic fiber response along strand direction; clump-level color variation lighter at crests, darker in valleys.",
       "referencePbr": {
         "version": "1.0",
-        "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/crop-hair.png",
+        "sourceImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/crop-hair.png",
         "extractor": "stage1_intake/extract_pbr_evidence.py",
         "method": "single-image pixel evidence with de-lighting estimate; not photogrammetry",
         "usable": true,
@@ -4552,31 +4552,31 @@
         "hardLimit": "A single image cannot uniquely recover true albedo/roughness/normal/AO; maps are reference-derived estimates.",
         "maps": {
           "albedo": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_albedo.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_albedo.png",
             "url": "mat-hair_albedo.png",
             "channel": "albedo",
             "source": "reference-pixel-extraction"
           },
           "roughness": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_roughness.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_roughness.png",
             "url": "mat-hair_roughness.png",
             "channel": "roughness",
             "source": "reference-pixel-extraction"
           },
           "height": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_height.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_height.png",
             "url": "mat-hair_height.png",
             "channel": "height",
             "source": "reference-pixel-extraction"
           },
           "normal": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_normal.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_normal.png",
             "url": "mat-hair_normal.png",
             "channel": "normal",
             "source": "reference-pixel-extraction"
           },
           "ao": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_ao.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_ao.png",
             "url": "mat-hair_ao.png",
             "channel": "ao",
             "source": "reference-pixel-extraction"
@@ -4635,7 +4635,7 @@
         ],
         "samplingNotes": "Reference-derived from foreground pixels; de-lit to reduce baked shadows/highlights.",
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_albedo.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_albedo.png",
           "url": "mat-beard_albedo.png",
           "channel": "albedo",
           "source": "reference-pixel-extraction"
@@ -4686,7 +4686,7 @@
       "roughness": {
         "base": 0.695,
         "variation": 0.05,
-        "map": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_roughness.png",
+        "map": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_roughness.png",
         "localResponse": "reference-derived roughness estimate; cavities and textured zones trend rougher, bright highlights trend smoother"
       },
       "metalness": {
@@ -4697,13 +4697,13 @@
         "pattern": "reference-derived height-gradient normal map",
         "strength": 0.173,
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_normal.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_normal.png",
           "url": "mat-beard_normal.png",
           "channel": "normal",
           "source": "reference-pixel-extraction"
         },
         "heightSource": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_height.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_height.png",
           "url": "mat-beard_height.png",
           "channel": "height",
           "source": "reference-pixel-extraction"
@@ -4714,7 +4714,7 @@
         "pattern": "reference-derived height field",
         "amplitude": 0.01,
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_height.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_height.png",
           "url": "mat-beard_height.png",
           "channel": "height",
           "source": "reference-pixel-extraction"
@@ -4730,7 +4730,7 @@
         "cavityStrength": 0.38,
         "contactShadowBias": 0.35,
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_ao.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_ao.png",
           "url": "mat-beard_ao.png",
           "channel": "ao",
           "source": "reference-pixel-extraction"
@@ -4788,7 +4788,7 @@
       "notes": "Stipple blend layer over skin; redder hue than scalp hair; alpha/coverage driven so skin material reads through sparse zones.",
       "referencePbr": {
         "version": "1.0",
-        "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/crop-beard.png",
+        "sourceImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/crop-beard.png",
         "extractor": "stage1_intake/extract_pbr_evidence.py",
         "method": "single-image pixel evidence with de-lighting estimate; not photogrammetry",
         "usable": true,
@@ -4799,31 +4799,31 @@
         "hardLimit": "A single image cannot uniquely recover true albedo/roughness/normal/AO; maps are reference-derived estimates.",
         "maps": {
           "albedo": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_albedo.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_albedo.png",
             "url": "mat-beard_albedo.png",
             "channel": "albedo",
             "source": "reference-pixel-extraction"
           },
           "roughness": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_roughness.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_roughness.png",
             "url": "mat-beard_roughness.png",
             "channel": "roughness",
             "source": "reference-pixel-extraction"
           },
           "height": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_height.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_height.png",
             "url": "mat-beard_height.png",
             "channel": "height",
             "source": "reference-pixel-extraction"
           },
           "normal": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_normal.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_normal.png",
             "url": "mat-beard_normal.png",
             "channel": "normal",
             "source": "reference-pixel-extraction"
           },
           "ao": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_ao.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_ao.png",
             "url": "mat-beard_ao.png",
             "channel": "ao",
             "source": "reference-pixel-extraction"
@@ -5120,7 +5120,7 @@
         ],
         "samplingNotes": "Reference-derived from foreground pixels; de-lit to reduce baked shadows/highlights.",
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_albedo.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_albedo.png",
           "url": "mat-shirt_albedo.png",
           "channel": "albedo",
           "source": "reference-pixel-extraction"
@@ -5171,7 +5171,7 @@
       "roughness": {
         "base": 0.706,
         "variation": 0.11,
-        "map": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_roughness.png",
+        "map": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_roughness.png",
         "localResponse": "reference-derived roughness estimate; cavities and textured zones trend rougher, bright highlights trend smoother"
       },
       "metalness": {
@@ -5182,13 +5182,13 @@
         "pattern": "reference-derived height-gradient normal map",
         "strength": 0.221,
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_normal.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_normal.png",
           "url": "mat-shirt_normal.png",
           "channel": "normal",
           "source": "reference-pixel-extraction"
         },
         "heightSource": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_height.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_height.png",
           "url": "mat-shirt_height.png",
           "channel": "height",
           "source": "reference-pixel-extraction"
@@ -5199,7 +5199,7 @@
         "pattern": "reference-derived height field",
         "amplitude": 0.025,
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_height.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_height.png",
           "url": "mat-shirt_height.png",
           "channel": "height",
           "source": "reference-pixel-extraction"
@@ -5215,7 +5215,7 @@
         "cavityStrength": 0.38,
         "contactShadowBias": 0.35,
         "map": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_ao.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_ao.png",
           "url": "mat-shirt_ao.png",
           "channel": "ao",
           "source": "reference-pixel-extraction"
@@ -5286,7 +5286,7 @@
       "notes": "Desaturated light-blue woven cotton; matte; fold-valley AO darkening.",
       "referencePbr": {
         "version": "1.0",
-        "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/crop-shirt.png",
+        "sourceImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/crop-shirt.png",
         "extractor": "stage1_intake/extract_pbr_evidence.py",
         "method": "single-image pixel evidence with de-lighting estimate; not photogrammetry",
         "usable": true,
@@ -5297,31 +5297,31 @@
         "hardLimit": "A single image cannot uniquely recover true albedo/roughness/normal/AO; maps are reference-derived estimates.",
         "maps": {
           "albedo": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_albedo.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_albedo.png",
             "url": "mat-shirt_albedo.png",
             "channel": "albedo",
             "source": "reference-pixel-extraction"
           },
           "roughness": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_roughness.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_roughness.png",
             "url": "mat-shirt_roughness.png",
             "channel": "roughness",
             "source": "reference-pixel-extraction"
           },
           "height": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_height.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_height.png",
             "url": "mat-shirt_height.png",
             "channel": "height",
             "source": "reference-pixel-extraction"
           },
           "normal": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_normal.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_normal.png",
             "url": "mat-shirt_normal.png",
             "channel": "normal",
             "source": "reference-pixel-extraction"
           },
           "ao": {
-            "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_ao.png",
+            "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_ao.png",
             "url": "mat-shirt_ao.png",
             "channel": "ao",
             "source": "reference-pixel-extraction"
@@ -5619,9 +5619,9 @@
           "id": "smile-and-beard"
         }
       ],
-      "referenceScreenshot": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference-clean.png",
-      "renderScreenshot": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/render-blockout-front.png",
-      "comparisonImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/cmp-blockout.png",
+      "referenceScreenshot": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/reference-clean.png",
+      "renderScreenshot": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/render-blockout-front.png",
+      "comparisonImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/cmp-blockout.png",
       "cameraView": "front",
       "notes": "",
       "aiVisionNotes": "Reads as the reference subject at blockout level: wavy voluminous asymmetric hair, ginger beard band with open smile, chambray shoulders. 3D form holds at +/-35-40deg orbits (no degenerate views)."
@@ -5674,11 +5674,11 @@
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/render-blockout-front-flat.png",
+      "mapStrippedRender": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/render-blockout-front-flat.png",
       "visualEvidence": {
-        "referenceScreenshot": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference-clean.png",
-        "renderScreenshot": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/render-blockout-front.png",
-        "comparisonImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/cmp-blockout.png",
+        "referenceScreenshot": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/reference-clean.png",
+        "renderScreenshot": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/render-blockout-front.png",
+        "comparisonImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/cmp-blockout.png",
         "cameraView": "front",
         "notes": "",
         "aiVisionNotes": "Reads as the reference subject at blockout level: wavy voluminous asymmetric hair, ginger beard band with open smile, chambray shoulders. 3D form holds at +/-35-40deg orbits (no degenerate views)."
@@ -5734,7 +5734,7 @@
   ],
   "localSpecSearch": {
     "collection": "core_3d",
-    "query": "Billy Portrait Bust human head bust anatomy proportions landmarks hair clumps stylized cards silhouette skin albedo roughness subsurface eye iris catchlight glossy sphere cloth shirt collar folds",
+    "query": "the candidate Portrait Bust human head bust anatomy proportions landmarks hair clumps stylized cards silhouette skin albedo roughness subsurface eye iris catchlight glossy sphere cloth shirt collar folds",
     "index": {
       "status": "hit",
       "reason": "current",
@@ -5842,31 +5842,31 @@
       "usable": true,
       "maps": {
         "albedo": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_albedo.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_albedo.png",
           "url": "mat-hair_albedo.png",
           "channel": "albedo",
           "source": "reference-pixel-extraction"
         },
         "roughness": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_roughness.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_roughness.png",
           "url": "mat-hair_roughness.png",
           "channel": "roughness",
           "source": "reference-pixel-extraction"
         },
         "height": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_height.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_height.png",
           "url": "mat-hair_height.png",
           "channel": "height",
           "source": "reference-pixel-extraction"
         },
         "normal": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_normal.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_normal.png",
           "url": "mat-hair_normal.png",
           "channel": "normal",
           "source": "reference-pixel-extraction"
         },
         "ao": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-hair/mat-hair_ao.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-hair/mat-hair_ao.png",
           "url": "mat-hair_ao.png",
           "channel": "ao",
           "source": "reference-pixel-extraction"
@@ -5880,31 +5880,31 @@
       "usable": true,
       "maps": {
         "albedo": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_albedo.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_albedo.png",
           "url": "mat-beard_albedo.png",
           "channel": "albedo",
           "source": "reference-pixel-extraction"
         },
         "roughness": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_roughness.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_roughness.png",
           "url": "mat-beard_roughness.png",
           "channel": "roughness",
           "source": "reference-pixel-extraction"
         },
         "height": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_height.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_height.png",
           "url": "mat-beard_height.png",
           "channel": "height",
           "source": "reference-pixel-extraction"
         },
         "normal": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_normal.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_normal.png",
           "url": "mat-beard_normal.png",
           "channel": "normal",
           "source": "reference-pixel-extraction"
         },
         "ao": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-beard/mat-beard_ao.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-beard/mat-beard_ao.png",
           "url": "mat-beard_ao.png",
           "channel": "ao",
           "source": "reference-pixel-extraction"
@@ -5918,31 +5918,31 @@
       "usable": true,
       "maps": {
         "albedo": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_albedo.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_albedo.png",
           "url": "mat-shirt_albedo.png",
           "channel": "albedo",
           "source": "reference-pixel-extraction"
         },
         "roughness": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_roughness.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_roughness.png",
           "url": "mat-shirt_roughness.png",
           "channel": "roughness",
           "source": "reference-pixel-extraction"
         },
         "height": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_height.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_height.png",
           "url": "mat-shirt_height.png",
           "channel": "height",
           "source": "reference-pixel-extraction"
         },
         "normal": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_normal.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_normal.png",
           "url": "mat-shirt_normal.png",
           "channel": "normal",
           "source": "reference-pixel-extraction"
         },
         "ao": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-shirt/mat-shirt_ao.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-shirt/mat-shirt_ao.png",
           "url": "mat-shirt_ao.png",
           "channel": "ao",
           "source": "reference-pixel-extraction"
@@ -5956,31 +5956,31 @@
       "usable": true,
       "maps": {
         "albedo": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_albedo.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_albedo.png",
           "url": "mat-skin_albedo.png",
           "channel": "albedo",
           "source": "reference-pixel-extraction"
         },
         "roughness": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_roughness.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_roughness.png",
           "url": "mat-skin_roughness.png",
           "channel": "roughness",
           "source": "reference-pixel-extraction"
         },
         "height": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_height.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_height.png",
           "url": "mat-skin_height.png",
           "channel": "height",
           "source": "reference-pixel-extraction"
         },
         "normal": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_normal.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_normal.png",
           "url": "mat-skin_normal.png",
           "channel": "normal",
           "source": "reference-pixel-extraction"
         },
         "ao": {
-          "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_ao.png",
+          "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_ao.png",
           "url": "mat-skin_ao.png",
           "channel": "ao",
           "source": "reference-pixel-extraction"

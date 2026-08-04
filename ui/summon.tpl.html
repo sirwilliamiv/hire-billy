@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Billy, summoned</title>
+<title>the candidate, summoned</title>
 <!-- GENERATED FILE: edit ui/summon.tpl.html, then `npm run build:summon`. -->
 <style>
 {{FONTS}}
@@ -140,7 +140,7 @@ details summary{font-size:10px;letter-spacing:.08em;text-transform:uppercase;col
 </head>
 <body>
 <div class="scene" id="scene">
-  <div class="brand"><span class="dot"><i></i></span> HIRE BILLY</div>
+  <div class="brand"><span class="dot"><i></i></span> THE CANDIDATE</div>
   <span class="kind" id="kind">summoned</span>
   <div id="door">
     <div class="opening"><canvas id="rain"></canvas></div>
@@ -180,7 +180,7 @@ var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: r
 
 var COPY={
   inline:{
-    lede:"Hey, I'm Billy. No desktop here, so I came to the message.",
+    lede:"Hey, I'm the candidate. No desktop here, so I came to the message.",
     rest:"The full version of this walks across a macOS desktop and sits down on your Claude window. You're on a surface that doesn't have one, so you get the same entrance in the chat: I walk in, I sit down, and I answer out of the same signed corpus, struck claims and all. Ask me anything below."
   },
   /* kept verbatim in step with the same strings in mcp/factory.js, which
@@ -425,7 +425,7 @@ function normalize(out){
 /* A summon result decides which show to run and carries the words with it, so
    the server stays the single source of the copy (the constants above are the
    fallback for a card that boots before any result arrives). Everything else
-   is an ask_billy answer. */
+   is an ask_candidate answer. */
 function consume(r){
   if(!r) return;
   if(r.mode==="desktop"||r.mode==="inline"){
@@ -453,8 +453,8 @@ function ask(q){
   speakBusy(); $("go").disabled=true;
   var done=function(out){ $("go").disabled=false; var r=normalize(out); if(r&&(r.lede||r.rest)) speakAnswer(r); else speakErr("The host returned nothing I can say."); };
   var fail=function(e){ $("go").disabled=false; speakErr("I could not reach the pipeline ("+e.message+")."); };
-  if(window.openai&&window.openai.callTool){ window.openai.callTool("ask_billy",{question:q}).then(done,fail); }
-  else if(bridged){ rpc("tools/call",{name:"ask_billy",arguments:{question:q}},60000).then(done,fail); }
+  if(window.openai&&window.openai.callTool){ window.openai.callTool("ask_candidate",{question:q}).then(done,fail); }
+  else if(bridged){ rpc("tools/call",{name:"ask_candidate",arguments:{question:q}},60000).then(done,fail); }
   else{ speakErr("No host bridge found here."); }
 }
 $("go").addEventListener("click",function(){ ask($("q").value) });
@@ -482,7 +482,7 @@ function start(force){
 }
 function boot(mode){ if(mode) wantMode=mode; start(false); }
 document.addEventListener("visibilitychange",function(){ start(false); });
-rpc("ui/initialize",{appInfo:{name:"hire-billy-summon",version:"1.0"}},1800)
+rpc("ui/initialize",{appInfo:{name:"eap-stage-summon",version:"1.0"}},1800)
   .then(function(r){
     bridged=true; applyCtx(r&&r.hostContext);
     if(r&&r.hostContext&&r.hostContext.containerDimensions) hostDims=r.hostContext.containerDimensions;

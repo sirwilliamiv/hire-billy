@@ -1,4 +1,4 @@
-# Reference Suitability Verdict — reference.png (Billy headshot)
+# Reference Suitability Verdict — reference.png (the candidate headshot)
 
 Rubric: grimoire/intake/validation_rubric.md
 

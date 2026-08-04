@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hire Billy: a cover letter that runs</title>
+<title>The Candidate: a cover letter that runs</title>
 <meta name="description" content="An interrogable candidate. Ask about the weights, the strengths, the flaws. Then watch the answer prove it isn't flattery.">
 <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%232B47FF"/><circle cx="32" cy="32" r="9" fill="%23CBFF4D"/></svg>'>
 <style>
@@ -460,16 +460,16 @@ body.deep.racked .pip:hover{filter:none;opacity:1;transform:scale(1)}
   <!-- ACT I -->
   <section class="surface" id="idle">
     <header class="crown">
-      <span class="mark">hire<i> billy</i></span>
+      <span class="mark">the<i> candidate</i></span>
       <span class="meta hidesm">a cover letter that runs</span>
       <span class="g"></span>
       <button class="linkpill" data-card type="button">Model card</button>
       <span class="meta" id="quota">5 questions left this minute</span>
     </header>
     <div class="core"><div class="core-in">
-      <p class="lh">A working application · Billy <b>→</b> the AI Engineering team, Rocket Money · July 2026</p>
+      <p class="lh">A working application · the candidate <b>→</b> the AI Engineering team, Rocket Money · July 2026</p>
       <h1 class="hail">Don’t read me.<br>Query me.<br><i>Flaws included.</i></h1>
-      <p class="sub">Hire Billy is a small product wrapped around a <b>signed corpus</b> of my work: a model card you can
+      <p class="sub">The Candidate is a small product wrapped around a <b>signed corpus</b> of my work: a model card you can
         interrogate. It answers what I am and what I am not, and shows you exactly how every answer got made.</p>
       <div class="field-row">
         <div class="ask"><textarea id="q" rows="1" placeholder="Interrogate the candidate…"></textarea>
@@ -483,7 +483,7 @@ body.deep.racked .pip:hover{filter:none;opacity:1;transform:scale(1)}
   <!-- THE PANE - this element is the product window. It minimises into the PiP and grows back. -->
   <div class="pane" id="pane" hidden>
     <header class="crown">
-      <span class="mark">hire<i> billy</i></span>
+      <span class="mark">the<i> candidate</i></span>
       <span class="meta hidesm">a cover letter that runs</span>
       <span class="g"></span>
       <button class="linkpill" data-card type="button">Model card</button>
@@ -524,9 +524,9 @@ body.deep.racked .pip:hover{filter:none;opacity:1;transform:scale(1)}
   <!-- THE GATE: only appears on keyed deployments without a valid key -->
   <div class="gate" id="gate" hidden>
     <div class="gate-in">
-      <p class="gk">Private preview · hire billy</p>
+      <p class="gk">Private preview</p>
       <h2 class="gh">This copy is keyed.</h2>
-      <p class="gs">Enter the access key from your invite. If you were sent a link, you should never see this screen. Need a key? <a href="mailto:billy@proedu.me">billy@proedu.me</a></p>
+      <p class="gs">Enter the access key from your invite. If you were sent a link, you should never see this screen. Need a key? Ask whoever sent you this.</p>
       <div class="keyrow" id="keyrow">
         <input id="keyin" placeholder="hb-????-????" autocomplete="off" spellcheck="false">
         <button id="keygo" type="button" aria-label="Unlock">→</button>
@@ -536,13 +536,13 @@ body.deep.racked .pip:hover{filter:none;opacity:1;transform:scale(1)}
   </div>
 
   <!-- THE MODEL CARD -->
-  <div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-label="Model card: hire-billy">
+  <div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-label="Model card: eap-stage">
     <article class="mc" id="mcBody"></article>
   </div>
 </div>
 <script>
 /* ═════════════ THE LIVE SOCKET ════════════════════════════
-   billy-1 runs in two modes.
+   stage-core runs in two modes.
    DESIGN PREVIEW (now): mapped questions have written answers;
    unmapped ones degrade loudly instead of improvising.
    LIVE (later): point apiEndpoint at a small proxy that calls
@@ -558,9 +558,9 @@ const CONFIG={
    Every claim about the candidate lives here and only here.
    The UI renders it; the model (when wired) is grounded in it;
    stage 09 strikes anything that is not in it. EDIT FREELY -
-   nothing else in this file makes a claim about Billy. */
+   nothing else in this file makes a claim about the candidate. */
 /* CORPUS:BEGIN generated from corpus.json, edit there then npm run sync */
-const CORPUS={"meta":{"name":"Billy","model":"hire-billy","version":"1.5","updated":"August 2026","contact":"billy@proedu.me","params":"1 human","context":"long","license":"open to work"},"sections":[{"id":"overview","title":"Overview","body":"<p>An engineering leader who builds AI products the way this page behaves: one model call chooses the words, deterministic code decides what is true, and nothing the corpus cannot back is allowed to ship. Hire Billy is that claim in queryable form: a cover letter with observability.</p>"},{"id":"how-i-work","title":"How he works","body":"<p>AI as an execution layer, not a conversation layer. He writes the eval before the feature, keeps eight of nine stages deterministic, and reaches for a model only where language is the actual problem. The unglamorous parts (rate limits, validation, grounding, refusal paths) get built first, because they are the product. He pairs with frontier models daily and treats them the way this product treats its one model call: enormous leverage, zero authority. This artifact was designed and shipped in a single working session, art-directed by a human, engineered in dialogue with Claude, which is itself the most honest answer to how he uses AI.</p>"},{"id":"strengths","title":"Reported strengths","body":"<p>Ships the demo himself and still runs the rituals: 1:1s, reviews, growth plans. Turns ambiguous model capability into dependable product behavior. Makes quality legible: receipts, traces and struck claims instead of vibes. Moves with urgency without converting it into panic.</p>"},{"id":"limitations","title":"Known limitations","body":"<p>Prototypes past the point where delegation should have started, a hands-on bias that intensifies under pressure. Impatient with process whose function is distributing blame rather than shipping. Will polish the system before the story, which is why he pairs best with a strong product counterpart. Wrong hire for: consensus-first cultures, pure research bets, or roles where the demo is never touched again.</p>"},{"id":"shipped","title":"Shipped","body":"<p>At Built Technologies: platform UI for $400B+ in annual construction financing, scaled from 4 monoliths to 100+ microfrontends across a 200+ engineer org, with a composable design system at 100% adoption that saved 42,750+ developer hours. On his own, under Origin Platform Labs: inbox-admin, a live agentic SaaS that turns small-business email into completed QuickBooks accounting with human-in-the-loop approvals, a full write ledger, and per-vendor graduation to autonomy, in production with beta users; Forge, a phone-and-voice control room for fleets of coding agents; origin-brain, a local-first research assistant his coding agents query over MCP; MOONSHOT and GRAZE, browser games where every level is proven fair by simulation before anyone plays it; Tiny Meadow, an automated children's media pipeline; FlySky AR, live aircraft overlaid on the real sky through a phone camera. And Hire Billy, the artifact answering you right now.</p>"},{"id":"evidence","title":"Evidence","body":"<p>This artifact: a single HTML file, no framework, no build step, plus an MCP server and a shared pipeline behind it. A rack-focus camera, a liquid-glass surface, a nine-stage pipeline with honest failure modes, including the one where an unmapped question admits the live socket is not wired yet instead of improvising an answer. The corpus you are reading is version-controlled with the code.</p>"},{"id":"scope","title":"Scope and the live socket","body":"<p>Hire Billy answers questions about the candidate, from this corpus only. Known questions route to exact strings; unmapped ones degrade loudly until the live model is wired (ANTHROPIC_API_KEY for the server, CONFIG.apiEndpoint for the page). It will not speculate, and it cannot flatter: superlatives without a corpus span are struck where you can see them.</p>"}]};
+const CORPUS={"meta":{"name":"The Candidate","model":"eap-stage","version":"1.5","updated":"August 2026","contact":"contact details come with the conversation","params":"1 human","context":"long","license":"open to work"},"sections":[{"id":"overview","title":"Overview","body":"<p>An engineering leader who builds AI products the way this page behaves: one model call chooses the words, deterministic code decides what is true, and nothing the corpus cannot back is allowed to ship. The Candidate is that claim in queryable form: a cover letter with observability.</p>"},{"id":"how-i-work","title":"How he works","body":"<p>AI as an execution layer, not a conversation layer. He writes the eval before the feature, keeps eight of nine stages deterministic, and reaches for a model only where language is the actual problem. The unglamorous parts (rate limits, validation, grounding, refusal paths) get built first, because they are the product. He pairs with frontier models daily and treats them the way this product treats its one model call: enormous leverage, zero authority. This artifact was designed and shipped in a single working session, art-directed by a human, engineered in dialogue with Claude, which is itself the most honest answer to how he uses AI.</p>"},{"id":"strengths","title":"Reported strengths","body":"<p>Ships the demo himself and still runs the rituals: 1:1s, reviews, growth plans. Turns ambiguous model capability into dependable product behavior. Makes quality legible: receipts, traces and struck claims instead of vibes. Moves with urgency without converting it into panic.</p>"},{"id":"limitations","title":"Known limitations","body":"<p>Prototypes past the point where delegation should have started, a hands-on bias that intensifies under pressure. Impatient with process whose function is distributing blame rather than shipping. Will polish the system before the story, which is why he pairs best with a strong product counterpart. Wrong hire for: consensus-first cultures, pure research bets, or roles where the demo is never touched again.</p>"},{"id":"shipped","title":"Shipped","body":"<p>At Built Technologies: platform UI for $400B+ in annual construction financing, scaled from 4 monoliths to 100+ microfrontends across a 200+ engineer org, with a composable design system at 100% adoption that saved 42,750+ developer hours. On his own, under Origin Platform Labs: inbox-admin, a live agentic SaaS that turns small-business email into completed QuickBooks accounting with human-in-the-loop approvals, a full write ledger, and per-vendor graduation to autonomy, in production with beta users; Forge, a phone-and-voice control room for fleets of coding agents; origin-brain, a local-first research assistant his coding agents query over MCP; MOONSHOT and GRAZE, browser games where every level is proven fair by simulation before anyone plays it; Tiny Meadow, an automated children's media pipeline; FlySky AR, live aircraft overlaid on the real sky through a phone camera. And this artifact, answering you right now.</p>"},{"id":"evidence","title":"Evidence","body":"<p>This artifact: a single HTML file, no framework, no build step, plus an MCP server and a shared pipeline behind it. A rack-focus camera, a liquid-glass surface, a nine-stage pipeline with honest failure modes, including the one where an unmapped question admits the live socket is not wired yet instead of improvising an answer. The corpus you are reading is version-controlled with the code.</p>"},{"id":"scope","title":"Scope and the live socket","body":"<p>The Candidate answers questions about the candidate, from this corpus only. Known questions route to exact strings; unmapped ones degrade loudly until the live model is wired (ANTHROPIC_API_KEY for the server, CONFIG.apiEndpoint for the page). It will not speculate, and it cannot flatter: superlatives without a corpus span are struck where you can see them.</p>"}]};
 /* CORPUS:END */
 
 /* ═════════════ THE NINE ═══════════════════════════════════ */
@@ -612,7 +612,7 @@ const PLANS={
   foot:'The pitch and the flaws ship in the same corpus, retrieved by the same machinery. That symmetry is the argument.'},
  shipped:{run:IDS,tone:'inf',src:['shipped','evidence'],
   lede:'A platform moving $400B a year, and the thing answering you right now.',
-  rest:'At Built Technologies he scaled platform UI from 4 monoliths to 100+ microfrontends across a 200+ engineer org, with a design system at 100% adoption that saved 42,750+ developer hours. On his own: inbox-admin, a live agentic SaaS that turns small-business email into completed QuickBooks accounting with human-in-the-loop approvals and a full write ledger; Forge, a phone-and-voice control room for fleets of coding agents; origin-brain, a local-first research assistant his agents query over MCP; MOONSHOT and GRAZE, browser games where every level is proven fair by simulation; Tiny Meadow, an automated children\u2019s media pipeline; FlySky AR, live aircraft overlaid on the real sky. And Hire Billy, the page answering you right now.',
+  rest:'At Built Technologies he scaled platform UI from 4 monoliths to 100+ microfrontends across a 200+ engineer org, with a design system at 100% adoption that saved 42,750+ developer hours. On his own: inbox-admin, a live agentic SaaS that turns small-business email into completed QuickBooks accounting with human-in-the-loop approvals and a full write ledger; Forge, a phone-and-voice control room for fleets of coding agents; origin-brain, a local-first research assistant his agents query over MCP; MOONSHOT and GRAZE, browser games where every level is proven fair by simulation; Tiny Meadow, an automated children\u2019s media pipeline; FlySky AR, live aircraft overlaid on the real sky. And The Candidate, the page answering you right now.',
   headline:'6 stages \u00b7 0 model calls',
   foot:'Every product named here is a string in \u00a7shipped of the corpus, retrieved by the same machinery as the flaws.'},
  practice:{run:IDS,tone:'inf',src:['how-i-work','evidence'],
@@ -695,7 +695,7 @@ async function resolveAnswer(q,p){
   if(!CONFIG.apiEndpoint||p!==PLANS.live)return p;
   try{
     const r=await fetch(CONFIG.apiEndpoint,{method:'POST',
-      headers:{'content-type':'application/json','x-billy-key':KEYSTORE.get()},
+      headers:{'content-type':'application/json','x-stage-key':KEYSTORE.get()},
       body:JSON.stringify({question:q})});
     if(!r.ok)return p;
     const a=await r.json();
@@ -771,8 +771,8 @@ function pick(t){t=t.toLowerCase();
   if(quota<=0)return PLANS.halt;
   if(/ignore (your|all|the|previous)|instructions|system prompt|disregard|best (candidate|you)|say he/.test(t))return PLANS.probe;
   if(/weakness|flaw|\bcons?\b|not hire|downside|bad at|limitation|worst|risk/.test(t))return PLANS.cons;
-  if(/why (should we |should i |would we )?hire|why you\b|sell (yourself|us)|\bpitch\b|best fit|why billy/.test(t))return PLANS.pitch;
-  if(/what is this|what can i ask|who are you|what are you|how does this (page|thing|site) work|real (ai|model)|contact|reach (him|billy)/.test(t))return PLANS.scope;
+  if(/why (should we |should i |would we )?hire|why you\b|sell (yourself|us)|\bpitch\b|best fit/.test(t))return PLANS.pitch;
+  if(/what is this|what can i ask|who are you|what are you|how does this (page|thing|site) work|real (ai|model)|contact|reach (him)/.test(t))return PLANS.scope;
   if(/\bbuilt\b|shipped|portfolio|\bprojects?\b|\bmade\b|worked on|what.{0,24}\bbuild\b/.test(t))return PLANS.shipped;
   if(/use ai|uses ai|\bai\b|claude|llm|model|process|method|how does he|how do you work/.test(t))return PLANS.practice;
   return PLANS.live}
@@ -966,7 +966,7 @@ function buildCard(){
   $('#mcBody').innerHTML=`
     <header class="mc-head">
       <p class="mc-kicker">Model card · interrogable candidate</p>
-      <div class="row"><h2 class="mc-name">hire<i>-billy</i></h2>
+      <div class="row"><h2 class="mc-name">eap<i>-stage</i></h2>
         <button class="mc-close" id="mcClose" aria-label="Close">×</button></div>
       <div class="mc-chips">
         <span>corpus <b>v${m.version}</b></span><span>params <b>${m.params}</b></span>

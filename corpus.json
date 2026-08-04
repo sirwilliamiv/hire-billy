@@ -1,10 +1,10 @@
 {
   "meta": {
-    "name": "Billy",
-    "model": "hire-billy",
+    "name": "The Candidate",
+    "model": "eap-stage",
     "version": "1.5",
     "updated": "August 2026",
-    "contact": "billy@proedu.me",
+    "contact": "contact details come with the conversation",
     "params": "1 human",
     "context": "long",
     "license": "open to work"
@@ -13,7 +13,7 @@
     {
       "id": "overview",
       "title": "Overview",
-      "body": "An engineering leader who builds AI products the way this page behaves: one model call chooses the words, deterministic code decides what is true, and nothing the corpus cannot back is allowed to ship. Hire Billy is that claim in queryable form: a cover letter with observability."
+      "body": "An engineering leader who builds AI products the way this page behaves: one model call chooses the words, deterministic code decides what is true, and nothing the corpus cannot back is allowed to ship. The Candidate is that claim in queryable form: a cover letter with observability."
     },
     {
       "id": "how-i-work",
@@ -33,7 +33,7 @@
     {
       "id": "shipped",
       "title": "Shipped",
-      "body": "At Built Technologies: platform UI for $400B+ in annual construction financing, scaled from 4 monoliths to 100+ microfrontends across a 200+ engineer org, with a composable design system at 100% adoption that saved 42,750+ developer hours. On his own, under Origin Platform Labs: inbox-admin, a live agentic SaaS that turns small-business email into completed QuickBooks accounting with human-in-the-loop approvals, a full write ledger, and per-vendor graduation to autonomy, in production with beta users; Forge, a phone-and-voice control room for fleets of coding agents; origin-brain, a local-first research assistant his coding agents query over MCP; MOONSHOT and GRAZE, browser games where every level is proven fair by simulation before anyone plays it; Tiny Meadow, an automated children's media pipeline; FlySky AR, live aircraft overlaid on the real sky through a phone camera. And Hire Billy, the artifact answering you right now."
+      "body": "At Built Technologies: platform UI for $400B+ in annual construction financing, scaled from 4 monoliths to 100+ microfrontends across a 200+ engineer org, with a composable design system at 100% adoption that saved 42,750+ developer hours. On his own, under Origin Platform Labs: inbox-admin, a live agentic SaaS that turns small-business email into completed QuickBooks accounting with human-in-the-loop approvals, a full write ledger, and per-vendor graduation to autonomy, in production with beta users; Forge, a phone-and-voice control room for fleets of coding agents; origin-brain, a local-first research assistant his coding agents query over MCP; MOONSHOT and GRAZE, browser games where every level is proven fair by simulation before anyone plays it; Tiny Meadow, an automated children's media pipeline; FlySky AR, live aircraft overlaid on the real sky through a phone camera. And this artifact, answering you right now."
     },
     {
       "id": "evidence",
@@ -43,7 +43,7 @@
     {
       "id": "scope",
       "title": "Scope and the live socket",
-      "body": "Hire Billy answers questions about the candidate, from this corpus only. Known questions route to exact strings; unmapped ones degrade loudly until the live model is wired (ANTHROPIC_API_KEY for the server, CONFIG.apiEndpoint for the page). It will not speculate, and it cannot flatter: superlatives without a corpus span are struck where you can see them."
+      "body": "The Candidate answers questions about the candidate, from this corpus only. Known questions route to exact strings; unmapped ones degrade loudly until the live model is wired (ANTHROPIC_API_KEY for the server, CONFIG.apiEndpoint for the page). It will not speculate, and it cannot flatter: superlatives without a corpus span are struck where you can see them."
     }
   ]
 }

@@ -109,7 +109,7 @@ function doorScreen(){
            y: Math.round(window.screenY + chromeTop() + r.top + r.height) };
 }
 function post(m){ fetch(api + "/stage", {method:"POST",
-  headers:{"content-type":"application/json","x-billy-token":TOKEN}, body: JSON.stringify(m)}).catch(function(){}); }
+  headers:{"content-type":"application/json","x-stage-token":TOKEN}, body: JSON.stringify(m)}).catch(function(){}); }
 post(doorScreen());
 setInterval(function(){ post(doorScreen()); }, 1000);
 
@@ -190,7 +190,7 @@ CHIPS.forEach(function(c){
   var b = document.createElement("button");
   b.className = "chip"; b.textContent = c;
   b.onclick = function(){
-    fetch(api + "/ask", {method:"POST", headers:{"content-type":"application/json","x-billy-token":TOKEN},
+    fetch(api + "/ask", {method:"POST", headers:{"content-type":"application/json","x-stage-token":TOKEN},
       body: JSON.stringify({question:c})})
     .then(function(r){ return r.json(); })
     .then(function(s){

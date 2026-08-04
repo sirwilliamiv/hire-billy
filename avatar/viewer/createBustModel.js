@@ -26,7 +26,7 @@ function extrudeShape(points) {
   for (let i = 1; i < points.length; i += 1) s.lineTo(points[i][0], points[i][1]);
   return s;
 }
-function createBillyPortraitBustModel(options = {}) {
+function createPortraitBustModel(options = {}) {
   const castShadow = options.castShadow ?? true;
   const receiveShadow = options.receiveShadow ?? true;
   const nodes = {};
@@ -37,7 +37,7 @@ function createBillyPortraitBustModel(options = {}) {
   const skinTargets = {};
   const mats = clayMaterials();
   const root = new THREE.Group();
-  root.name = "billy-bust";
+  root.name = "candidate-bust";
   nodes.root = root;
   function pivot(id, parent, pos, rotDeg = [0, 0, 0]) {
     const g = new THREE.Group();
@@ -346,12 +346,12 @@ function createBillyPortraitBustModel(options = {}) {
   addMesh("hair-back", hairBackNode, curlClumpGeo(), "hair", [0.36, 0.34, 0.22]);
   const runtime = { nodes, meshes, sockets, colliders, destructionGroups, skinTargets };
   root.userData.sculptRuntime = runtime;
-  root.userData.applySkin = (skin) => applyBillySkin(root, skin);
+  root.userData.applySkin = (skin) => applySkin(root, skin);
   return root;
 }
-function applyBillySkin(root, skin) {
+function applySkin(root, skin) {
   const runtime = root.userData.sculptRuntime;
-  if (!runtime) throw new Error("applyBillySkin: root has no sculptRuntime");
+  if (!runtime) throw new Error("applySkin: root has no sculptRuntime");
   for (const [meshId, slot] of Object.entries(runtime.skinTargets)) {
     const mesh = runtime.meshes[meshId];
     const material = skin.materials[slot];
@@ -360,9 +360,9 @@ function applyBillySkin(root, skin) {
   skin.onAttach?.(root);
   root.userData.activeSkin = skin;
 }
-function createBillyPortraitBustLookDevLights() {
+function createPortraitBustLookDevLights() {
   const g = new THREE.Group();
-  g.name = "billy-lookdev-lights";
+  g.name = "candidate-lookdev-lights";
   const key = new THREE.DirectionalLight(16774378, 2.6);
   key.position.set(-1.6, 2.2, 2.6);
   key.castShadow = false;
@@ -374,7 +374,7 @@ function createBillyPortraitBustLookDevLights() {
   g.add(rim);
   return g;
 }
-function createBillyPortraitBustEnvironment(renderer) {
+function createPortraitBustEnvironment(renderer) {
   const pmrem = new THREE.PMREMGenerator(renderer);
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(16119285);
@@ -387,7 +387,7 @@ function createBillyPortraitBustEnvironment(renderer) {
   pmrem.dispose();
   return tex;
 }
-function configureBillyPortraitBustRenderer(renderer) {
+function configurePortraitBustRenderer(renderer) {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -395,9 +395,9 @@ function configureBillyPortraitBustRenderer(renderer) {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 }
 export {
-  applyBillySkin,
-  configureBillyPortraitBustRenderer,
-  createBillyPortraitBustEnvironment,
-  createBillyPortraitBustLookDevLights,
-  createBillyPortraitBustModel
+  applySkin,
+  configurePortraitBustRenderer,
+  createPortraitBustEnvironment,
+  createPortraitBustLookDevLights,
+  createPortraitBustModel
 };

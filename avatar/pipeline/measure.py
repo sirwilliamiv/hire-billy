@@ -14,7 +14,7 @@ Pure stdlib; reuses forge PNG reader.
 import argparse, json, math, sys
 from pathlib import Path
 
-FORGE = Path('/private/tmp/claude-501/-Users-b-Desktop-code-hire-billy/caeb0fd5-c664-4197-83aa-7207997a8d34/scratchpad/img2threejs/forge/stage1_intake')
+FORGE = Path('/private/tmp/claude-501/-Users-b-Desktop-code-eap-stage/caeb0fd5-c664-4197-83aa-7207997a8d34/scratchpad/img2threejs/forge/stage1_intake')
 sys.path.insert(0, str(FORGE))
 from extract_pbr_evidence import read_png  # noqa: E402
 

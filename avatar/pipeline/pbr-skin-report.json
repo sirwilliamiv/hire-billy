@@ -5,8 +5,8 @@
   "estimatedFidelity": 0.667,
   "targetThreshold": 0.7,
   "materialId": "mat-skin",
-  "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/crop-skin.png",
-  "outDir": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin",
+  "sourceImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/crop-skin.png",
+  "outDir": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin",
   "palette": [
     "#D3B19B",
     "#DCBCA6",
@@ -16,31 +16,31 @@
   ],
   "maps": {
     "albedo": {
-      "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_albedo.png",
+      "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_albedo.png",
       "url": "mat-skin_albedo.png",
       "channel": "albedo",
       "source": "reference-pixel-extraction"
     },
     "roughness": {
-      "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_roughness.png",
+      "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_roughness.png",
       "url": "mat-skin_roughness.png",
       "channel": "roughness",
       "source": "reference-pixel-extraction"
     },
     "height": {
-      "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_height.png",
+      "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_height.png",
       "url": "mat-skin_height.png",
       "channel": "height",
       "source": "reference-pixel-extraction"
     },
     "normal": {
-      "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_normal.png",
+      "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_normal.png",
       "url": "mat-skin_normal.png",
       "channel": "normal",
       "source": "reference-pixel-extraction"
     },
     "ao": {
-      "path": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin/mat-skin_ao.png",
+      "path": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin/mat-skin_ao.png",
       "url": "mat-skin_ao.png",
       "channel": "ao",
       "source": "reference-pixel-extraction"

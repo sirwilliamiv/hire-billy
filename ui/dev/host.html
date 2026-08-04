@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>hire-billy widget harness</title>
+<title>eap-stage widget harness</title>
 <style>
   body{margin:0;font:14px/1.5 -apple-system,sans-serif;background:#262624;display:flex;justify-content:center;min-height:100vh}
   .chat{width:700px;max-width:96vw;background:#30302e;margin:20px 0;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
@@ -26,8 +26,8 @@
   <button onclick="reload()">reload</button>
 </div>
 <div class="chat" id="chat">
-  <div class="msg user" id="prompt">use hire-billy to tell me about this candidate</div>
-  <div class="msg" id="calling">Calling ask_billy…</div>
+  <div class="msg user" id="prompt">use eap-stage to tell me about this candidate</div>
+  <div class="msg" id="calling">Calling ask_candidate…</div>
   <iframe id="f" src="/widget?autostart=1" allowtransparency="true"></iframe>
   <div class="input">Reply to Claude…</div>
 </div>
@@ -41,8 +41,8 @@ function setTheme(t){ theme = t; post({jsonrpc:'2.0',method:'ui/notifications/ho
 function setW(w){ document.getElementById('chat').style.width = w + 'px'; }
 function load(kind, platform){
   surface = kind; want = platform || null;
-  document.getElementById('prompt').textContent = kind === 'summon' ? 'summon billy' : 'use hire-billy to tell me about this candidate';
-  document.getElementById('calling').textContent = 'Calling ' + (kind === 'summon' ? 'summon_billy…' : 'ask_billy…');
+  document.getElementById('prompt').textContent = kind === 'summon' ? 'summon the actor' : 'use eap-stage to tell me about this candidate';
+  document.getElementById('calling').textContent = 'Calling ' + (kind === 'summon' ? 'stage_summon…' : 'ask_candidate…');
   reload();
 }
 function reload(){
@@ -66,7 +66,7 @@ window.addEventListener('message', async function(e){
          send and letting the card supply its own desktop copy */
       var res = want === 'desktop'
         ? {structuredContent:{mode:'desktop'}}
-        : await callTool('summon_billy', want ? {platform:want} : {});
+        : await callTool('stage_summon', want ? {platform:want} : {});
       post({jsonrpc:'2.0', method:'ui/notifications/tool-result', params:res});
     }
     return;

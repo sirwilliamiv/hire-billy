@@ -1,6 +1,6 @@
 {
-  "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference-clean.png",
-  "overlayImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/landmarks.png",
+  "sourceImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/reference-clean.png",
+  "overlayImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/landmarks.png",
   "overlayLegend": {
     "C": "center symmetry axis",
     "1..N": "head-unit horizontal ticks (blue, dashed)",

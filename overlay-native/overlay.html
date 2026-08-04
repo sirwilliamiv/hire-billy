@@ -180,7 +180,7 @@ window.addEventListener("error", function(ev){
   }catch(e){}
 });
 var qs = new URLSearchParams(location.search);
-var CFG = window.__BILLY || {};
+var CFG = window.__STAGE || {};
 var SW = CFG.screenW || +qs.get("screenW") || innerWidth, SH = CFG.screenH || +qs.get("screenH") || innerHeight;
 var CLAUDE = CFG.claude || null; if(!CLAUDE){ try{ CLAUDE = JSON.parse(qs.get("claude")); }catch(e){} }
 var NATIVE = !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.rects);
@@ -190,7 +190,7 @@ function bridgeQuit(){ if(NATIVE){ webkit.messageHandlers.quit.postMessage(1); }
 function bridgeAsk(q){
   if(!NATIVE && window.overlay && window.overlay.ask) return window.overlay.ask(q);
   return fetch("http://127.0.0.1:"+BRAIN+"/ask",{method:"POST",
-    headers:{"content-type":"application/json","x-billy-token":CFG.token||""},
+    headers:{"content-type":"application/json","x-stage-token":CFG.token||""},
     body:JSON.stringify({question:q})}).then(function(r){return r.json()});
 }
 
@@ -306,7 +306,7 @@ function speak(lede, text, receipt, done){
     reportRects();
   },16);
 }
-function askBilly(q){
+function askActor(q){
   if(/off the record|\bdance\b/i.test(q)){
     danceMoves();
     speak("A dance, per request.", "The corpus has no section on rhythm, so what you are watching is uncorroborated motion. The grounding stage let it through because nobody claimed it was good.", null);
@@ -322,7 +322,7 @@ function askBilly(q){
 }
 CHIPS.forEach(function(c){
   var b=document.createElement("button"); b.className="chip"; b.textContent=c;
-  b.onclick=function(){askBilly(c)};
+  b.onclick=function(){askActor(c)};
   document.getElementById("chips").appendChild(b);
 });
 function goHome(){
@@ -357,7 +357,7 @@ function walkTo(sx, sy){
     fig.removeEventListener("transitionend", cross);
     fig.classList.remove("walking");
     fetch("http://127.0.0.1:" + BRAIN + "/stage", {method:"POST",
-      headers:{"content-type":"application/json","x-billy-token": CFG.token || ""},
+      headers:{"content-type":"application/json","x-stage-token": CFG.token || ""},
       body: JSON.stringify({type:"crossing"})}).catch(function(){});
     fig.style.transition = "opacity .5s";
     fig.style.opacity = 0;

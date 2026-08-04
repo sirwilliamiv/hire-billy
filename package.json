@@ -1,10 +1,10 @@
 {
-  "name": "hire-billy",
+  "name": "eap-stage",
   "version": "1.4.0",
   "private": true,
   "type": "module",
   "description": "An interrogable candidate: one corpus, one nine-stage pipeline, three surfaces (browser UI, HTTP socket, MCP server).",
-  "bin": { "hire-billy-mcp": "mcp/server.js" },
+  "bin": { "eap-stage-mcp": "mcp/server.js" },
   "scripts": {
     "serve": "node serve.js",
     "mcp": "node mcp/server.js",

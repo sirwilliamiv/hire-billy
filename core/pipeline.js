@@ -1,4 +1,4 @@
-/* billy-1 shared core: one corpus, one pipeline, every surface.
+/* stage-core shared core: one corpus, one pipeline, every surface.
    Nine stages, eight deterministic, one model call. Timings here are
    measured for real; the browser UI dramatizes the same stages. */
 import { readFileSync, statSync } from 'node:fs';
@@ -21,7 +21,7 @@ export function corpus() {
 export const CORPUS = corpusCache;
 
 const KEY = process.env.ANTHROPIC_API_KEY || '';
-const MODEL = process.env.BILLY1_MODEL || 'claude-sonnet-4-5';
+const MODEL = process.env.STAGE_MODEL || 'claude-sonnet-4-5';
 
 /* stage 02: token bucket, five questions a minute, arithmetic not judgement */
 const bucket = { n: 5, resetAt: 0 };
@@ -48,8 +48,8 @@ const ROUTES = [
     rest: 'Instead of telling you how the candidate thinks about AI products, this product is one: a signed corpus about him, one model call for phrasing, and a grounding stage that strikes anything the corpus cannot back. Ask what he is. Ask what he is not. The machinery shows its work either way.',
     sources: ['scope'],
   }],
-  [/contact|reach (him|billy)|email/i, 'contact', {
-    lede: 'billy@proedu.me',
+  [/contact|reach (him)|email/i, 'contact', {
+    lede: 'Contact details come with the conversation, not the corpus.',
     rest: 'That address is a string in the corpus, not an inference. He reads it.',
     sources: ['scope'],
   }],
@@ -59,7 +59,7 @@ const ROUTES = [
 const MAPPED = [
   { key: 'shipped', re: /\bbuilt\b|shipped|portfolio|\bprojects?\b|\bmade\b|worked on|what.{0,24}\bbuild\b/i,
     lede: 'A platform moving $400B a year, and the thing answering you right now.',
-    rest: 'At Built Technologies he scaled platform UI from 4 monoliths to 100+ microfrontends across a 200+ engineer org, with a design system at 100% adoption that saved 42,750+ developer hours. On his own: inbox-admin, a live agentic SaaS that turns small-business email into completed QuickBooks accounting with human-in-the-loop approvals and a full write ledger; Forge, a phone-and-voice control room for fleets of coding agents; origin-brain, a local-first research assistant his agents query over MCP; MOONSHOT and GRAZE, browser games where every level is proven fair by simulation; Tiny Meadow, an automated children\u2019s media pipeline; FlySky AR, live aircraft overlaid on the real sky. And Hire Billy, which you are using. Details live in the model card under shipped.',
+    rest: 'At Built Technologies he scaled platform UI from 4 monoliths to 100+ microfrontends across a 200+ engineer org, with a design system at 100% adoption that saved 42,750+ developer hours. On his own: inbox-admin, a live agentic SaaS that turns small-business email into completed QuickBooks accounting with human-in-the-loop approvals and a full write ledger; Forge, a phone-and-voice control room for fleets of coding agents; origin-brain, a local-first research assistant his agents query over MCP; MOONSHOT and GRAZE, browser games where every level is proven fair by simulation; Tiny Meadow, an automated children\u2019s media pipeline; FlySky AR, live aircraft overlaid on the real sky. And this artifact, which you are using. Details live in the model card under shipped.',
     sources: ['shipped', 'evidence'] },
   { key: 'practice', re: /use ai|uses ai|\bai\b|claude|llm|model|process|method|how does he/i,
     lede: 'As an execution layer. The model is the smallest part of this product.',
@@ -69,7 +69,7 @@ const MAPPED = [
     lede: 'Three, and they are load-bearing.',
     rest: 'He prototypes past the point where he should be delegating, a hands-on bias that gets worse under pressure. He is impatient with process that exists to distribute blame rather than to ship. And he will polish the system before the story, which is why he pairs best with a strong product counterpart. If you want the flattering version: there is not one. The grounding stage strikes anything the corpus cannot back.',
     sources: ['limitations'] },
-  { key: 'pitch', re: /why (should we |should i |would we )?hire|why you\b|sell (yourself|us)|\bpitch\b|best fit|why billy/i,
+  { key: 'pitch', re: /why (should we |should i |would we )?hire|why you\b|sell (yourself|us)|\bpitch\b|best fit/i,
     lede: 'Because the demo is the argument.',
     rest: 'He turns ambiguous model capability into dependable product behavior, ships the demo himself, and still runs the rituals: 1:1s, reviews, growth plans. You are inside the evidence right now: a grounded assistant that cannot flatter, shows its work, and knows when to hand off to a human. The flaws are one question away, in the same corpus, retrieved by the same machinery. That is the trust model he builds into financial software, applied to himself first.',
     sources: ['strengths', 'overview', 'limitations'] },
@@ -112,7 +112,7 @@ function retrieve(question) {
 /* stage 07 (live): the only model call, corpus as ground truth */
 async function askClaude(question) {
   const sys = [
-    'You are Hire Billy, a product that answers questions about one candidate.',
+    'You are an interrogable candidate: a product that answers questions about one person.',
     'You may only make claims supported by the corpus below. No superlatives',
     'without a corpus span. If the corpus does not cover the question, say so',
     'plainly. Reply as strict JSON: {"lede": string, "rest": string,',

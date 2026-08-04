@@ -10,7 +10,7 @@
       "scope": "setup",
       "status": "done",
       "evidence": [
-        "/Users/b/Desktop/code/hire-billy/avatar/pipeline/image-analysis.md"
+        "/Users/b/Desktop/code/eap-stage/avatar/pipeline/image-analysis.md"
       ],
       "reason": "",
       "command": "Read grimoire/intake/image_analysis.md and analyze {reference}"
@@ -20,7 +20,7 @@
       "scope": "setup",
       "status": "done",
       "evidence": [
-        "/Users/b/Desktop/code/hire-billy/avatar/pipeline/suitability-verdict.md"
+        "/Users/b/Desktop/code/eap-stage/avatar/pipeline/suitability-verdict.md"
       ],
       "reason": "",
       "command": "Read grimoire/intake/validation_rubric.md and record a pass, conditional, or reject verdict for {reference}"
@@ -30,7 +30,7 @@
       "scope": "setup",
       "status": "done",
       "evidence": [
-        "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference-admission.json"
+        "/Users/b/Desktop/code/eap-stage/avatar/pipeline/reference-admission.json"
       ],
       "reason": "",
       "command": "python3 forge/stage1_intake/check_reference_admission.py {reference}"
@@ -40,7 +40,7 @@
       "scope": "setup",
       "status": "done",
       "evidence": [
-        "/Users/b/Desktop/code/hire-billy/avatar/pipeline/image-analysis.md"
+        "/Users/b/Desktop/code/eap-stage/avatar/pipeline/image-analysis.md"
       ],
       "reason": "",
       "command": "Read grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md completely"
@@ -50,7 +50,7 @@
       "scope": "setup",
       "status": "done",
       "evidence": [
-        "/Users/b/Desktop/code/hire-billy/avatar/pipeline/anatomy.json"
+        "/Users/b/Desktop/code/eap-stage/avatar/pipeline/anatomy.json"
       ],
       "reason": "",
       "command": "python3 forge/stage1_intake/extract_landmarks.py {reference} --out anatomy.json --overlay landmarks.png"
@@ -60,7 +60,7 @@
       "scope": "setup",
       "status": "done",
       "evidence": [
-        "/Users/b/Desktop/code/hire-billy/avatar/pipeline/assessment.json"
+        "/Users/b/Desktop/code/eap-stage/avatar/pipeline/assessment.json"
       ],
       "reason": "",
       "command": "Run the local evidence search before authoring the assessment"
@@ -70,7 +70,7 @@
       "scope": "setup",
       "status": "done",
       "evidence": [
-        "/Users/b/Desktop/code/hire-billy/avatar/pipeline/assessment.json"
+        "/Users/b/Desktop/code/eap-stage/avatar/pipeline/assessment.json"
       ],
       "reason": "",
       "command": "python3 forge/stage2_spec/new_pre_spec_assessment.py \"<name>\" --image {reference} --out assessment.json"
@@ -80,7 +80,7 @@
       "scope": "setup",
       "status": "done",
       "evidence": [
-        "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-inventory.json"
+        "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-inventory.json"
       ],
       "reason": "",
       "command": "python3 forge/stage1_intake/build_detail_inventory.py {reference} --mode grid-3x3 --out-dir detail-inventory --out di.json"
@@ -90,7 +90,7 @@
       "scope": "setup",
       "status": "done",
       "evidence": [
-        "/Users/b/Desktop/code/hire-billy/avatar/pipeline/projection-route.md"
+        "/Users/b/Desktop/code/eap-stage/avatar/pipeline/projection-route.md"
       ],
       "reason": "",
       "command": "Record whether projection is required; if required run solve_camera_pose.py, delight_albedo.py, and bake_projected_texture.py, otherwise skip with a reason"
@@ -100,7 +100,7 @@
       "scope": "setup",
       "status": "done",
       "evidence": [
-        "/Users/b/Desktop/code/hire-billy/avatar/pipeline/spec.json"
+        "/Users/b/Desktop/code/eap-stage/avatar/pipeline/spec.json"
       ],
       "reason": "",
       "command": "python3 forge/stage2_spec/new_sculpt_spec.py \"<name>\" --image {reference} --assessment assessment.json --out object-sculpt-spec.json"
@@ -110,7 +110,7 @@
       "scope": "setup",
       "status": "done",
       "evidence": [
-        "/Users/b/Desktop/code/hire-billy/avatar/pipeline/pbr-skin"
+        "/Users/b/Desktop/code/eap-stage/avatar/pipeline/pbr-skin"
       ],
       "reason": "",
       "command": "When material fidelity matters, run analyze_texture.py and extract_pbr_evidence.py per verified crop; otherwise skip with a reason"
@@ -120,7 +120,7 @@
       "scope": "setup",
       "status": "done",
       "evidence": [
-        "/Users/b/Desktop/code/hire-billy/avatar/pipeline/spec.json"
+        "/Users/b/Desktop/code/eap-stage/avatar/pipeline/spec.json"
       ],
       "reason": "",
       "command": "python3 forge/stage2_spec/validate_sculpt_spec.py {spec} --strict-quality"
@@ -213,8 +213,8 @@
     "maxTotal": 6
   },
   "artifacts": {
-    "reference": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference.png",
-    "spec": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/spec.json"
+    "reference": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/reference.png",
+    "spec": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/spec.json"
   },
   "passHistory": [
     {
@@ -225,7 +225,7 @@
           "scope": "pass",
           "status": "done",
           "evidence": [
-            "/Users/b/Desktop/code/hire-billy/avatar/src/createBillyBustModel.ts"
+            "/Users/b/Desktop/code/eap-stage/avatar/src/createBustModel.ts"
           ],
           "reason": "",
           "command": "python3 forge/stage3_build/generate_threejs_factory.py {spec} --out src/createObjectModel.ts --pass-id {pass_id}"
@@ -235,7 +235,7 @@
           "scope": "pass",
           "status": "done",
           "evidence": [
-            "/Users/b/Desktop/code/hire-billy/avatar/pipeline/render-blockout-front.png"
+            "/Users/b/Desktop/code/eap-stage/avatar/pipeline/render-blockout-front.png"
           ],
           "reason": "",
           "command": "Render {pass_id} and capture the fixed review view plus meaningful orbit views"
@@ -245,7 +245,7 @@
           "scope": "pass",
           "status": "done",
           "evidence": [
-            "/Users/b/Desktop/code/hire-billy/avatar/pipeline/render-blockout-front.png"
+            "/Users/b/Desktop/code/eap-stage/avatar/pipeline/render-blockout-front.png"
           ],
           "reason": "",
           "command": "Read grimoire/review/gates_reference.md and grimoire/review/self_correction.md completely"
@@ -255,7 +255,7 @@
           "scope": "pass",
           "status": "done",
           "evidence": [
-            "/Users/b/Desktop/code/hire-billy/avatar/pipeline/spec.json"
+            "/Users/b/Desktop/code/eap-stage/avatar/pipeline/spec.json"
           ],
           "reason": "",
           "command": "python3 forge/stage4_review/diagnose_render.py --reference {reference} --render <shot> --spec {spec} --pass-id {pass_id} --in-place"
@@ -265,7 +265,7 @@
           "scope": "pass",
           "status": "done",
           "evidence": [
-            "/Users/b/Desktop/code/hire-billy/avatar/pipeline/multi-angle-result.json"
+            "/Users/b/Desktop/code/eap-stage/avatar/pipeline/multi-angle-result.json"
           ],
           "reason": "",
           "command": "python3 forge/stage4_review/diagnose_render_multi_angle.py --reference <fixed-shot> --orbit <orbit-shot> --orbit <orbit-shot>"
@@ -275,7 +275,7 @@
           "scope": "pass",
           "status": "done",
           "evidence": [
-            "/Users/b/Desktop/code/hire-billy/avatar/pipeline/spec.json"
+            "/Users/b/Desktop/code/eap-stage/avatar/pipeline/spec.json"
           ],
           "reason": "",
           "command": "python3 forge/stage3_build/orchestrate_passes.py check {spec} --pass-id {pass_id}"
@@ -285,7 +285,7 @@
           "scope": "pass",
           "status": "done",
           "evidence": [
-            "/Users/b/Desktop/code/hire-billy/avatar/pipeline/cmp-blockout.png"
+            "/Users/b/Desktop/code/eap-stage/avatar/pipeline/cmp-blockout.png"
           ],
           "reason": "",
           "command": "Create the comparison sheet, inspect it with agent vision, and append exactly one review action"
@@ -295,7 +295,7 @@
           "scope": "pass",
           "status": "done",
           "evidence": [
-            "/Users/b/Desktop/code/hire-billy/avatar/pipeline/spec.json"
+            "/Users/b/Desktop/code/eap-stage/avatar/pipeline/spec.json"
           ],
           "reason": "",
           "command": "python3 forge/stage3_build/orchestrate_passes.py sync {spec} --in-place"

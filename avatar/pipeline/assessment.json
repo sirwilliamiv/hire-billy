@@ -1,6 +1,6 @@
 {
-  "targetName": "Billy Portrait Bust",
-  "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference-clean.png",
+  "targetName": "the candidate Portrait Bust",
+  "sourceImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/reference-clean.png",
   "preSpecAssessment": {
     "objectClass": {
       "primaryType": "portrait bust (adult male head + neck + shoulders)",
@@ -98,7 +98,7 @@
             "type": "component.localFeatures",
             "ref": "hair/curlClumps"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r0c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r0c1.png",
           "confidence": 0.9
         },
         {
@@ -118,7 +118,7 @@
             "type": "material.localOverrides",
             "ref": "mat-hair/crestAnisotropy"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r0c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r0c1.png",
           "confidence": 0.75
         },
         {
@@ -138,7 +138,7 @@
             "type": "component.localFeatures",
             "ref": "hair/frontWisps"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r0c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r0c1.png",
           "confidence": 0.85
         },
         {
@@ -158,7 +158,7 @@
             "type": "material.localOverrides",
             "ref": "mat-skin/browDecal"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r1c1.png",
           "confidence": 0.85
         },
         {
@@ -178,7 +178,7 @@
             "type": "material.localOverrides",
             "ref": "mat-eye/catchlight"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r1c1.png",
           "confidence": 0.85
         },
         {
@@ -198,7 +198,7 @@
             "type": "material.localOverrides",
             "ref": "mat-skin/crowsFeet"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c0.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r1c0.png",
           "confidence": 0.7
         },
         {
@@ -218,7 +218,7 @@
             "type": "component.localFeatures",
             "ref": "head/nasolabialFolds"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r1c1.png",
           "confidence": 0.9
         },
         {
@@ -238,7 +238,7 @@
             "type": "component.localFeatures",
             "ref": "mouth/teethRow"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r1c1.png",
           "confidence": 0.9
         },
         {
@@ -258,7 +258,7 @@
             "type": "material.localOverrides",
             "ref": "mat-beard/coverageMask"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r1c1.png",
           "confidence": 0.85
         },
         {
@@ -278,7 +278,7 @@
             "type": "material.localOverrides",
             "ref": "mat-skin/tZoneRoughness"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r1c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r1c1.png",
           "confidence": 0.7
         },
         {
@@ -298,7 +298,7 @@
             "type": "material.localOverrides",
             "ref": "mat-shirt/weave"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r2c1.png",
           "confidence": 0.85
         },
         {
@@ -318,7 +318,7 @@
             "type": "component.localFeatures",
             "ref": "shirt/collarPlacket"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r2c1.png",
           "confidence": 0.9
         },
         {
@@ -338,7 +338,7 @@
             "type": "component.localFeatures",
             "ref": "shirt/buttonRow"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c1.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r2c1.png",
           "confidence": 0.8
         },
         {
@@ -358,7 +358,7 @@
             "type": "component.localFeatures",
             "ref": "shirt/foldRidges"
           },
-          "evidenceRef": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/detail-crops/zone-r2c0.png",
+          "evidenceRef": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/detail-crops/zone-r2c0.png",
           "confidence": 0.8
         }
       ]
@@ -497,7 +497,7 @@
       "confidence": 0.75,
       "note": "Filled from extract_landmarks.py overlay measurement; see anatomy.json + landmarks.png."
     },
-    "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference-clean.png"
+    "sourceImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/reference-clean.png"
   },
   "qualityContract": {
     "qualityBar": "complex",
@@ -624,7 +624,7 @@
   "authoringInstruction": "Fill observed object class, complexity reasoning, featureGroups, visualDeltaChecks, and unknowns before generating or implementing ObjectSculptSpec.",
   "localSpecSearch": {
     "collection": "core_3d",
-    "query": "Billy Portrait Bust human head bust anatomy proportions landmarks hair clumps stylized cards silhouette skin albedo roughness subsurface eye iris catchlight glossy sphere cloth shirt collar folds",
+    "query": "the candidate Portrait Bust human head bust anatomy proportions landmarks hair clumps stylized cards silhouette skin albedo roughness subsurface eye iris catchlight glossy sphere cloth shirt collar folds",
     "index": {
       "status": "hit",
       "reason": "current",

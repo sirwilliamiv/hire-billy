@@ -1,6 +1,6 @@
 /**
- * Billy bust SKINS — material sets that swap onto the geometry shell via applyBillySkin.
- * The shell (createBillyBustModel) owns geometry; skins own appearance only.
+ * Bust SKINS — material sets that swap onto the geometry shell via applySkin.
+ * The shell (createBustModel) owns geometry; skins own appearance only.
  *
  * Both non-clay skins share ONE mapping: the reference photo is projected onto the
  * bust with landmark-anchored vertical mapping (applyLikenessUVs), so photo pixels
@@ -12,7 +12,7 @@
  * - createClaySkin(): neutral review look
  */
 import * as THREE from 'three';
-import type { BillySkin } from './createBillyBustModel.js';
+import type { BustSkin } from './createBustModel.js';
 
 // subject bbox inside reference-clean.png (measured: x 51..471, y 43..508 of 512)
 const REF = { u0: 51 / 512, u1: 471 / 512, v0: 43 / 512, v1: 508 / 512 };
@@ -94,7 +94,7 @@ export function applyLikenessUVs(root: THREE.Object3D): void {
 // ---------------------------------------------------------------------------
 // clay
 // ---------------------------------------------------------------------------
-export function createClaySkin(): BillySkin {
+export function createClaySkin(): BustSkin {
   const mk = (color: number, roughness = 0.8) =>
     new THREE.MeshStandardMaterial({ color, roughness, metalness: 0 });
   return {
@@ -114,7 +114,7 @@ export function createClaySkin(): BillySkin {
 // ---------------------------------------------------------------------------
 // likeness — the photo itself, unlit
 // ---------------------------------------------------------------------------
-export function createLikenessSkin(albedoUrl: string, onReady?: () => void): BillySkin {
+export function createLikenessSkin(albedoUrl: string, onReady?: () => void): BustSkin {
   const tex = new THREE.TextureLoader().load(albedoUrl, () => onReady?.());
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
@@ -157,7 +157,7 @@ export function createLikenessSkin(albedoUrl: string, onReady?: () => void): Bil
 // ---------------------------------------------------------------------------
 const GLYPHS = 'アイウエオカキクケコサシスセソタチツテト0123456789ZXCVBNMASDFGH';
 
-export function createMatrixSkin(albedoUrl: string, onReady?: () => void): BillySkin {
+export function createMatrixSkin(albedoUrl: string, onReady?: () => void): BustSkin {
   const SIZE = 1024;
   const CELL = 12;
   const COLS = Math.floor(SIZE / CELL);

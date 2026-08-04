@@ -1,8 +1,8 @@
 {
   "delightReference": {
     "version": "1.0",
-    "sourceImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/reference-clean.png",
-    "outputImage": "/Users/b/Desktop/code/hire-billy/avatar/pipeline/albedo-delit.png",
+    "sourceImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/reference-clean.png",
+    "outputImage": "/Users/b/Desktop/code/eap-stage/avatar/pipeline/albedo-delit.png",
     "method": "per-pixel normalization against a box-blurred luminance proxy; an approximation of de-lighting, not physically based inverse rendering or true light/albedo separation",
     "strength": 0.6,
     "confidence": 0.592,
