@@ -34,6 +34,12 @@ func claudeWindowBounds() -> CGRect? {
   return nil
 }
 
+/* A borderless window refuses keyboard focus by default; the bubble's chat
+   field needs it. Clicking any other app takes focus back the normal way. */
+final class KeyableWindow: NSWindow {
+  override var canBecomeKey: Bool { true }
+}
+
 final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
   var window: NSWindow!
   var web: WKWebView!
@@ -50,7 +56,7 @@ final class Delegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler {
     /* the stage is the primary display: window-server coordinates are anchored
        there, and NSScreen.main (the focused screen) may be a different monitor */
     let screen = (NSScreen.screens.first ?? NSScreen.main!).frame
-    window = NSWindow(contentRect: screen, styleMask: [.borderless], backing: .buffered, defer: false)
+    window = KeyableWindow(contentRect: screen, styleMask: [.borderless], backing: .buffered, defer: false)
     window.isOpaque = false
     window.backgroundColor = .clear
     window.hasShadow = false

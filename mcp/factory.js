@@ -32,6 +32,7 @@ function ensureBrain() {
        cross-origin browser page fails both checks */
     const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type, x-stage-token' };
     const stageClients = new Set();
+    const heard = []; /* what the viewer typed at the actor, until the director listens */
     const broadcast = obj => {
       const b = typeof obj === 'string' ? obj : JSON.stringify(obj);
       for (const c of stageClients) { try { c.write('data: ' + b + '\n\n'); } catch (e) {} }
@@ -46,6 +47,21 @@ function ensureBrain() {
         res.write('\n');
         stageClients.add(res);
         req.on('close', () => stageClients.delete(res));
+        return;
+      }
+      if (req.method === 'POST' && u.pathname === '/heard') {
+        let b = '';
+        req.on('data', c => { b += c; if (b.length > 8192) req.destroy(); });
+        req.on('end', () => {
+          try {
+            const { text } = JSON.parse(b || '{}');
+            if (text && typeof text === 'string') {
+              heard.push({ text: text.slice(0, 2000), ts: Date.now() });
+              if (heard.length > 50) heard.shift();
+            }
+          } catch (e) {}
+          res.writeHead(204, CORS); res.end();
+        });
         return;
       }
       if (req.method === 'POST' && u.pathname === '/stage') {
@@ -80,7 +96,7 @@ function ensureBrain() {
       res.writeHead(404, CORS); res.end();
     });
     srv.unref();
-    srv.listen(0, '127.0.0.1', () => { brain = { port: srv.address().port, token, broadcast }; resolve(brain); });
+    srv.listen(0, '127.0.0.1', () => { brain = { port: srv.address().port, token, broadcast, heard }; resolve(brain); });
   });
 }
 
@@ -357,6 +373,10 @@ export function buildServer({ local = false } = {}) {
       x: z.number(), y: z.number(), w: z.number(), h: z.number(),
     });
 
+    const heardNote = () => (brain && brain.heard.length)
+      ? `\n\n(The viewer has typed ${brain.heard.length} thing(s) into the actor's bubble — call stage_listen to hear them.)`
+      : '';
+
     const notOnStage = {
       content: [{ type: 'text', text:
         'Nobody is on stage. Summon him first (stage_summon) — the door is the consent gate, ' +
@@ -413,7 +433,7 @@ export function buildServer({ local = false } = {}) {
         return {
           content: [{ type: 'text', text:
             `He is walking over to ${target.app}${target.title ? ' (' + target.title + ')' : ''} to point at it` +
-            `${say ? ' and deliver the line' : ''}. He will not click it. He never clicks.` }],
+            `${say ? ' and deliver the line' : ''}. He will not click it. He never clicks.` + heardNote() }],
           structuredContent: { verb: 'point', target },
         };
       }
@@ -446,7 +466,7 @@ export function buildServer({ local = false } = {}) {
         return {
           content: [{ type: 'text', text:
             `He is heading for the top edge of ${target.app}${target.title ? ' (' + target.title + ')' : ''} to sit down on it. ` +
-            'The window will not notice. Nothing he does registers as input.' }],
+            'The window will not notice. Nothing he does registers as input.' + heardNote() }],
           structuredContent: { verb: 'sit', target },
         };
       }
@@ -493,7 +513,7 @@ export function buildServer({ local = false } = {}) {
         return {
           content: [{ type: 'text', text:
             `He is walking over to ${target.app}${target.title ? ' (' + target.title + ')' : ''} with the wand out. ` +
-            `The window glides to ${to.x},${to.y}. Its contents never feel a thing.` }],
+            `The window glides to ${to.x},${to.y}. Its contents never feel a thing.` + heardNote() }],
           structuredContent: { verb: 'move', target, to },
         };
       }
@@ -532,9 +552,30 @@ export function buildServer({ local = false } = {}) {
         return {
           content: [{ type: 'text', text:
             `${targets.length} beam(s) incoming: ${targets.map(w => w.app).join(', ')}. ` +
-            'Each window lights up as it is hit. Light only — no window receives any input.' }],
+            'Each window lights up as it is hit. Light only — no window receives any input.' + heardNote() }],
           structuredContent: { verb: 'lasers', targets },
         };
+      }
+    );
+
+    server.registerTool(
+      'stage_listen',
+      {
+        title: 'Hear the viewer',
+        description:
+          'Returns whatever the viewer has typed into the actor\'s speech bubble since you last listened. ' +
+          'The corpus pipeline already answered them in-bubble; treat these as the viewer talking to YOU, ' +
+          'the director — respond with stage directions or conversation. Empty when nothing was said.',
+        inputSchema: {},
+        outputSchema: { utterances: z.array(z.object({ text: z.string(), ts: z.number() })) },
+      },
+      async () => {
+        if (!brain) return notOnStage;
+        const utterances = brain.heard.splice(0, brain.heard.length);
+        const text = utterances.length
+          ? 'From the stage, in order:\n' + utterances.map(u => `- "${u.text}"`).join('\n')
+          : 'Silence. Nothing new from the stage.';
+        return { content: [{ type: 'text', text }], structuredContent: { utterances } };
       }
     );
   }

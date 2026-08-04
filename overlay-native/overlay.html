@@ -132,6 +132,13 @@ html,body{background:transparent;overflow:hidden;width:100vw;height:100vh;
 .brec{display:none;font:10.5px/1.6 var(--data);color:var(--soft3);margin-top:9px;border-top:1px solid var(--line);padding-top:7px}
 .btext del{color:var(--del)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.bask{display:flex;gap:6px;margin-top:10px}
+.bask input{flex:1;min-width:0;background:rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.25);
+  border-radius:8px;padding:7px 10px;font:12px 'Martian Mono',monospace;color:inherit;outline:none}
+.bask input:focus{border-color:rgba(0,0,0,.7);background:#fff}
+.bask button{border:1px solid rgba(0,0,0,.7);background:#111;color:#fff;border-radius:8px;
+  padding:7px 12px;font:11px 'Martian Mono',monospace;cursor:pointer}
+.bask button:active{transform:translateY(1px)}
 .chip{font:12px/1 inherit;font-size:12px;background:var(--paper2);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
 .chip:hover{border-color:var(--blue)}
 .bye{position:sticky;float:right;top:0;margin:-4px -6px 0 8px;border:0;background:none;color:#999;cursor:pointer;font-size:14px}
@@ -182,6 +189,7 @@ html,body{background:transparent;overflow:hidden;width:100vw;height:100vh;
   <div class="btext" id="btext"></div>
   <div class="brec" id="brec"></div>
   <div class="chips" id="chips"></div>
+  <div class="bask"><input id="bq" type="text" placeholder="say something to him" autocomplete="off"><button id="bgo">Ask</button></div>
 </div>
 <script>
 (function(){
@@ -328,7 +336,14 @@ function speak(lede, text, receipt, done){
     reportRects();
   },16);
 }
+function heardPost(q){
+  if(!(NATIVE && BRAIN)) return;
+  fetch("http://127.0.0.1:" + BRAIN + "/heard", {method:"POST",
+    headers:{"content-type":"application/json","x-stage-token": CFG.token || ""},
+    body: JSON.stringify({text: q})}).catch(function(){});
+}
 function askActor(q){
+  heardPost(q);
   if(/off the record|\bdance\b/i.test(q)){
     danceMoves();
     speak("A dance, per request.", "The corpus has no section on rhythm, so what you are watching is uncorroborated motion. The grounding stage let it through because nobody claimed it was good.", null);
@@ -342,6 +357,17 @@ function askActor(q){
   .catch(function(e){ speak("I've lost contact with my brain.",
     "The pipeline that fact-checks me is not answering ("+e.message+"), which means right now I am legally just a drawing. Anything I said would be unsourced, and you know how I feel about that. Summon me again, or check that the MCP server is still alive.", null); });
 }
+(function(){
+  var bq = document.getElementById("bq"), bgo = document.getElementById("bgo");
+  function go(){
+    var q = (bq.value || "").trim();
+    if(!q) return;
+    bq.value = "";
+    askActor(q);
+  }
+  bgo.onclick = go;
+  bq.addEventListener("keydown", function(ev){ if(ev.key === "Enter") go(); });
+})();
 CHIPS.forEach(function(c){
   var b=document.createElement("button"); b.className="chip"; b.textContent=c;
   b.onclick=function(){askActor(c)};
