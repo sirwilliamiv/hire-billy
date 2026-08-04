@@ -61,7 +61,7 @@ const ok = (name, cond) => { console.log((cond ? 'PASS' : 'FAIL') + '  ' + name)
   await client.connect(transport);
   const tools = await client.listTools();
   const expected = process.platform === 'darwin'
-    ? 'ask_candidate,get_model_card,list_windows,stage_lasers,stage_listen,stage_move,stage_point,stage_sit,stage_summon'
+    ? 'ask_candidate,get_model_card,list_windows,stage_lasers,stage_listen,stage_move,stage_point,stage_sit,stage_speak,stage_summon'
     : 'ask_candidate,get_model_card,stage_summon';
   ok('local mcp exposes the full toolset incl verbs', tools.tools.map(t => t.name).sort().join(',') === expected);
   if (process.platform === 'darwin') {

@@ -352,7 +352,12 @@ function askActor(q){
   speak("Good question.", "Let me run that through the machinery…", null);
   bridgeAsk(q)
   .then(function(s){
-    if(s&&s.lede) speak(s.lede, s.rest, s.receipt||null);
+    if(s && s.kind === "unmapped" && NATIVE && BRAIN){
+      speak("Not in my corpus.",
+        "I do not have that one on file, and I will not invent it. I have relayed it to the director — if they answer, I will say it out loud.",
+        s.receipt || null);
+    }
+    else if(s&&s.lede) speak(s.lede, s.rest, s.receipt||null);
     else speak("Hm.","The pipeline returned nothing I can say.",null); })
   .catch(function(e){ speak("I've lost contact with my brain.",
     "The pipeline that fact-checks me is not answering ("+e.message+"), which means right now I am legally just a drawing. Anything I said would be unsourced, and you know how I feel about that. Summon me again, or check that the MCP server is still alive.", null); });
@@ -659,6 +664,12 @@ function verbLasers(m){
     })();
   });
 }
+function verbSpeak(m){
+  if(!m.say) return;
+  bubble.classList.add("show");
+  positionBubbleAt(lastP.x, lastP.y);
+  speak(m.lede || "From the director.", m.say, null);
+}
 var pendingMoveSay = null;
 function verbMove(m){
   var t = m.target; if(!t) return;
@@ -702,6 +713,7 @@ if(NATIVE && BRAIN){
   var verbES = new EventSource("http://127.0.0.1:" + BRAIN + "/stage-events?t=" + (CFG.token || ""));
   verbES.onmessage = function(ev){
     var m = {}; try{ m = JSON.parse(ev.data); }catch(e){ return; }
+    if(m.type === "verb.speak"){ if(!window.__retiring && !window.__going) verbSpeak(m); return; }
     if(m.type !== "verb.point" && m.type !== "verb.sit" && m.type !== "verb.move" && m.type !== "verb.lasers") return;
     (function run(){
       if(window.__retiring || window.__going) return;

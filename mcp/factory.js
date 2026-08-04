@@ -559,6 +559,31 @@ export function buildServer({ local = false } = {}) {
     );
 
     server.registerTool(
+      'stage_speak',
+      {
+        title: 'Speak through the actor',
+        description:
+          'Put your own words in the actor\'s speech bubble. This is how the director answers what ' +
+          'stage_listen heard — the viewer types at the actor, you reply through him, and no separate ' +
+          'API key is ever needed because you are the model. Keep it grounded: the body lends your ' +
+          'words presence, not authority. Requires a prior stage_summon.',
+        inputSchema: {
+          say: z.string().describe('What the actor should say'),
+          lede: z.string().optional().describe('Optional short opening line shown as the bubble headline'),
+        },
+        outputSchema: { verb: z.string() },
+      },
+      async ({ say, lede }) => {
+        if (!verbReady()) return notOnStage;
+        brain.broadcast({ type: 'verb.speak', say, lede: lede || null });
+        return {
+          content: [{ type: 'text', text: 'He is saying it now.' + heardNote() }],
+          structuredContent: { verb: 'speak' },
+        };
+      }
+    );
+
+    server.registerTool(
       'stage_listen',
       {
         title: 'Hear the viewer',
